@@ -1,0 +1,29 @@
+displayName: Nutanix AI
+description: NAI core components.
+type: catalog
+allowMultipleInstances: false
+category:
+  - Artificial Intelligence
+certifications:
+  - certified
+  - supported
+  - airgapped
+licensing:
+  - Ultimate
+  - Pro
+requiredDependencies:
+  - cert-manager
+  - istio
+  - knative
+  - kube-prometheus-stack
+  - nvidia-gpu-operator
+scope:
+  - workspace
+overview: |-
+  # Overview
+  NAI core components
+
+  **Note: Only install the Nutanix AI once per workspace.**
+
+  ## More Information
+  - [Nutanix AI Documentation](https://github.com/nutanix-core/nai-helm-charts)

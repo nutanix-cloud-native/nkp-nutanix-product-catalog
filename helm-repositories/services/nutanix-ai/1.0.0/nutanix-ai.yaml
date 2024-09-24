@@ -1,0 +1,28 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: nai-core
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: nai-core
+      sourceRef:
+        kind: HelmRepository
+        name: nutanix.github.io-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 1.0.0-rc1
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: nai-core
+  valuesFrom:
+    - kind: ConfigMap
+      name: nai-core-1.0.0-d2iq-defaults
+  targetNamespace: ${releaseNamespace}
