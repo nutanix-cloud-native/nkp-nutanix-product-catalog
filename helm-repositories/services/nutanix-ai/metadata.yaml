@@ -58,7 +58,20 @@ overview: |-
       GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
       and compliant solution.
 
-  ## More Information
-  - [Github Link](https://github.com/nutanix-core/nai-helm-charts)
-  - [Documentation Link] (https://drive.google.com/file/d/1cbuJ9yrNm-pmm0wiz06Y2DxUpksaPvEh/view)
-  
+  # Github Link
+  - https://github.com/nutanix-core/nai-helm-charts
+
+  # Documentation Link
+  - https://drive.google.com/file/d/1cbuJ9yrNm-pmm0wiz06Y2DxUpksaPvEh/view
+
+  # Release page
+  - TBD
+
+  # Dependencies details
+  - Cert-manager            v1.9.0
+  - Istio                   1.20.8
+  - Knative-serving         1.13.1
+  - Kserve                  v0.13.1
+  - NVIDIA GPU Operator     v23.9.0
+  - NVIDIA toolkit          v1.14.3-centos7
+  - Kube-prometheus-stack   61.3.1
