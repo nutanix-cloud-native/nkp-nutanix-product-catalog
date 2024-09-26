@@ -58,6 +58,23 @@ overview: |-
       GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
       and compliant solution.
 
+  # Pre-requisite
+  - Create the storage class named nai-nfs-storage using Nutanix Files share storage by replacing <nfs-path> and <nfs-server> 
+      in the following manifest, then execute it:
+      cat <<EOF | kubectl apply -f -
+      apiVersion: storage.k8s.io/v1
+      kind: StorageClass
+      metadata:
+        name: nai-nfs-storage
+      parameters:
+        nfsPath: <nfs-path>
+        nfsServer: <nfs-server>
+        storageType: NutanixFiles
+      provisioner: csi.nutanix.com
+      reclaimPolicy: Delete
+      volumeBindingMode: Immediate
+      EOF 
+
   # Github Link
   - https://github.com/nutanix-core/nai-helm-charts
 
