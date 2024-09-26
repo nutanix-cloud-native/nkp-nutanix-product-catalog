@@ -1,0 +1,8 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nai-core-1.0.0-d2iq-defaults
+  namespace: nai-system
+data:
+  values.yaml: ""
