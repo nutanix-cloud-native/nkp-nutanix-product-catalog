@@ -68,10 +68,10 @@ overview: |-
   - TBD
 
   # Dependencies details
-  - Cert-manager            v1.9.0
-  - Istio                   1.20.8
-  - Knative-serving         1.13.1
-  - Kserve                  v0.13.1
-  - NVIDIA GPU Operator     v23.9.0
-  - NVIDIA toolkit          v1.14.3-centos7
-  - Kube-prometheus-stack   61.3.1
+  - Cert-manager
+  - Istio              
+  - Knative-serving        
+  - Kserve                  
+  - NVIDIA GPU Operator
+  - NVIDIA toolkit
+  - Kube-prometheus-stack
