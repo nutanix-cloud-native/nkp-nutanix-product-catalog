@@ -2,7 +2,7 @@
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:
-  name: nai-core
+  name: nutanix-ai
   namespace: nai-system
 spec:
   chart:
@@ -21,8 +21,8 @@ spec:
   upgrade:
     remediation:
       retries: 30
-  releaseName: nai-core
+  releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap
-      name: nai-core-1.0.0-d2iq-defaults
+      name: nutanix-ai-1.0.0-d2iq-defaults
   targetNamespace: nai-system
