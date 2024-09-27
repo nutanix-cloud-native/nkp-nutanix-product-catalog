@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nutanix-ai-1.0.0-d2iq-defaults
-  namespace: nai-system
+  name: nutanix-ai-1.0.0-nkp-defaults
+  namespace: ${releaseNamespace}
 data:
   values.yaml: ""
