@@ -73,7 +73,7 @@ overview: |-
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
       EOF
-    
+
   # Github Link
   - https://github.com/nutanix-core/nai-helm-charts
 
