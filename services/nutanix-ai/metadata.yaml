@@ -26,7 +26,7 @@ overview: |-
   optimize your AI model orchestration experience. GPT-in-a-Box allows you to select, deploy, and manage
   large language models (LLMs) on a Kubernetes cluster. You can deploy GPT-in-a-Box on any Kubernetes distribution, 
   including Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms 
-  such as Amazon Elastic Kubernetes Service(EKS).
+  such as Amazon Elastic Kubernetes Service (EKS).
   
   **Note: Only install the Nutanix AI once per workspace.**
 
