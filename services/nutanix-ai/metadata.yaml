@@ -1,5 +1,5 @@
-displayName: Nutanix AI
-description: Nutanix AI core components.
+displayName: Nutanix Enterprise AI
+description: Operations management for LLMs (AI models) and secure APIs for AI endpoints
 type: catalog
 allowMultipleInstances: false
 category:
