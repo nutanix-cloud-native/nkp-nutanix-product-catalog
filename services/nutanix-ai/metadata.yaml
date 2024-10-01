@@ -1,13 +1,12 @@
-displayName: Nutanix AI
-description: NAI core components.
+displayName: Nutanix Enterprise AI
+description: Operations management for LLMs (AI models) and secure APIs for AI endpoints
 type: catalog
 allowMultipleInstances: false
 category:
-  - Artificial Intelligence
+  - artificial-intelligence
 certifications:
   - certified
   - supported
-  - airgapped
 licensing:
   - Ultimate
   - Pro
@@ -26,8 +25,8 @@ overview: |-
   GPT-in-a-Box is a comprehensive inference endpoint management product designed to streamline and
   optimize your AI model orchestration experience. GPT-in-a-Box allows you to select, deploy, and manage
   large language models (LLMs) on a Kubernetes cluster. You can deploy GPT-in-a-Box on any Kubernetes distribution, 
-  including Nutanix Kubernetes Engine (NKE), Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms 
-  such as Amazon Elastic Kubernetes Service(EKS).
+  including Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms 
+  such as Amazon Elastic Kubernetes Service (EKS).
   
   **Note: Only install the Nutanix AI once per workspace.**
 
@@ -59,7 +58,7 @@ overview: |-
       and compliant solution.
 
   # Pre-requisite
-  - Create the storage class named nai-nfs-storage using Nutanix Files share storage by replacing <nfs-path> and <nfs-server> 
+  Create the storage class named nai-nfs-storage using Nutanix Files share storage by replacing <nfs-path> and <nfs-server> 
       in the following manifest, then execute it:
       cat <<EOF | kubectl apply -f -
       apiVersion: storage.k8s.io/v1
@@ -73,7 +72,7 @@ overview: |-
       provisioner: csi.nutanix.com
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
-      EOF 
+      EOF
 
   # Github Link
   - https://github.com/nutanix-core/nai-helm-charts
