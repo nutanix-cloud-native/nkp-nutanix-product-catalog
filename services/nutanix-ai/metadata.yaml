@@ -61,7 +61,7 @@ overview: |-
   # Pre-requisite
   Create the storage class named nai-nfs-storage using Nutanix Files share storage by replacing <nfs-path> and <nfs-server> 
       in the following manifest, then execute it:
-      <MonospaceText> cat <<EOF | kubectl apply -f -
+      <pre> cat <<EOF | kubectl apply -f -
       apiVersion: storage.k8s.io/v1
       kind: StorageClass
       metadata:
@@ -73,7 +73,7 @@ overview: |-
       provisioner: csi.nutanix.com
       reclaimPolicy: Delete
       volumeBindingMode: Immediate
-      EOF </MonospaceText>
+      EOF </pre>
 
   # Github Link
   - https://github.com/nutanix-core/nai-helm-charts
