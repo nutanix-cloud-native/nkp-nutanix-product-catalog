@@ -1,1 +1,1 @@
-k8sVersionSupport: ">=1.28"
+k8sVersionSupport: ">=1.30"

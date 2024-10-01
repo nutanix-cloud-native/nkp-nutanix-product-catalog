@@ -4,6 +4,7 @@ type: catalog
 allowMultipleInstances: false
 category:
   - artificial-intelligence
+  - nutanix-products
 certifications:
   - certified
   - supported
