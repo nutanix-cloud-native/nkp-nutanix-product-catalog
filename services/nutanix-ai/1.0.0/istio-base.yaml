@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: istio-release.storage.googleapis.com-helm-releases
         namespace: ${workspaceNamespace}
-      version: 1.20.8
+      version: 1.23.2
   interval: 15s
   install:
     remediation:
