@@ -30,8 +30,3 @@ spec:
       controller:
         image: quay.io/saileshd1402/kserve-controller
         tag: v0.14.0-rc1
-      ingress:
-        ingressGateway:
-          name: istio-ingressgateway
-          namespace: istio-system
-        ingressService: istio-ingressgateway
