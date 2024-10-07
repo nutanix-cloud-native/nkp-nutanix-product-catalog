@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ghcr.io-kserve-helm-releases
         namespace: ${workspaceNamespace}
-      version: v0.14.0-rc0
+      version: v0.13.0
   interval: 15s
   install:
     remediation:
