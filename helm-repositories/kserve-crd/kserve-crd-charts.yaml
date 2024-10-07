@@ -7,5 +7,5 @@ metadata:
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
-  url: oci://ghcr.io/kserve/charts/kserve-crd
+  url: https://johnliu25.github.io/helm-charts/charts/kserve-crd-v0.14.0-rc0.tgz
   interval: 10m
