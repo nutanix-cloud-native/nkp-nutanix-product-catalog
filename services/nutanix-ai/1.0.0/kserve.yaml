@@ -30,3 +30,4 @@ spec:
       controller:
         image: quay.io/saileshd1402/kserve-controller
         tag: v0.14.0-rc0
+  
