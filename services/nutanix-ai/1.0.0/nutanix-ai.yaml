@@ -5,6 +5,17 @@ metadata:
   name: nutanix-ai
   namespace: ${workspaceNamespace}
 spec:
+  dependsOn:
+    - name: istio-base
+      namespace: ${workspaceNamespace}
+    - name: istio-ingressgateway
+      namespace: ${workspaceNamespace}
+    - name: istiod
+      namespace: ${workspaceNamespace}
+    - name: kserve
+      namespace: ${workspaceNamespace}
+    - name: kserve-crd
+      namespace: ${workspaceNamespace}
   chart:
     spec:
       chart: nai-core
