@@ -1,0 +1,90 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: istio-release.storage.googleapis.com-helm-releases
+  namespace: ${workspaceNamespace}
+  labels:
+    kommander.d2iq.io/dkp-airgapped: supported
+spec:
+  url: https://istio-release.storage.googleapis.com/charts
+  interval: 10m
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-base
+  namespace: ${workspaceNamespace}
+spec:
+  chart:
+    spec:
+      chart: base
+      sourceRef:
+        kind: HelmRepository
+        name: istio-release.storage.googleapis.com-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 1.23.2
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: istio-base
+  targetNamespace: istio-system
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istiod
+  namespace: ${workspaceNamespace}
+spec:
+  chart:
+    spec:
+      chart: istiod
+      sourceRef:
+        kind: HelmRepository
+        name: istio-release.storage.googleapis.com-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 1.23.2
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: istiod
+  targetNamespace: istio-system
+
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: istio-ingressgateway
+  namespace: ${workspaceNamespace}
+spec:
+  chart:
+    spec:
+      chart: gateway
+      sourceRef:
+        kind: HelmRepository
+        name: istio-release.storage.googleapis.com-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 1.23.2
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: istio-ingressgateway
+  targetNamespace: istio-system
+
