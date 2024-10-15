@@ -5,7 +5,7 @@ on:
     - cron: "0 0 * * *" # Midnight
 jobs:
   security:
-    if: github.repository == 'nutanix-cloud-native/cluster-api-provider-nutanix'
+    if: github.repository == 'nutanix-cloud-native/nkp-nutanix-product-catalog'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
