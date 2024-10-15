@@ -10,15 +10,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install devbox
-        run: curl -fsSL https://get.jetpack.io/devbox | bash -s -- -f
-
-      - name: Install devbox deps
-        run: devbox install
-
-      - name: Build Project
-        run: devbox run -- make build
-
       - name: Black Duck Full Scan
         uses: synopsys-sig/synopsys-action@v1.10.0
         with:
