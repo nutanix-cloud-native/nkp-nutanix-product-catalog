@@ -1,8 +1,7 @@
 
 name: Black Duck Daily Policy Check
 on:
-  schedule:
-    - cron: "0 0 * * *" # Midnight
+  workflow_dispatch: # Enables manual triggering of the workflow
 jobs:
   security:
     if: github.repository == 'nutanix-cloud-native/nkp-nutanix-product-catalog'
