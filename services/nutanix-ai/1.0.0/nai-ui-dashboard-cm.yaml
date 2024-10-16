@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nai-ui
+  namespace: ${workspaceNamespace}
+  labels:
+    "kommander.d2iq.io/application": "nutanix-ai"
+data:
+  name: "Nutanix Enterprise AI"
+  dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
+  docsLink: "<NAI GA Docs link>"
+  version: "1.0.0"
