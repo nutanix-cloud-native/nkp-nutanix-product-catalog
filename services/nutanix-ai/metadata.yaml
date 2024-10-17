@@ -12,26 +12,22 @@ licensing:
   - Ultimate
   - Pro
 dependencies:
-  - cert-manager
-  - istio
-  - knative
   - kube-prometheus-stack
+  - istio
   - nvidia-gpu-operator
+  - knative
 scope:
   - workspace
+icon: PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI2MTlfMTEwMzUpIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yOS45MjE2IDI1Ljk0NTZDMzAuMDY2MSAyNS45NDU2IDMwLjE5NjUgMjYuMDA4MyAzMC4yOTEzIDI2LjEwOTJMMzkuNzk0IDM0Ljk5MTNDMzkuOTE5MSAzNS4wOTQgMzkuOTk5OSAzNS4yNTU5IDM5Ljk5OTkgMzUuNDM4MUMzOS45OTk5IDM1Ljc0ODEgMzkuNzY1OSAzNS45OTk4IDM5LjQ3NzIgMzUuOTk5OEgzMy4wMDM4QzMyLjg2MTIgMzUuOTk5OCAzMi43MzE2IDM1LjkzODIgMzIuNjM3MyAzNS44Mzg0TDI2LjM0ODggMjkuOTYxNkMyNi4yMzQzIDI5Ljg1NzggMjYuMTYyMSAyOS43MDM5IDI2LjE2MjEgMjkuNTMxMUMyNi4xNjIxIDI5LjM4NTkgMjYuMjEzNiAyOS4yNTM2IDI2LjI5NzggMjkuMTUzOUwyOS41MzQ0IDI2LjEyOTJDMjkuNjMgMjYuMDE2NiAyOS43NjgxIDI1Ljk0NTYgMjkuOTIxNiAyNS45NDU2Wk0zOS40NzcyIDEyQzM5Ljc2NTkgMTIgMzkuOTk5OSAxMi4yNTE4IDM5Ljk5OTkgMTIuNTYxN0MzOS45OTk5IDEyLjc0MzkgMzkuOTE5MSAxMi45MDU2IDM5Ljc5NCAxMy4wMDgyTDMwLjI5MTMgMjEuODkwM0MzMC4xOTY1IDIxLjk5MTUgMzAuMDY2MSAyMi4wNTQzIDI5LjkyMTYgMjIuMDU0M0MyOS43NjgxIDIyLjA1NDMgMjkuNjMgMjEuOTgzNSAyOS41MzQ0IDIxLjg3MDZMMjYuMjk3OCAxOC44NDZDMjYuMjEzNiAxOC43NDYyIDI2LjE2MjEgMTguNjEzOSAyNi4xNjIxIDE4LjQ2ODdDMjYuMTYyMSAxOC4yOTYyIDI2LjIzNDMgMTguMTQyIDI2LjM0ODggMTguMDM4NUwzMi42MzczIDEyLjE2MTFDMzIuNzMxNiAxMi4wNjE2IDMyLjg2MTIgMTIgMzMuMDAzOCAxMkgzOS40NzcyWiIgZmlsbD0iIzc4NTVGQSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE1LjM1NzUgMzUuODUyM0MxNS4yNjQ1IDM1Ljk0MzUgMTUuMTQwNSAzNiAxNS4wMDQzIDM2SDguNTIyNjVDOC4yMzM5NyAzNiA4IDM1Ljc0ODIgOCAzNS40MzhDOCAzNS4yODMyIDguMDU4NDMgMzUuMTQyOSA4LjE1Mjk3IDM1LjA0MTZMMTkuNTExMSAyNC40MjkxQzE5LjYyNSAyNC4zMjYyIDE5LjY5NzIgMjQuMTcxOSAxOS42OTcyIDIzLjk5OTRDMTkuNjk3MiAyMy44MzYzIDE5LjYzMjQgMjMuNjg5OCAxOS41Mjk0IDIzLjU4NzRMOC4xODUxMSAxMi45OUM4LjA3MTcxIDEyLjg4NyA4IDEyLjczMzYgOCAxMi41NjE3QzggMTIuMjUxOCA4LjIzMzk3IDEyIDguNTIyNjUgMTJIMTUuMDA0M0MxNS4xNDEgMTIgMTUuMjY1NiAxMi4wNTYyIDE1LjM1ODUgMTIuMTQ4M0wyNy41ODYxIDIzLjU3NTdDMjcuNjk2OSAyMy42Nzg0IDI3Ljc2NjcgMjMuODI5OCAyNy43NjY3IDIzLjk5OTRDMjcuNzY2NyAyNC4xNjk0IDI3LjY5NjYgMjQuMzIxOSAyNy41ODUzIDI0LjQyNTFMMTUuMzU3NSAzNS44NTIzWiIgZmlsbD0iIzc4NTVGQSIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI2MTlfMTEwMzUiPgo8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==
 overview: |-
   # Overview
-  NAI GPT-in-a-Box
-
-  GPT-in-a-Box is a comprehensive inference endpoint management product designed to streamline and
+  Nutanix Enterprise AI is a comprehensive inference endpoint management product designed to streamline and
   optimize your AI model orchestration experience. GPT-in-a-Box allows you to select, deploy, and manage
   large language models (LLMs) on a Kubernetes cluster. You can deploy GPT-in-a-Box on any Kubernetes distribution, 
   including Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms 
   such as Amazon Elastic Kubernetes Service (EKS).
-  
-  **Note: Only install the Nutanix AI once per workspace.**
 
-  # Key features
+  ## Key features
   - Model access integration
       GPT-in-a-Box supports selecting and deploying text-based generative AI LLMs from Hugging Face.
   - API endpoint integration
@@ -58,42 +54,100 @@ overview: |-
       GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
       and compliant solution.
 
-  # Pre-requisite
-  Create the storage class named nai-nfs-storage using Nutanix Files share storage by replacing <nfs-path> and <nfs-server> 
-      in the following manifest, then execute it:
-      ```
-      cat <<EOF | kubectl apply -f -
-      apiVersion: storage.k8s.io/v1
-      kind: StorageClass
-      metadata:
-        name: nai-nfs-storage
-      parameters:
-        nfsPath: <nfs-path>
-        nfsServer: <nfs-server>
-        storageType: NutanixFiles
-      provisioner: csi.nutanix.com
-      reclaimPolicy: Delete
-      volumeBindingMode: Immediate
-      EOF
-      ```
-
-  # Github Link
-  - https://github.com/nutanix-core/nai-helm-charts
-
   # Documentation Link
-  - https://drive.google.com/file/d/1cbuJ9yrNm-pmm0wiz06Y2DxUpksaPvEh/view
+  - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
 
-  # Release page
-  - TBD
-
-  # Dependencies details
-  - Cert-manager
-  - Istio              
-  - Knative-serving        
-  - Kserve                  
+  ## Before you begin, ensure that you have the following:
+  ###  Nutanix AI requires following NKP platform applications to be enabled
+  - Prometheus Monitoring
+  - Istio Service Mesh
   - NVIDIA GPU Operator
-  - NVIDIA toolkit
-  - Kube-prometheus-stack
+  - Knative
 
-icon: PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI2MTlfMTEwMzUpIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yOS45MjE2IDI1Ljk0NTZDMzAuMDY2MSAyNS45NDU2IDMwLjE5NjUgMjYuMDA4MyAzMC4yOTEzIDI2LjEwOTJMMzkuNzk0IDM0Ljk5MTNDMzkuOTE5MSAzNS4wOTQgMzkuOTk5OSAzNS4yNTU5IDM5Ljk5OTkgMzUuNDM4MUMzOS45OTk5IDM1Ljc0ODEgMzkuNzY1OSAzNS45OTk4IDM5LjQ3NzIgMzUuOTk5OEgzMy4wMDM4QzMyLjg2MTIgMzUuOTk5OCAzMi43MzE2IDM1LjkzODIgMzIuNjM3MyAzNS44Mzg0TDI2LjM0ODggMjkuOTYxNkMyNi4yMzQzIDI5Ljg1NzggMjYuMTYyMSAyOS43MDM5IDI2LjE2MjEgMjkuNTMxMUMyNi4xNjIxIDI5LjM4NTkgMjYuMjEzNiAyOS4yNTM2IDI2LjI5NzggMjkuMTUzOUwyOS41MzQ0IDI2LjEyOTJDMjkuNjMgMjYuMDE2NiAyOS43NjgxIDI1Ljk0NTYgMjkuOTIxNiAyNS45NDU2Wk0zOS40NzcyIDEyQzM5Ljc2NTkgMTIgMzkuOTk5OSAxMi4yNTE4IDM5Ljk5OTkgMTIuNTYxN0MzOS45OTk5IDEyLjc0MzkgMzkuOTE5MSAxMi45MDU2IDM5Ljc5NCAxMy4wMDgyTDMwLjI5MTMgMjEuODkwM0MzMC4xOTY1IDIxLjk5MTUgMzAuMDY2MSAyMi4wNTQzIDI5LjkyMTYgMjIuMDU0M0MyOS43NjgxIDIyLjA1NDMgMjkuNjMgMjEuOTgzNSAyOS41MzQ0IDIxLjg3MDZMMjYuMjk3OCAxOC44NDZDMjYuMjEzNiAxOC43NDYyIDI2LjE2MjEgMTguNjEzOSAyNi4xNjIxIDE4LjQ2ODdDMjYuMTYyMSAxOC4yOTYyIDI2LjIzNDMgMTguMTQyIDI2LjM0ODggMTguMDM4NUwzMi42MzczIDEyLjE2MTFDMzIuNzMxNiAxMi4wNjE2IDMyLjg2MTIgMTIgMzMuMDAzOCAxMkgzOS40NzcyWiIgZmlsbD0iIzc4NTVGQSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE1LjM1NzUgMzUuODUyM0MxNS4yNjQ1IDM1Ljk0MzUgMTUuMTQwNSAzNiAxNS4wMDQzIDM2SDguNTIyNjVDOC4yMzM5NyAzNiA4IDM1Ljc0ODIgOCAzNS40MzhDOCAzNS4yODMyIDguMDU4NDMgMzUuMTQyOSA4LjE1Mjk3IDM1LjA0MTZMMTkuNTExMSAyNC40MjkxQzE5LjYyNSAyNC4zMjYyIDE5LjY5NzIgMjQuMTcxOSAxOS42OTcyIDIzLjk5OTRDMTkuNjk3MiAyMy44MzYzIDE5LjYzMjQgMjMuNjg5OCAxOS41Mjk0IDIzLjU4NzRMOC4xODUxMSAxMi45OUM4LjA3MTcxIDEyLjg4NyA4IDEyLjczMzYgOCAxMi41NjE3QzggMTIuMjUxOCA4LjIzMzk3IDEyIDguNTIyNjUgMTJIMTUuMDA0M0MxNS4xNDEgMTIgMTUuMjY1NiAxMi4wNTYyIDE1LjM1ODUgMTIuMTQ4M0wyNy41ODYxIDIzLjU3NTdDMjcuNjk2OSAyMy42Nzg0IDI3Ljc2NjcgMjMuODI5OCAyNy43NjY3IDIzLjk5OTRDMjcuNzY2NyAyNC4xNjk0IDI3LjY5NjYgMjQuMzIxOSAyNy41ODUzIDI0LjQyNTFMMTUuMzU3NSAzNS44NTIzWiIgZmlsbD0iIzc4NTVGQSIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI2MTlfMTEwMzUiPgo8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==
+  ### Create NutanixFiles storage class using the following manifest by replacing <nfs-path> and <nfs-server>:
+    ```
+    cat <<EOF | kubectl apply -f -
+    apiVersion: storage.k8s.io/v1
+    kind: StorageClass
+    metadata:
+      name: nai-nfs-storage
+    parameters:
+      nfsPath: <nfs-path>
+      nfsServer: <nfs-server>
+      storageType: NutanixFiles
+    provisioner: csi.nutanix.com
+    reclaimPolicy: Delete
+    volumeBindingMode: Immediate
+    EOF
+    ```
+
+  ## During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
+  ```
+  imagePullSecret:
+    # Name of the image pull secret
+    name: nai-iep-secret
+    # Image registry credentials
+    credentials:
+      registry: https://index.docker.io/v1/
+      username: <username>
+      password: <password>
+      email: <email
+  naiApi:
+    # NAI API image details
+    naiApiImage:
+      # The name of the NAI API Docker image
+      image: docker.io/nutanix/nai-api
+      # The tag of the Docker image to be used
+      tag: v1.0.0-rc2
+  storageClassName: nai-nfs-storage
+  ```
+
+  ## Patch the Istio Gateway to enable HTTPS
+  ```
+  kubectl patch gateway knative-ingress-gateway -n knative-serving --type='merge' --patch '{
+  "spec": {
+    "selector": {
+      "istio": "ingressgateway"
+    },
+    "servers": [
+      {
+        "hosts": ["*"],
+        "port": {
+          "name": "http",
+          "number": 80,
+          "protocol": "HTTP"
+        },
+        "tls": {
+          "httpsRedirect": true
+        }
+      },
+      {
+        "hosts": ["*"],
+        "port": {
+          "name": "https",
+          "number": 443,
+          "protocol": "HTTPS"
+        },
+        "tls": {
+          "credentialName": "nai-self-signed-cert",
+          "mode": "SIMPLE"
+        }
+      }
+    ]
+  }
+  }'
+  ```
+  ## After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
+  On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
+  ```
+  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}')/
+  ```
+  Update the dashboard URL in config map as follows:
+  ```
+  kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
+  ```
+  
+  Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
+
+  NOTE: Currently, Nutanix Enterprise AI UI is hosted using self-signed certificate for HTTPS out of the box. You can create a new certificate by updating the nai-self-signed-cert.yaml file with your domain name and apply it to the cluster.
 
