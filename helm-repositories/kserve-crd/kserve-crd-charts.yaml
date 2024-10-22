@@ -1,11 +1,14 @@
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: ghcr.io-kserve-crd-helm-releases
   namespace: ${workspaceNamespace}
-  labels:
-    kommander.d2iq.io/dkp-airgapped: supported
 spec:
-  url: https://johnliu25.github.io/helm-charts
+  url: oci://ghcr.io/kserve/charts/kserve-crd
+  ref:
+    tag: v0.14.0
   interval: 10m
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy

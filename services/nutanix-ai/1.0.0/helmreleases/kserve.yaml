@@ -1,18 +1,16 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: kserve
   namespace: ${workspaceNamespace}
 spec:
-  chart:
-    spec:
-      chart: kserve
-      sourceRef:
-        kind: HelmRepository
-        name: ghcr.io-kserve-helm-releases
-        namespace: ${workspaceNamespace}
-      version: v0.14.0-rc1
+  chartRef:
+    kind: OCIRepository
+    name: ghcr.io-kserve-helm-releases
+    namespace: ${workspaceNamespace}
+  dependsOn:
+  - name: kserve-crd
   interval: 15s
   install:
     remediation:
