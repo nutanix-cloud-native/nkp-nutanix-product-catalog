@@ -57,6 +57,7 @@ overview: |-
   ## Documentation Link
   - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
 
+  ## Steps to enable Nutanix Enterprise AI application
   ### Before you begin, ensure that you have the following:
   ###  Nutanix AI requires following NKP platform applications to be enabled
   - Prometheus Monitoring
@@ -81,7 +82,6 @@ overview: |-
     EOF
     ```
 
-  ## Steps to enable Nutanix Enterprise AI application
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
   imagePullSecret:
