@@ -79,7 +79,6 @@ overview: |-
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
     EOF
-    ```
 
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
