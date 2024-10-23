@@ -54,10 +54,10 @@ overview: |-
       GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
       and compliant solution.
 
-  # Documentation Link
+  ## Documentation Link
   - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
 
-  ## Before you begin, ensure that you have the following:
+  ### Before you begin, ensure that you have the following:
   ###  Nutanix AI requires following NKP platform applications to be enabled
   - Prometheus Monitoring
   - Istio Service Mesh
@@ -81,7 +81,7 @@ overview: |-
     EOF
     ```
 
-  ## During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
+  ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
   imagePullSecret:
     # Name of the image pull secret
@@ -102,7 +102,7 @@ overview: |-
   storageClassName: nai-nfs-storage
   ```
 
-  ## Patch the Istio Gateway to enable HTTPS
+  ### Patch the Istio Gateway to enable HTTPS
   ```
   kubectl patch gateway knative-ingress-gateway -n knative-serving --type='merge' --patch '{
   "spec": {
@@ -137,7 +137,7 @@ overview: |-
   }
   }'
   ```
-  ## After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
+  ### After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
   export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}')/
