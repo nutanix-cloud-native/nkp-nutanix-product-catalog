@@ -79,7 +79,9 @@ overview: |-
     reclaimPolicy: Delete
     volumeBindingMode: Immediate
     EOF
+    ```
 
+  ## Steps to enable Nutanix Enterprise AI application
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
   imagePullSecret:
