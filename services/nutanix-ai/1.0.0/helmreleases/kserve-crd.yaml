@@ -5,6 +5,10 @@ metadata:
   name: ghcr.io-kserve-charts-kserve-crd
   namespace: ${workspaceNamespace}
 spec:
+  # TODO(takirala): This does not work in airgapped as of today as the url here is
+  # hardcoded and we do not accept any secretRef here. If/when NKP supports oci in 
+  # airgapped (2.14 hopefully) we need to parametrize the URL here as well as
+  # allow secret population here if configured.
   url: oci://ghcr.io/kserve/charts/kserve-crd
   ref:
     tag: v0.14.0
