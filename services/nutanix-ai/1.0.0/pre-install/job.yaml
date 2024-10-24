@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+rules:
+  - apiGroups: ["networking.istio.io/v1"]
+    resources: ["gateways"]
+    verbs: ["get", "watch", "list", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: nai-prereq-job
+subjects:
+  - kind: ServiceAccount
+    name: nai-prereq-job
+    namespace: ${releaseNamespace}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+spec:
+  template:
+    metadata:
+      name: nai-prereq-job
+    spec:
+      serviceAccountName: nai-prereq-job
+      priorityClassName: system-cluster-critical
+      restartPolicy: OnFailure
+      containers:
+        - name: pre-install
+          image: "${kubetoolsImageRepository:=bitnami/kubectl}:${kubetoolsImageTag:=1.30.5}"
+          env:
+            - name: KNATIVE_INGRESS_GATEWAY_PATCH
+              value: |
+                {
+                  "spec": {
+                    "selector": {
+                      "istio": "ingressgateway"
+                    },
+                    "servers": [
+                      {
+                        "hosts": ["*"],
+                        "port": {
+                          "name": "http",
+                          "number": 80,
+                          "protocol": "HTTP"
+                        },
+                        "tls": {
+                          "httpsRedirect": true
+                        }
+                      },
+                      {
+                        "hosts": ["*"],
+                        "port": {
+                          "name": "https",
+                          "number": 443,
+                          "protocol": "HTTPS"
+                        },
+                        "tls": {
+                          "credentialName": "nai-self-signed-cert",
+                          "mode": "SIMPLE"
+                        }
+                      }
+                    ]
+                  }
+                }
+          command:
+            - sh
+            - -c
+            - |
+              while ! kubectl wait --for condition=established --timeout=30s crd/gateways.networking.istio.io ;
+              do
+                echo "Waiting for gateways.networking.istio.io CRD to be established"
+                sleep 30
+              done
+              echo "Patching knative-ingress-gateway"
+              kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-serving --type='merge' --patch ${KNATIVE_INGRESS_GATEWAY_PATCH}
+              echo "TODO: kubectl patch cm nai-ui after waiting for the external IP or FQDN of the istio-ingressgateway service"
