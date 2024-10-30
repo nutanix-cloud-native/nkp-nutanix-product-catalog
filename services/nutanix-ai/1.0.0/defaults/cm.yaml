@@ -14,7 +14,7 @@ data:
     # These gateways determine the entry points for your traffic.
     virtualService:
       gateways:
-        - knative-serving/knative-ingress-gateway
+      - knative-serving/knative-ingress-gateway
 
     # Image pull secret Details
     imagePullSecret:
