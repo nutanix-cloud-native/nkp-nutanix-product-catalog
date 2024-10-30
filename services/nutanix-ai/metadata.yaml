@@ -99,7 +99,7 @@ overview: |-
       # The name of the NAI API Docker image
       image: docker.io/nutanix/nai-api
       # The tag of the Docker image to be used
-      tag: v1.0.0-rc2
+      tag: v2.0.0-rc0
   storageClassName: nai-nfs-storage
   ```
 
