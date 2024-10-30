@@ -9,4 +9,4 @@ data:
   name: "Nutanix Enterprise AI"
   dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
   docsLink: "<NAI GA Docs link>"
-  version: "1.0.0"
+  version: "2.0.0"

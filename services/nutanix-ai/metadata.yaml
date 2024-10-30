@@ -92,14 +92,7 @@ overview: |-
       registry: https://index.docker.io/v1/
       username: <username>
       password: <password>
-      email: <email
-  naiApi:
-    # NAI API image details
-    naiApiImage:
-      # The name of the NAI API Docker image
-      image: docker.io/nutanix/nai-api
-      # The tag of the Docker image to be used
-      tag: v2.0.0-rc0
+      email: <email>
   storageClassName: nai-nfs-storage
   ```
 
