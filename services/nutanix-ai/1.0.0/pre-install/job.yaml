@@ -1,0 +1,140 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: nai-prereq-job
+rules:
+  # Permissions for CRDs in the 'apiextensions.k8s.io' API group
+  - apiGroups: ["apiextensions.k8s.io"]
+    resources: ["customresourcedefinitions"]
+    verbs: ["get", "list", "watch"]
+  # Permissions to patch the 'knative-ingress-gateway' in 'knative-serving' namespace
+  - apiGroups: ["networking.istio.io"]
+    resources: ["gateways"]
+    verbs: ["patch", "get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: nai-prereq-job
+subjects:
+  - kind: ServiceAccount
+    name: nai-prereq-job
+    namespace: ${releaseNamespace}
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-prereq-job
+  namespace: ${releaseNamespace}
+spec:
+  template:
+    metadata:
+      name: nai-prereq-job
+    spec:
+      serviceAccountName: nai-prereq-job
+      priorityClassName: system-cluster-critical
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-knative
+          image: "${kubetoolsImageRepository:=bitnami/kubectl}:${kubetoolsImageTag:=1.30.5}"
+          command:
+          - sh
+          - -c
+          - |
+            max_retries=120 # 30s x 120 = 1h. Wait for 1 hour and then give up.
+            retries=0
+            while ! kubectl wait --for condition=established --timeout=30s crd/gateways.networking.istio.io ;
+            do
+              retries=$((retries+1))
+              if [ "$retries" -ge "$max_retries" ]; then
+                echo "Failed to establish CRD after $max_retries attempts."
+                exit 1
+              fi
+              echo "Waiting for gateways.networking.istio.io CRD to be established"
+              sleep 30
+            done
+        - name: wait-for-istio
+          image: "${kubetoolsImageRepository:=bitnami/kubectl}:${kubetoolsImageTag:=1.30.5}"
+          command:
+          - sh
+          - -c
+          - |
+            max_retries=120 # 30s x 120 = 1h. Wait for 1 hour and then give up.
+            retries=0
+            # TODO(takirala): find a reasonable entity in istio that asserts its health
+            while ! kubectl wait --for condition=established --timeout=30s crd/gateways.networking.istio.io ;
+            do
+              retries=$((retries+1))
+              if [ "$retries" -ge "$max_retries" ]; then
+                echo "Failed to establish CRD after $max_retries attempts."
+                exit 1
+              fi
+              echo "Waiting for gateways.networking.istio.io CRD to be established"
+              sleep 30
+            done
+      containers:
+        - name: pre-install-knative-patch
+          image: "${kubetoolsImageRepository:=bitnami/kubectl}:${kubetoolsImageTag:=1.30.5}"
+          env:
+            - name: KNATIVE_INGRESS_GATEWAY_PATCH
+              value: |
+                {
+                  "spec": {
+                    "selector": {
+                      "istio": "ingressgateway"
+                    },
+                    "servers": [
+                      {
+                        "hosts": ["*"],
+                        "port": {
+                          "name": "http",
+                          "number": 80,
+                          "protocol": "HTTP"
+                        },
+                        "tls": {
+                          "httpsRedirect": true
+                        }
+                      },
+                      {
+                        "hosts": ["*"],
+                        "port": {
+                          "name": "https",
+                          "number": 443,
+                          "protocol": "HTTPS"
+                        },
+                        "tls": {
+                          "credentialName": "nai-self-signed-cert",
+                          "mode": "SIMPLE"
+                        }
+                      }
+                    ]
+                  }
+                }
+          command:
+            - sh
+            - -c
+            - |
+              max_retries=120 # 30s x 120 = 1h. Wait for 1 hour and then give up.
+              retries=0
+              while ! kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-serving --type='merge' --patch "${KNATIVE_INGRESS_GATEWAY_PATCH}" ;
+              do
+                retries=$((retries+1))
+                if [ "$retries" -ge "$max_retries" ]; then
+                  echo "Failed to patch knative-ingress-gateway"
+                  exit 1
+                fi
+                echo "Trying to patch knative-ingress-gateway"
+                sleep 30
+              done
+              echo "TODO: kubectl patch cm nai-ui after waiting for the external IP or FQDN of the istio-ingressgateway service"
