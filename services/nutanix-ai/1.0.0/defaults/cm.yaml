@@ -6,7 +6,7 @@ metadata:
   namespace: ${workspaceNamespace}
 data:
   values.yaml: |
-    # Labels common to all components of nai-core
+    # Labels common to add components of nai-core
     labels:
       app.kubernetes.io/name: nai-iep
 
@@ -14,9 +14,9 @@ data:
     # These gateways determine the entry points for your traffic.
     virtualService:
       gateways:
-      - knative-serving/knative-ingress-gateway
+        - knative-serving/knative-ingress-gateway
 
-    # Image pull secret details
+    # Image pull secret Details
     imagePullSecret:
       # Name of the image pull secret
       name: nai-iep-secret
@@ -33,9 +33,10 @@ data:
     naiIepOperator:
       # IEP operator image details
       iepOperatorImage:
+        # IEP operator image name
         image: docker.io/nutanix/nai-iep-operator
+        # IEP operator image tag
         tag: latest
-      
       iepOperatorResources:
         limits:
           cpu: 500m
@@ -44,10 +45,14 @@ data:
           cpu: 100m
           memory: 100Mi
 
+      # Model processor image details
       modelProcessorImage:
+        # Model Processor image name
         image: docker.io/nutanix/nai-model-processor
+        # Model Processor image tag
         tag: latest
 
+      # Configuration for resource limits and requests for the model processor.
       modelProcessorResources:
         limits:
           cpu: ""
@@ -55,14 +60,22 @@ data:
         requests:
           cpu: ""
           memory: ""
-
+      
+      # Determines whether the model processor job should be retained after completion.
+      # Acceptable values:
+      # - "true": Retain the job after completion.
+      # - "false": Delete the job after completion.
       retainModelProcessorJob: "false"
 
     naiInferenceUi:
+      # NAI UI image details
       naiUiImage:
+        # The name of the NAI UI Docker image
         image: docker.io/nutanix/nai-inference-ui
+        # The tag of the Docker image to be used
         tag: latest
-      
+
+      # Resources for nai-ui container
       resources:
         requests:
           cpu: 1
@@ -71,13 +84,18 @@ data:
           cpu: 2
           memory: 2Gi   
 
+      # The URL for the NAI API service
       naiApiUrl: "http://nai-api.nai-system.svc.cluster.local:7000"
 
     naiApi:
+      # NAI API image details
       naiApiImage:
+        # The name of the NAI API Docker image
         image: docker.io/nutanix/nai-api
+        # The tag of the Docker image to be used
         tag: latest
 
+      # Resources for nai-api container
       naiApiResources:
         requests:
           cpu: 2
@@ -86,6 +104,7 @@ data:
           cpu: 8
           memory: 4Gi
       
+      # Resources for nai-api-db-migrate job container
       naiMigrateInitContainerResources:
         requests:
           cpu: 100m
@@ -93,7 +112,7 @@ data:
         limits:
           cpu: 1
           memory: 1Gi   
-      
+
       naiMigrateJobResources:
         requests:
           cpu: 1
@@ -102,32 +121,44 @@ data:
           cpu: 1
           memory: 1Gi
 
+      # Details of super admin (first user in the nai system)
       superAdmin:
         username: admin
         password: Nutanix.123
         email: admin@nutanix.com
         firstName: admin
 
+      # Storage class name to be used nai-iep for storing models
       storageClassName: nai-nfs-storage
 
-      supportedKserveRuntimeImage: "quay.io/saileshd1402/huggingfaceserver:v0.14.0"
-      supportedTGIImage: "artifactory-edge-01.corp.p10y.ntnxdpro.com/canaveral-legacy-docker/nutanix-core/nai-tgi:2.3.1"
+      # supportedKserveRuntimeVersion Image in model catalog
+      supportedKserveRuntimeImage: "docker.io/nutanix/nai-kserve-huggingfaceserver:v0.14.0"
+
+      # supportedTGIRuntimeImage
+      supportedTGIImage: "docker.io/nutanix/nai-tgi"
+      supportedTGIImageTag: "2.3.1-825f39d"
+      
+      # The URL for NAI prometheus service
       naiMonitoringUrl: "http://nai-prometheus.nai-system.svc.cluster.local:9090"
 
     naiDatabase:
       naiDbImage:
+        # The name of the NAI DB Docker image
         image: docker.io/nutanix/nai-postgres:16.1-alpine
 
+      # Postgres sql service port
       service:
         port: 5432
 
+      # Postgres sql details
       postgresql:
         postgresUser: nai-api-user
         postgresPassword: nai-api-password
         postgresDatabase: nai_iep
         postgresPort: "5432"
         postgresHost: nai-db
-
+      
+      # Resources for nai-db container
       resources:
         requests:
           cpu: 2
@@ -135,20 +166,27 @@ data:
         limits:
           cpu: 4
           memory: 4Gi
-
+      
+      # Storage spec for of nai-db
       storageSpec:
         resources:
           requests:
             storage: 4Gi  
 
+    # Values for nai-monitoring stack deployment.
+    # Values for node-exporter, kube-scheduler and dcgm-exporter service monitors are populated in env specific values files.
     naiMonitoring:
+      ## Deploy prometheus
       prometheus:
+        # Image for prometheus pod
         image:
           registry: quay.io
           repository: prometheus/prometheus
           tag: v2.54.0
         version: v2.54.0
+        # Number of prometheus pods to deploy
         replicas: 1
+        # Resources for prometheus pod
         resources:
           requests:
             cpu: 2
@@ -156,24 +194,29 @@ data:
           limits:
             cpu: 8
             memory: 4Gi
+        # Prometheus db storage spec
         storageSpec:
           resources:
             requests:
               storage: 20Gi
+        # PVC retention policy during helm uninstall i.e. if statefulset is deleted.
         persistentVolumeClaimRetentionPolicy:
           whenScaled: Retain
           whenDeleted: Delete
 
+      ## Component scraping kube scheduler
       kubeScheduler:
         service:
           enabled: false
         serviceMonitor:
           enabled: false
 
+      ## Component scraping node exporter
       nodeExporter:
         serviceMonitor:
           enabled: false
 
+      ## Component scraping dcgm exporter
       dcgmExporter:
         podLevelMetrics: false
         serviceMonitor:
