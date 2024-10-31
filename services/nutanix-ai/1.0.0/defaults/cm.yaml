@@ -123,10 +123,10 @@ data:
 
       # Details of super admin (first user in the nai system)
       superAdmin:
-        username: USERNAME
-        password: PASSWORD
-        email: EMAIL
-        firstName: FIRSTNAME
+        username: admin
+        password: Nutanix.123
+        email: admin@nutanix.com
+        firstName: admin
 
       # Storage class name to be used nai-iep for storing models
       storageClassName: nai-nfs-storage
