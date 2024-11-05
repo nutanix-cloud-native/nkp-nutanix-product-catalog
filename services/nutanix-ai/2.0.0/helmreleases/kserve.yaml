@@ -40,5 +40,5 @@ spec:
       modelmesh:
         enabled: false
       controller:
-        image: quay.io/saileshd1402/kserve-controller
+        image: docker.io/nutanix/nai-kserve-controller
         tag: v0.14.0
