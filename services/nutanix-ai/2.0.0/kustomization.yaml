@@ -4,4 +4,3 @@ resources:
   - ./pre-install
   - ./helmreleases
   - ../../../helm-repositories/ntnx-charts
-  - nai-self-signed-cert.yaml
