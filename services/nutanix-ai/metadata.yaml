@@ -1,5 +1,5 @@
 displayName: Nutanix Enterprise AI
-description: Operations management for LLMs (AI models) and secure APIs for AI endpoints
+description: Operations management for LLMs (AI models) and secure APIs for AI endpoints.
 type: catalog
 allowMultipleInstances: false
 category:
@@ -54,10 +54,10 @@ overview: |-
       GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
       and compliant solution.
 
-  ## Documentation Link
+  ## More Information
   - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
 
-  ## Steps to enable Nutanix Enterprise AI application
+  ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have the following:
   ###  Nutanix AI requires following NKP platform applications to be enabled
   - Prometheus Monitoring
