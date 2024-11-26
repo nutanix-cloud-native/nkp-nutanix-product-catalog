@@ -134,7 +134,7 @@ overview: |-
   ### After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
-  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}')/
+  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -o json | jq -r '.status.loadBalancer.ingress[0] | (.hostname // .ip)')/
   ```
   Update the dashboard URL in config map as follows:
   ```
