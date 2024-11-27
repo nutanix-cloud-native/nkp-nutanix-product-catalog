@@ -143,13 +143,8 @@ overview: |-
   ```
   Run below patches:
   ```
-  kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"}}'
-  kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"}}'
-  kubectl patch gateway -n knative-serving knative-ingress-gateway --type=merge --patch-file=/dev/stdin <<EOF
-    metadata:
-      annotations:
-        kustomize.toolkit.fluxcd.io/reconcile: "disabled"
-    EOF
+  kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
+  kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
   ```
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
