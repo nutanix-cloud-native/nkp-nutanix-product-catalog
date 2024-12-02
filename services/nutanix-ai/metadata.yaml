@@ -56,6 +56,7 @@ overview: |-
 
   ## More Information
   - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
+  - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_0:Nutanix-Enterprise-AI-v2_0)
 
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have the following:
@@ -134,11 +135,16 @@ overview: |-
   ### After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
-  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}')/
+  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/
   ```
   Update the dashboard URL in config map as follows:
   ```
   kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
+  ```
+  Run below patches:
+  ```
+  kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
+  kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
   ```
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
