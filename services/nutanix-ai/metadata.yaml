@@ -5,7 +5,6 @@ allowMultipleInstances: false
 category:
   - artificial-intelligence
 certifications:
-  - certified
   - supported
   - airgapped
 licensing:
