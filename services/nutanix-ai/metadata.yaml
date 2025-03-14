@@ -98,7 +98,7 @@ overview: |-
 
   ### Patch the Istio Gateway to enable HTTPS
   ```
-  kubectl patch gateway knative-ingress-gateway -n knative-serving --type='merge' --patch '{
+  kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-serving --type='merge' --patch '{
   "spec": {
     "selector": {
       "istio": "ingressgateway"
