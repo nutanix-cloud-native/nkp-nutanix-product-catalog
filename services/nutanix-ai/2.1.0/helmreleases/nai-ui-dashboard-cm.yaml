@@ -10,5 +10,5 @@ metadata:
 data:
   name: "Nutanix Enterprise AI"
   dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
-  docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_0:Nutanix-Enterprise-AI-v2_0"
-  version: "2.0.0"
+  docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_1:Nutanix-Enterprise-AI-v2_1"
+  version: "2.1.0"
