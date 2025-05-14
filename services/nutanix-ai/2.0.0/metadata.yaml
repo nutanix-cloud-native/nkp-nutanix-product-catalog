@@ -1,2 +1,0 @@
-# This is meant for e2e testing and not for production use
-k8sVersionSupport: ">=1.30"

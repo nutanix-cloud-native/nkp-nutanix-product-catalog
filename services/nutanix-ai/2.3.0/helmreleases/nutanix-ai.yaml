@@ -17,7 +17,7 @@ spec:
         kind: HelmRepository
         name: nutanix.github.io-helm-releases
         namespace: ${workspaceNamespace}
-      version: 2.1.0
+      version: 2.3.0
   interval: 15s
   install:
     remediation:
@@ -29,5 +29,5 @@ spec:
   releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-2.1.0-nkp-defaults
+      name: nutanix-ai-2.3.0-nkp-defaults
   targetNamespace: nai-system
