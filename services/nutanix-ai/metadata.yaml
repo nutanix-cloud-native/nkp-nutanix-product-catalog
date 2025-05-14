@@ -25,7 +25,6 @@ overview: |-
   Nutanix Enterprise AI is a comprehensive inference endpoint management product designed to streamline and optimize your AI model orchestration experience. Nutanix Enterprise AI allows you to select, deploy, and manage large language models (LLMs) on a Kubernetes cluster.You can deploy Nutanix Enterprise AI on Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms such as Amazon Elastic Kubernetes Service (EKS), Azure Kubernetes Service (AKS), and Google Kubernetes Engine (GKE).
 
   ## For Information on Features
-  - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
   - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
