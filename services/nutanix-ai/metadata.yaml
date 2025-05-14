@@ -24,40 +24,13 @@ overview: |-
   # Overview
   Nutanix Enterprise AI is a comprehensive inference endpoint management product designed to streamline and optimize your AI model orchestration experience. Nutanix Enterprise AI allows you to select, deploy, and manage large language models (LLMs) on a Kubernetes cluster.You can deploy Nutanix Enterprise AI on Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms such as Amazon Elastic Kubernetes Service (EKS), Azure Kubernetes Service (AKS), and Google Kubernetes Engine (GKE).
 
-  ## Key features
-  - Model access integration
-      Nutanix Enterprise AI supports selecting and deploying text-based generative AI LLMs from Hugging Face.
-  - API endpoint integration
-      Nutanix Enterprise AI supports creating an API endpoint and sharing it with developers to incorporate into
-      their AI applications. You can also manage and validate these endpoints to ensure that they are
-      configured correctly.
-  - API-based access control
-      Nutanix Enterprise AI supports accessing an endpoint by an application using API keys. API key
-      management allows you to provide and revoke API access to ensure proper access security
-      controls.
-  - User access and role-based access control
-      Nutanix Enterprise AI supports role-based access control (RBAC), which you can configure to provide
-      customized access permissions to users based on their assigned roles. The Users dashboard
-      displays information about all the defined roles.
-  - Enterprise user interface
-      Nutanix Enterprise AI has a simple and dynamic user interface that streamlines your deployment processes
-      using one-click deployment.
-  - Metrics dashboard
-      Nutanix Enterprise AI has a dynamic dashboard where you can monitor the health of your deployment with
-      real-time monitoring tools that identify bottlenecks, track performance, and troubleshoot issues.
-  - Dark site deployment
-      Nutanix Enterprise AI provides support for deploying secure models in a dark site.
-  - Built-in support for Nutanix products
-      Nutanix Enterprise AI supports seamless integration with existing Nutanix products, thus providing a robust
-      and compliant solution.
-  
-  ## More Information
+  ## For Information on Features
   - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
   - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
-  ### Before you begin, ensure that you have the following.
-  ### Nutanix AI requires following applications to be installed on the Kubernetes cluster:
+  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.30
+  ### Nutanix Enterprise AI requires the following applications to be installed on the workload cluster:
   - cert-manager v1.16.1
   - istio 1.23.3
   - knative-operator v1.17.1
@@ -132,7 +105,7 @@ overview: |-
   }
   }'
   ```
-  ### After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
+  ### After enabling Nutanix Enterprise AI, update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix Enterprise AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
   export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/
