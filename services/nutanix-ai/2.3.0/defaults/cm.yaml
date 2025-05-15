@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nutanix-ai-2.1.0-nkp-defaults
+  name: nutanix-ai-2.3.0-nkp-defaults
   namespace: ${workspaceNamespace}
 data:
   values.yaml: ""

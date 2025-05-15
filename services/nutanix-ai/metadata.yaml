@@ -1,5 +1,5 @@
 displayName: Nutanix Enterprise AI
-description: Operations management for LLMs (AI models) and secure APIs for AI endpoints.
+description: Inference endpoint management platform.
 type: catalog
 allowMultipleInstances: false
 category:
@@ -8,62 +8,35 @@ certifications:
   - supported
   - airgapped
 licensing:
-  - Ultimate
   - Pro
 dependencies:
-  - kube-prometheus-stack
+  - cert-manager
   - istio
+  - knative-operator
+  - knative-serving
+  - kube-prometheus-stack
   - nvidia-gpu-operator
-  - knative
+  - nvidia-container-toolkit
 scope:
   - workspace
 icon: PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI2MTlfMTEwMzUpIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yOS45MjE2IDI1Ljk0NTZDMzAuMDY2MSAyNS45NDU2IDMwLjE5NjUgMjYuMDA4MyAzMC4yOTEzIDI2LjEwOTJMMzkuNzk0IDM0Ljk5MTNDMzkuOTE5MSAzNS4wOTQgMzkuOTk5OSAzNS4yNTU5IDM5Ljk5OTkgMzUuNDM4MUMzOS45OTk5IDM1Ljc0ODEgMzkuNzY1OSAzNS45OTk4IDM5LjQ3NzIgMzUuOTk5OEgzMy4wMDM4QzMyLjg2MTIgMzUuOTk5OCAzMi43MzE2IDM1LjkzODIgMzIuNjM3MyAzNS44Mzg0TDI2LjM0ODggMjkuOTYxNkMyNi4yMzQzIDI5Ljg1NzggMjYuMTYyMSAyOS43MDM5IDI2LjE2MjEgMjkuNTMxMUMyNi4xNjIxIDI5LjM4NTkgMjYuMjEzNiAyOS4yNTM2IDI2LjI5NzggMjkuMTUzOUwyOS41MzQ0IDI2LjEyOTJDMjkuNjMgMjYuMDE2NiAyOS43NjgxIDI1Ljk0NTYgMjkuOTIxNiAyNS45NDU2Wk0zOS40NzcyIDEyQzM5Ljc2NTkgMTIgMzkuOTk5OSAxMi4yNTE4IDM5Ljk5OTkgMTIuNTYxN0MzOS45OTk5IDEyLjc0MzkgMzkuOTE5MSAxMi45MDU2IDM5Ljc5NCAxMy4wMDgyTDMwLjI5MTMgMjEuODkwM0MzMC4xOTY1IDIxLjk5MTUgMzAuMDY2MSAyMi4wNTQzIDI5LjkyMTYgMjIuMDU0M0MyOS43NjgxIDIyLjA1NDMgMjkuNjMgMjEuOTgzNSAyOS41MzQ0IDIxLjg3MDZMMjYuMjk3OCAxOC44NDZDMjYuMjEzNiAxOC43NDYyIDI2LjE2MjEgMTguNjEzOSAyNi4xNjIxIDE4LjQ2ODdDMjYuMTYyMSAxOC4yOTYyIDI2LjIzNDMgMTguMTQyIDI2LjM0ODggMTguMDM4NUwzMi42MzczIDEyLjE2MTFDMzIuNzMxNiAxMi4wNjE2IDMyLjg2MTIgMTIgMzMuMDAzOCAxMkgzOS40NzcyWiIgZmlsbD0iIzc4NTVGQSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE1LjM1NzUgMzUuODUyM0MxNS4yNjQ1IDM1Ljk0MzUgMTUuMTQwNSAzNiAxNS4wMDQzIDM2SDguNTIyNjVDOC4yMzM5NyAzNiA4IDM1Ljc0ODIgOCAzNS40MzhDOCAzNS4yODMyIDguMDU4NDMgMzUuMTQyOSA4LjE1Mjk3IDM1LjA0MTZMMTkuNTExMSAyNC40MjkxQzE5LjYyNSAyNC4zMjYyIDE5LjY5NzIgMjQuMTcxOSAxOS42OTcyIDIzLjk5OTRDMTkuNjk3MiAyMy44MzYzIDE5LjYzMjQgMjMuNjg5OCAxOS41Mjk0IDIzLjU4NzRMOC4xODUxMSAxMi45OUM4LjA3MTcxIDEyLjg4NyA4IDEyLjczMzYgOCAxMi41NjE3QzggMTIuMjUxOCA4LjIzMzk3IDEyIDguNTIyNjUgMTJIMTUuMDA0M0MxNS4xNDEgMTIgMTUuMjY1NiAxMi4wNTYyIDE1LjM1ODUgMTIuMTQ4M0wyNy41ODYxIDIzLjU3NTdDMjcuNjk2OSAyMy42Nzg0IDI3Ljc2NjcgMjMuODI5OCAyNy43NjY3IDIzLjk5OTRDMjcuNzY2NyAyNC4xNjk0IDI3LjY5NjYgMjQuMzIxOSAyNy41ODUzIDI0LjQyNTFMMTUuMzU3NSAzNS44NTIzWiIgZmlsbD0iIzc4NTVGQSIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI2MTlfMTEwMzUiPgo8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==
 overview: |-
   # Overview
-  Nutanix Enterprise AI is a comprehensive inference endpoint management product designed to streamline and
-  optimize your AI model orchestration experience. GPT-in-a-Box allows you to select, deploy, and manage
-  large language models (LLMs) on a Kubernetes cluster. You can deploy GPT-in-a-Box on any Kubernetes distribution, 
-  including Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms 
-  such as Amazon Elastic Kubernetes Service (EKS).
+  Nutanix Enterprise AI is a comprehensive inference endpoint management product designed to streamline and optimize your AI model orchestration experience. Nutanix Enterprise AI allows you to select, deploy, and manage large language models (LLMs) on a Kubernetes cluster.You can deploy Nutanix Enterprise AI on Nutanix Kubernetes Platform (NKP), and public cloud Kubernetes platforms such as Amazon Elastic Kubernetes Service (EKS), Azure Kubernetes Service (AKS), and Google Kubernetes Engine (GKE).
 
-  ## Key features
-  - Model access integration
-      GPT-in-a-Box supports selecting and deploying text-based generative AI LLMs from Hugging Face.
-  - API endpoint integration
-      GPT-in-a-Box supports creating an API endpoint and sharing it with developers to incorporate into
-      their AI applications. You can also manage and validate these endpoints to ensure that they are
-      configured correctly.
-  - API-based access control
-      GPT-in-a-Box supports accessing an endpoint by an application using API keys. API key
-      management allows you to provide and revoke API access to ensure proper access security
-      controls.
-  - User access and role-based access control
-      GPT-in-a-Box supports role-based access control (RBAC), which you can configure to provide
-      customized access permissions to users based on their assigned roles. The Users dashboard
-      displays information about all the defined roles.
-  - Enterprise user interface
-      GPT-in-a-Box has a simple and dynamic user interface that streamlines your deployment processes
-      using one-click deployment.
-  - Metrics dashboard
-      GPT-in-a-Box has a dynamic dashboard where you can monitor the health of your deployment with
-      real-time monitoring tools that identify bottlenecks, track performance, and troubleshoot issues.
-  - Dark site deployment
-      GPT-in-a-Box provides support for deploying secure models in a dark site.
-  - Built-in support for Nutanix products
-      GPT-in-a-Box supports seamless integration with existing Nutanix products, thus providing a robust
-      and compliant solution.
-
-  ## More Information
-  - [Nutanix AI Documentation](https://www.nutanix.com/solutions/ai)
-  - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_0:Nutanix-Enterprise-AI-v2_0)
+  ## For Information on Features
+  - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
-  ### Before you begin, ensure that you have the following:
-  ###  Nutanix AI requires following NKP platform applications to be enabled
-  - Prometheus Monitoring
-  - Istio Service Mesh
-  - NVIDIA GPU Operator
-  - Knative
+  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.30
+  ### Nutanix Enterprise AI requires the following applications to be installed on the workload cluster:
+  - cert-manager v1.16.1
+  - istio 1.23.3
+  - knative-operator v1.17.1
+  - knative-serving 1.17.0
+  - kube-prometheus-stack 69.1.2
+  - nvidia-gpu-operator v24.9.2
+  - nvidia-container-toolkit v1.17.4-ubuntu20.04
 
   ### Create NutanixFiles storage class using the following manifest by replacing <nfs-path> and <nfs-server>:
     ```
@@ -131,7 +104,7 @@ overview: |-
   }
   }'
   ```
-  ### After enabling Nutanix Enterprise AI, Update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix AI dashboard ConfigMap.
+  ### After enabling Nutanix Enterprise AI, update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix Enterprise AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
   export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/
@@ -149,4 +122,3 @@ overview: |-
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
 
   NOTE: Currently, Nutanix Enterprise AI UI is hosted using self-signed certificate for HTTPS out of the box. You can create a new certificate by updating the nai-self-signed-cert.yaml file with your domain name and apply it to the cluster.
-
