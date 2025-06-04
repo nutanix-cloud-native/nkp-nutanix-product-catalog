@@ -69,41 +69,6 @@ overview: |-
   storageClassName: nai-nfs-storage
   ```
 
-  ### Patch the Istio Gateway to enable HTTPS
-  ```
-  kubectl patch gateways.networking.istio.io knative-ingress-gateway -n knative-serving --type='merge' --patch '{
-  "spec": {
-    "selector": {
-      "istio": "ingressgateway"
-    },
-    "servers": [
-      {
-        "hosts": ["*"],
-        "port": {
-          "name": "http",
-          "number": 80,
-          "protocol": "HTTP"
-        },
-        "tls": {
-          "httpsRedirect": true
-        }
-      },
-      {
-        "hosts": ["*"],
-        "port": {
-          "name": "https",
-          "number": 443,
-          "protocol": "HTTPS"
-        },
-        "tls": {
-          "credentialName": "nai-self-signed-cert",
-          "mode": "SIMPLE"
-        }
-      }
-    ]
-  }
-  }'
-  ```
   ### After enabling Nutanix Enterprise AI, update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix Enterprise AI dashboard ConfigMap.
   On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
   ```
@@ -112,11 +77,6 @@ overview: |-
   Update the dashboard URL in config map as follows:
   ```
   kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
-  ```
-  Run below patches:
-  ```
-  kubectl patch configmap config-features -n knative-serving --patch '{"data":{"kubernetes.podspec-nodeselector":"enabled"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
-  kubectl patch configmap config-autoscaler -n knative-serving --patch '{"data":{"enable-scale-to-zero":"false"},"metadata":{"annotations":{"kustomize.toolkit.fluxcd.io/reconcile":"disabled"}}}'
   ```
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
