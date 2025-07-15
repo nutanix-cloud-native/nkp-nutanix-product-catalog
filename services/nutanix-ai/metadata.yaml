@@ -9,6 +9,7 @@ certifications:
   - airgapped
 licensing:
   - Pro
+  - Ultimate
 dependencies:
   - cert-manager
   - istio
