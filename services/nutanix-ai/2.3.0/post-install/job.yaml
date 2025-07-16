@@ -19,13 +19,13 @@ spec:
             - |
               echo "Waiting for istio-ingressgateway external IP/FQDN..."
 
-              for i in $(seq 1 5); do
+              for i in $(seq 1 60); do
                 IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null)
                 HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null)
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
                 fi
-                echo "Waiting..."; sleep 2
+                echo "Waiting..."; sleep 30
               done
 
               ENDPOINT="https://${IP:-$HOSTNAME}/"
