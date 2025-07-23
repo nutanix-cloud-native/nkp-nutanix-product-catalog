@@ -39,5 +39,5 @@ spec:
     kserve:
       controller:
         deploymentMode: RawDeployment
-        image: artifactory-edge-01.corp.p10y.ntnxdpro.com/canaveral-legacy-docker/nutanix-core/nai-kserve-controller
-        tag: v0.15.0
+        gateway:
+          disableIngressCreation: true
