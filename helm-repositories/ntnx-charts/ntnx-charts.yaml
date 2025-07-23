@@ -7,7 +7,7 @@ metadata:
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
-  url: "${helmMirrorURL:=https://artifactory-edge-01.corp.p10y.ntnxdpro.com/artifactory/canaveral-helm/nai-core}"
+  url: "${helmMirrorURL:=https://artifactory-edge-01.corp.p10y.ntnxdpro.com/artifactory/canaveral-helm}"
   interval: 10m
   secretRef:
     name: artifactory-secret
