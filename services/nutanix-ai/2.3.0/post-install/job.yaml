@@ -2,7 +2,6 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: nai-postinstall
-  namespace: {{ .Release.Namespace }}
 spec:
   backoffLimit: 3
   template:
@@ -13,6 +12,11 @@ spec:
         - name: post-install-nai-patch
           image: bitnami/kubectl:1.30.5
           imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
           command:
             - /bin/sh
             - -c
@@ -31,7 +35,7 @@ spec:
               ENDPOINT="https://${IP:-$HOSTNAME}/"
               echo "Endpoint resolved: $ENDPOINT"
 
-              kubectl patch configmap nai-ui -n {{ .Release.Namespace }} \
+              kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 -p "{\"data\":{\"dashboardLink\":\"${ENDPOINT}\"}}"
 
               echo "Dashboard link updated successfully."

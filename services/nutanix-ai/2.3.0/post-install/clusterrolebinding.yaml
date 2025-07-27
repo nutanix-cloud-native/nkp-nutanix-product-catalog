@@ -5,7 +5,7 @@ metadata:
 subjects:
   - kind: ServiceAccount
     name: nai-postinstall
-    namespace: {{ .Release.Namespace }}
+    namespace: ${workspaceNamespace}
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
