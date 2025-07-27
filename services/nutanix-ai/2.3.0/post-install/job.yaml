@@ -17,6 +17,8 @@ spec:
               valueFrom:
                 fieldRef:
                   fieldPath: metadata.namespace
+            - name: KUBECONFIG
+              value: /opt/bitnami/kubectl/.kube/config
           command:
             - /bin/sh
             - -c
