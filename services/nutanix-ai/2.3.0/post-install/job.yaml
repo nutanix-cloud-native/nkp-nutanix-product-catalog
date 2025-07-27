@@ -24,7 +24,7 @@ spec:
             - /bin/sh
             - -c
             - |
-              set -euo pipefail
+              set -eu
 
               echo "Waiting for istio-ingressgateway external IP/FQDN..."
 
