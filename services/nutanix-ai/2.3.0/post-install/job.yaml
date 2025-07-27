@@ -4,6 +4,7 @@ metadata:
   name: nai-postinstall
 spec:
   backoffLimit: 3
+  ttlSecondsAfterFinished: null
   template:
     spec:
       serviceAccountName: nai-postinstall
@@ -36,6 +37,9 @@ spec:
                 echo "Waiting..."; sleep 5
               done
 
+              echo "IP: $IP"
+              echo "HOSTNAME: $HOSTNAME"
+
               if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
                 echo "ERROR: Could not resolve istio ingress IP or HOSTNAME"
                 exit 1
@@ -43,6 +47,8 @@ spec:
 
               ENDPOINT="https://${IP:-$HOSTNAME}/"
               echo "Endpoint resolved: $ENDPOINT"
+
+              echo "{\"data\":{\"dashboardLink\":\"${ENDPOINT}\"}}"
 
               kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 -p "{\"data\":{\"dashboardLink\":\"${ENDPOINT}\"}}"
