@@ -24,15 +24,17 @@ spec:
             - /bin/sh
             - -c
             - |
-              set -e
+              set -eu
 
               echo "Waiting for istio-ingressgateway external IP/FQDN..."
 
               for i in $(seq 1 60); do
-                IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
-                HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
-                IP="${IP:-}"
-                HOSTNAME="${HOSTNAME:-}"
+                RAW_IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
+                RAW_HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+                IP=$(echo "$RAW_IP" | tr -d '\n\r ')
+                HOSTNAME=$(echo "$RAW_HOSTNAME" | tr -d '\n\r ')
+                echo "Current IP: '$IP'"
+                echo "Current HOSTNAME: '$HOSTNAME'"
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
                 fi
