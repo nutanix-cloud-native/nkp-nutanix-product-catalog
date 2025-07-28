@@ -45,12 +45,20 @@ spec:
                 exit 1
               fi
 
-              ENDPOINT="https://${IP:-$HOSTNAME}/"
+              if [ -n "$HOSTNAME" ]; then
+                ENDPOINT="https://${HOSTNAME}/"
+              else
+                ENDPOINT="https://${IP}/"
+              fi
+
               echo "Endpoint resolved: $ENDPOINT"
 
-              echo "{\"data\":{\"dashboardLink\":\"${ENDPOINT}\"}}"
+              PAYLOAD="{\"data\": {\"dashboardLink\": \"${ENDPOINT}\"}}"
+
+              echo "Payload to patch:"
+              echo "$PAYLOAD"
 
               kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
-                -p "{\"data\":{\"dashboardLink\":\"${ENDPOINT}\"}}"
+                --type=merge -p "$PAYLOAD"
 
               echo "Dashboard link updated successfully."
