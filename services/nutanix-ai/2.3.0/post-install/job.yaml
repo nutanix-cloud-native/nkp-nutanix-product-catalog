@@ -45,10 +45,11 @@ spec:
                 exit 1
               fi
 
-              if [ -n "$HOSTNAME" ]; then
-                ENDPOINT="https://${HOSTNAME}/"
-              else
+              ENDPOINT=""
+              if [ -n "$IP" ]; then
                 ENDPOINT="https://${IP}/"
+              elif [ -n "$HOSTNAME" ]; then
+                ENDPOINT="https://${HOSTNAME}/"
               fi
 
               echo "Endpoint resolved: $ENDPOINT"
