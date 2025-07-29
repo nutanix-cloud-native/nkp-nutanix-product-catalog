@@ -68,7 +68,8 @@ spec:
 
               echo "Endpoint resolved: $ENDPOINT"
 
-              PAYLOAD="{\"data\": {\"dashboardLink\": \"${ENDPOINT}\"}}"
+              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")
+              printf 'PAYLOAD base64: %s\n' "$(echo -n "$PAYLOAD" | base64)"
               echo "Payload to patch:"
               echo "$PAYLOAD"
 
