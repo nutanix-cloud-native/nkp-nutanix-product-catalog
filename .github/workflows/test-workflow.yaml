@@ -1,0 +1,16 @@
+name: Test workflow
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, labeled]
+
+  push:
+    branches:
+      - 'main'
+      - 'v*'
+
+jobs:
+    test-publish-oci-artifacts:
+        uses: ./.github/workflows/publish-oci-artifacts.yaml
+        with:
+            COLLECTION_TAG: '2.16'
+            ARTIFACT_CONSTRAINT: nkpVersion=2.16
