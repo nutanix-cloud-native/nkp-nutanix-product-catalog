@@ -48,7 +48,7 @@ spec:
                 ENDPOINT=$(printf "https://%s/" "$HOSTNAME")
               fi
 
-              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")"
+              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")
 
               kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 --type=merge -p "$PAYLOAD"
