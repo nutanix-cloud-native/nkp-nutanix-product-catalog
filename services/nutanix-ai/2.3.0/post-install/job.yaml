@@ -59,9 +59,11 @@ spec:
               fi
 
               if [ -n "$IP" ]; then
-                ENDPOINT="https://${IP}/"
+                echo "Using IP for endpoint: $IP"
+                ENDPOINT=$(printf "https://%s/\n" "$IP")
               else
-                ENDPOINT="https://${HOSTNAME}/"
+                echo "Using HOSTNAME for endpoint: $HOSTNAME"
+                ENDPOINT=$(printf "https://%s/\n" "$HOSTNAME")
               fi
 
               echo "Endpoint resolved: $ENDPOINT"
