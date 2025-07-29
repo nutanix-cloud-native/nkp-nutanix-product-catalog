@@ -1,0 +1,69 @@
+name: Publish OCI Artifacts
+
+on:
+  workflow_call:
+    inputs:
+      COLLECTION_TAG:
+        description: 'Tag to give to new version to be published'
+        required: true
+        type: string
+      ARTIFACT_CONSTRAINT:
+        description: "Constraints to filter the applications that are selected (e.g., nkpVersion=2.16)"
+        required: false
+        type: string
+      ARTIFACT_APPS:
+        description: "Apps to bundle (name=version)"
+        required: false
+        type: string
+  workflow_dispatch:
+    inputs:
+      COLLECTION_TAG:
+        description: 'Tag to give to new version to be published'
+        required: true
+        type: string
+      ARTIFACT_CONSTRAINT:
+        description: "Constraints to filter the applications that are selected (e.g., nkpVersion=2.16)"
+        required: false
+        type: string
+      ARTIFACT_APPS:
+        description: "Apps to bundle (name=version)"
+        required: false
+        type: string
+
+jobs:
+  publish-oci-artifacts:
+    name: Publish OCI Artifacts
+    runs-on:
+      - self-hosted-ncn-docker-medium
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install NIX
+        uses: cachix/install-nix-action@v31
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.13.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+     
+      - name: Create and publish artifacts
+        run: |
+            devbox run -- \
+                GOOS=linux GOARCH=amd64 \
+                just create-publish-artifacts \
+                ghcr.io/nutanix-cloud-native \
+                ${{ inputs.COLLECTION_TAG }} \
+                ${{ inputs.ARTIFACT_CONSTRAINT }} \
+                ${{ inputs.ARTIFACT_APPS }}
