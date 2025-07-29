@@ -60,10 +60,6 @@ jobs:
      
       - name: Create and publish artifacts
         run: |
-            devbox run -- \
-                GOOS=linux GOARCH=amd64 \
-                just create-publish-artifacts \
-                ghcr.io/nutanix-cloud-native \
-                ${{ inputs.COLLECTION_TAG }} \
-                ${{ inputs.ARTIFACT_CONSTRAINT }} \
-                ${{ inputs.ARTIFACT_APPS }}
+            export GOOS=linux
+            export GOARCH=amd64
+            devbox run -- just create-publish-artifacts ghcr.io/nutanix-cloud-native ${{ inputs.COLLECTION_TAG }} "${{ inputs.ARTIFACT_CONSTRAINT }}" "${{ inputs.ARTIFACT_APPS }}"
