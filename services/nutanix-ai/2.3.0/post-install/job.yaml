@@ -25,41 +25,44 @@ spec:
             - -c
             - |
               set -eu
-
               echo "Waiting for istio-ingressgateway external IP/FQDN..."
 
               for i in $(seq 1 60); do
-                RAW_IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || true)
-                RAW_HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || true)
+                RAW_IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+                RAW_HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+
+                echo "RAW_IP='$RAW_IP'"
+                echo "RAW_HOSTNAME='$RAW_HOSTNAME'"
+
                 IP=$(echo "$RAW_IP" | tr -d '\n\r ')
                 HOSTNAME=$(echo "$RAW_HOSTNAME" | tr -d '\n\r ')
-                echo "Current IP: '$IP'"
-                echo "Current HOSTNAME: '$HOSTNAME'"
+
+                echo "Trimmed IP: '$IP'"
+                echo "Trimmed HOSTNAME: '$HOSTNAME'"
+
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
                 fi
                 echo "Waiting..."; sleep 5
               done
 
-              echo "IP: $IP"
-              echo "HOSTNAME: $HOSTNAME"
+              echo "Final resolved IP: '$IP'"
+              echo "Final resolved HOSTNAME: '$HOSTNAME'"
 
               if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
                 echo "ERROR: Could not resolve istio ingress IP or HOSTNAME"
                 exit 1
               fi
 
-              ENDPOINT=""
               if [ -n "$IP" ]; then
                 ENDPOINT="https://${IP}/"
-              elif [ -n "$HOSTNAME" ]; then
+              else
                 ENDPOINT="https://${HOSTNAME}/"
               fi
 
               echo "Endpoint resolved: $ENDPOINT"
 
               PAYLOAD="{\"data\": {\"dashboardLink\": \"${ENDPOINT}\"}}"
-
               echo "Payload to patch:"
               echo "$PAYLOAD"
 
