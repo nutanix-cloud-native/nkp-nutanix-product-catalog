@@ -28,19 +28,8 @@ spec:
               echo "Waiting for istio-ingressgateway external IP/FQDN..."
 
               for i in $(seq 1 60); do
-                RAW_IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
-                RAW_HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
-
-                echo "RAW_IP='$RAW_IP'"
-                echo "RAW_HOSTNAME='$RAW_HOSTNAME'"
-
-                IP=$(echo "$RAW_IP" | tr -dc '[:alnum:].')
-                HOSTNAME=$(echo "$RAW_HOSTNAME" | tr -dc '[:alnum:].-')
-
-                echo "Trimmed IP: '$IP'"
-                echo "Trimmed HOSTNAME: '$HOSTNAME'"
-
-                echo "Base64 of IP: $(echo -n "$IP" | base64)"
+                IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+                HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
 
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
@@ -48,30 +37,18 @@ spec:
                 echo "Waiting..."; sleep 5
               done
 
-              echo "Base64 of IP: $(echo -n "$IP" | base64)"
-
-              echo "Final resolved IP: '$IP'"
-              echo "Final resolved HOSTNAME: '$HOSTNAME'"
-
               if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
                 echo "ERROR: Could not resolve istio ingress IP or HOSTNAME"
                 exit 1
               fi
 
               if [ -n "$IP" ]; then
-                echo "Using IP for endpoint: $IP"
                 ENDPOINT=$(printf "https://%s/" "$IP")
               else
-                echo "Using HOSTNAME for endpoint: $HOSTNAME"
                 ENDPOINT=$(printf "https://%s/" "$HOSTNAME")
               fi
 
-              echo "Endpoint resolved: $ENDPOINT"
-
-              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")
-              printf 'PAYLOAD base64: %s\n' "$(echo -n "$PAYLOAD" | base64)"
-              echo "Payload to patch:"
-              echo "$PAYLOAD"
+              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")"
 
               kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 --type=merge -p "$PAYLOAD"
