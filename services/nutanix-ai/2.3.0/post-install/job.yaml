@@ -40,6 +40,8 @@ spec:
                 echo "Trimmed IP: '$IP'"
                 echo "Trimmed HOSTNAME: '$HOSTNAME'"
 
+                printf 'IP in hex: %s\n' "$(echo -n "$IP" | xxd)"
+
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
                 fi
