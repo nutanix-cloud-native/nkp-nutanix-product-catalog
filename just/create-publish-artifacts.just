@@ -8,4 +8,5 @@ create-publish-artifacts OCI_REGISTRY COLLECTION_TAG ARTIFACT_CONSTRAINT ARTIFAC
   --repo-dir "{{REPO_ROOT}}" \
   --collection-tag "{{COLLECTION_TAG}}" \
   $( [ -n "{{ARTIFACT_APPS}}" ] && echo "--apps={{ARTIFACT_APPS}}" ) \
-  $( [ -n "{{ARTIFACT_CONSTRAINT}}" ] && echo "--constraint={{ARTIFACT_CONSTRAINT}}" )
+  $( [ -n "{{ARTIFACT_CONSTRAINT}}" ] && echo "--constraint={{ARTIFACT_CONSTRAINT}}" ) && \
+  "{{ NKP_CLI }}" push bundle --bundle "{{ ARTIFACT_BUNDLE }}" --to-registry "{{ OCI_REGISTRY }}"
