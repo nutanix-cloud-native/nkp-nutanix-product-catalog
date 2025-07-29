@@ -34,7 +34,7 @@ jobs:
   publish-oci-artifacts:
     name: Publish OCI Artifacts
     runs-on:
-      - self-hosted-ncn-docker-medium
+      - ubuntu-latest
     permissions:
       contents: read
       packages: write
