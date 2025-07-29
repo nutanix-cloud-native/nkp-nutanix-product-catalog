@@ -34,19 +34,21 @@ spec:
                 echo "RAW_IP='$RAW_IP'"
                 echo "RAW_HOSTNAME='$RAW_HOSTNAME'"
 
-                IP=$(echo "$RAW_IP" | tr -d '\n\r ')
-                HOSTNAME=$(echo "$RAW_HOSTNAME" | tr -d '\n\r ')
+                IP=$(echo "$RAW_IP" | tr -dc '[:alnum:].')
+                HOSTNAME=$(echo "$RAW_HOSTNAME" | tr -dc '[:alnum:].-')
 
                 echo "Trimmed IP: '$IP'"
                 echo "Trimmed HOSTNAME: '$HOSTNAME'"
 
-                printf 'IP in hex: %s\n' "$(echo -n "$IP" | xxd)"
+                echo "Base64 of IP: $(echo -n "$IP" | base64)"
 
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
                 fi
                 echo "Waiting..."; sleep 5
               done
+
+              echo "Base64 of IP: $(echo -n "$IP" | base64)"
 
               echo "Final resolved IP: '$IP'"
               echo "Final resolved HOSTNAME: '$HOSTNAME'"
