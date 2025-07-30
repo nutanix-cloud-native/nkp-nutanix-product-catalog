@@ -17,7 +17,7 @@ spec:
         kind: HelmRepository
         name: nutanix.github.io-helm-releases
         namespace: ${workspaceNamespace}
-      version: 2.4.0-release-branch+build.1517
+      version: 2.4.0-rc1
   interval: 15s
   install:
     remediation:
