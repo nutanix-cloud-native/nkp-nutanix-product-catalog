@@ -1,11 +1,12 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Enterprise AI
 description: Inference endpoint management platform.
-type: catalog
+type: nkp-catalog
 allowMultipleInstances: false
 category:
   - artificial-intelligence
 certifications:
-  - supported
+  - nutanix-supported
   - airgapped
 licensing:
   - Pro
