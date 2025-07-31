@@ -4,5 +4,4 @@ resources:
   - ./pre-install
   - ./prerequisites
   - ./helmreleases
-   - ./post-install
-  - ../../../helm-repositories/ntnx-charts
+  - ./post-install
