@@ -1,3 +1,13 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: nutanix-ai
+  namespace: ${workspaceNamespace}
+spec:
+  interval: 1m
+  url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-core"
+  ref:
+    tag: 2.3.0
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -10,14 +20,10 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
-  chart:
-    spec:
-      chart: nai-core
-      sourceRef:
-        kind: HelmRepository
-        name: nutanix.github.io-helm-releases
-        namespace: ${workspaceNamespace}
-      version: 2.3.0
+  chartRef:
+    kind: OCIRepository
+    name: nutanix-ai
+    namespace: ${workspaceNamespace}
   interval: 15s
   install:
     remediation:

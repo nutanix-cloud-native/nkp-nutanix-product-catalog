@@ -1,0 +1,27 @@
+# Kubernetes versions
+# (e.g. 1.33.0 - has to match versions in https://github.com/yannh/kubernetes-json-schema)
+k8s_versions:
+  - 1.33.0
+
+paths:
+  - applications
+
+# use strict validation (reject unknown fields in resources)
+strict: true
+
+# types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
+skip_types: []
+
+# load additional CRDs (URLs of CRD yaml files)
+additional_crds:
+ - https://raw.githubusercontent.com/istio/istio/1.9.1/manifests/charts/base/crds/crd-all.gen.yaml
+ - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
+ - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_prometheusrules.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_prometheuses.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_servicemonitors.yaml
+
+# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
+substitution_vars:
+  releaseNamespace: kommander
+  workspaceNamespace: workspace

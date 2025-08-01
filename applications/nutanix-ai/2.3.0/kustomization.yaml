@@ -3,5 +3,6 @@ kind: Kustomization
 resources:
   - ./pre-install
   - ./prerequisites
+  - ./defaults
   - ./helmreleases
-  - ../../../helm-repositories/ntnx-charts
+  - ./post-install

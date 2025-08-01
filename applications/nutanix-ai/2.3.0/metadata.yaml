@@ -1,11 +1,12 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Enterprise AI
 description: Inference endpoint management platform.
-type: catalog
+type: nkp-catalog
 allowMultipleInstances: false
 category:
   - artificial-intelligence
 certifications:
-  - supported
+  - nutanix-supported
   - airgapped
 licensing:
   - Pro
@@ -68,16 +69,6 @@ overview: |-
       password: <password>
       email: <email>
   storageClassName: nai-nfs-storage
-  ```
-
-  ### After enabling Nutanix Enterprise AI, update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix Enterprise AI dashboard ConfigMap.
-  On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
-  ```
-  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/
-  ```
-  Update the dashboard URL in config map as follows:
-  ```
-  kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
   ```
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
