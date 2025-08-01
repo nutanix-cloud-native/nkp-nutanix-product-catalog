@@ -20,7 +20,8 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
-  chartRef:
+  chart:
+    chartRef:
     kind: OCIRepository
     name: nutanix-ai
     namespace: ${workspaceNamespace}

@@ -3,6 +3,5 @@ kind: Kustomization
 resources:
   - ./pre-install
   - ./prerequisites
-  - ./defaults
   - ./helmreleases
   - ./post-install
