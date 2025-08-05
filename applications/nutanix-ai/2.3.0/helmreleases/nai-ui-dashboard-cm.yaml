@@ -5,6 +5,7 @@ metadata:
   namespace: ${workspaceNamespace}
   labels:
     "kommander.d2iq.io/application": "nutanix-ai"
+    "kustomize.toolkit.fluxcd.io/reconcile": "disabled"
   annotations:
     "kustomize.toolkit.fluxcd.io/ssa": "Merge"
 data:
