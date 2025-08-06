@@ -6,7 +6,7 @@ metadata:
   labels:
     "kommander.d2iq.io/application": "nutanix-ai"
   annotations:
-    "kustomize.toolkit.fluxcd.io/ssa": "Override"
+    "kustomize.toolkit.fluxcd.io/ssa": "IfNotPresent"
 data:
   name: "Nutanix Enterprise AI"
   dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
