@@ -6,7 +6,6 @@ metadata:
   labels:
     "kommander.d2iq.io/application": "nutanix-ai"
   annotations:
-    "kustomize.toolkit.fluxcd.io/reconcile": "disabled"
     "kustomize.toolkit.fluxcd.io/ssa": "Merge"
 data:
   name: "Nutanix Enterprise AI"
