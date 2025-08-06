@@ -53,5 +53,4 @@ spec:
               kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 --type=merge -p "$PAYLOAD"
 
-              echo "test only..."
               echo "Dashboard link updated successfully."
