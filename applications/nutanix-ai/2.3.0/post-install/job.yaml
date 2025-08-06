@@ -2,6 +2,8 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: nai-postinstall
+  annotations:
+    kustomize.toolkit.fluxcd.io/reconcile: "disabled"
 spec:
   backoffLimit: 3
   ttlSecondsAfterFinished: null
@@ -53,4 +55,5 @@ spec:
               kubectl patch --field-manager=flux-client-side-apply configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
                 --type=merge -p "$PAYLOAD"
 
+              echo "test only..."
               echo "Dashboard link updated successfully."
