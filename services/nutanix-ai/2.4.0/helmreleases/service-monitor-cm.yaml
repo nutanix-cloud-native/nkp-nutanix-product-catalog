@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: service-monitor-defaults
-  namespace: nai-system
+  namespace: ${workspaceNamespace}
 data:
   values.yaml: |-
     naiMonitoring:
