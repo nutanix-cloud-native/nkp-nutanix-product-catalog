@@ -26,30 +26,31 @@ overview: |-
   - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
-  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.30
-  ### Nutanix Enterprise AI requires the following applications to be installed on the workload cluster:
+
+  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.31
+
+  ### Nutanix Enterprise AI 2.4.0 requires the following applications to be installed on the workload cluster:
   - cert-manager v1.16.4
   - envoy-gateway v1.3.2
   - kube-prometheus-stack 70.4.2
   - nvidia-gpu-operator v25.3.0
 
   ### Create NutanixFiles storage class using the following manifest by replacing <nfs-path> and <nfs-server>:
-    ```
-    cat <<EOF | kubectl apply -f -
-    apiVersion: storage.k8s.io/v1
-    kind: StorageClass
-    metadata:
-      name: nai-nfs-storage
-    parameters:
-      nfsPath: <nfs-path>
-      nfsServer: <nfs-server>
-      storageType: NutanixFiles
-    provisioner: csi.nutanix.com
-    reclaimPolicy: Delete
-    volumeBindingMode: Immediate
-    EOF
-    ```
-
+  ```
+  cat <<EOF | kubectl apply -f -
+  apiVersion: storage.k8s.io/v1
+  kind: StorageClass
+  metadata:
+    name: nai-nfs-storage
+  parameters:
+    nfsPath: <nfs-path>
+    nfsServer: <nfs-server>
+    storageType: NutanixFiles
+  provisioner: csi.nutanix.com
+  reclaimPolicy: Delete
+  volumeBindingMode: Immediate
+  EOF
+  ```
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
   imagePullSecret:
@@ -63,17 +64,26 @@ overview: |-
       email: <email>
   storageClassName: nai-nfs-storage
   ```
-
-  ### After enabling Nutanix Enterprise AI, update the endpoint of istio-ingressgateway service external IP or FQDN in the Nutanix Enterprise AI dashboard ConfigMap.
-  On the terminal, run the following command to get the external IP or FQDN of the istio-ingressgateway service from respective cluster:
+  ### After enabling Nutanix Enterprise AI 2.4.0, update the endpoint with FQDN or EXTERNAL-IP of envoy-nai-system-nai-ingress-gateway service in the Nutanix Enterprise AI dashboard ConfigMap.
   ```
-  export NAI_UI_ENDPOINT=https://$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}')/
+  export NAI_UI_ENDPOINT=https://<FQDN>/
   ```
-  Update the dashboard URL in config map as follows:
+  Or, on the terminal, run the following command to get the EXTERNAL-IP of the envoy-nai-system-nai-ingress-gateway service from respective cluster:
+  ```
+  export NAI_UI_ENDPOINT=https://$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')/
+  ```
+  Update the dashboard link in config map as follows:
   ```
   kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
   ```
-  
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
 
-  NOTE: Currently, Nutanix Enterprise AI UI is hosted using self-signed certificate for HTTPS out of the box. You can create a new certificate by updating the nai-self-signed-cert.yaml file with your domain name and apply it to the cluster.
+  ### By default, Nutanix Enterprise AI uses a self-signed HTTPS certificate; follow the provided steps to replace it with a custom certificate for secure access.
+  Create kubernetes secret of type tls with the certificate and key:
+  ```
+  kubectl create secret tls nai-ingress-certificate -n nai-system --cert=path/to/certificate.crt --key=path/to/private.key
+  ```
+  Patch the gateway nai-ingress-gateway with the secret:
+  ```
+  kubectl patch gateway nai-ingress-gateway -n nai-system --type='json' -p='[{"op": "replace", "path": "/spec/listeners/1/tls/certificateRefs/0/name", "value": "nai-ingress-certificate"}]'
+  ```
