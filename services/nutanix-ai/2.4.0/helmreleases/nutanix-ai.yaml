@@ -27,6 +27,9 @@ spec:
     remediation:
       retries: 30
   releaseName: nutanix-ai
+  valuesFiles:
+    - values.yaml
+    - nkp-values.yaml
   valuesFrom:
     - kind: ConfigMap
       name: nutanix-ai-2.4.0-nkp-defaults
