@@ -6,9 +6,8 @@ metadata:
   labels:
     "kommander.d2iq.io/application": "nutanix-ai"
   annotations:
-    "kustomize.toolkit.fluxcd.io/ssa": "IfNotPresent"
+    "kustomize.toolkit.fluxcd.io/ssa": "Merge"
 data:
   name: "Nutanix Enterprise AI"
-  dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
   docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_3:Nutanix-Enterprise-AI-v2_3"
   version: "2.3.0"
