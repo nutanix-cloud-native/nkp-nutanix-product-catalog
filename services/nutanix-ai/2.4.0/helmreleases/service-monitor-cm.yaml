@@ -1,0 +1,35 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-monitor-defaults
+  namespace: nai-system
+data:
+  values.yaml: |-
+    naiMonitoring:
+      nodeExporter:
+        serviceMonitor:
+          enabled: true
+          endpoint:
+            port: http-metrics
+            scheme: http
+            targetPort: 9100
+          namespaceSelector:
+            matchNames:
+            - ${workspaceNamespace}
+          serviceSelector:
+            matchLabels:
+              app.kubernetes.io/name: prometheus-node-exporter
+              app.kubernetes.io/component: metrics
+      dcgmExporter:
+        podLevelMetrics: true
+        serviceMonitor:
+          enabled: true
+          endpoint:
+            targetPort: 9400
+          namespaceSelector:
+            matchNames:
+            - ${workspaceNamespace}
+          serviceSelector:
+            matchLabels:
+              app: nvidia-dcgm-exporter

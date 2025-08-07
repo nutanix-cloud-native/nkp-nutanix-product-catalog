@@ -33,4 +33,6 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: nutanix-ai-2.4.0-nkp-defaults
+    - kind: ConfigMap
+      name: service-monitor-defaults
   targetNamespace: nai-system
