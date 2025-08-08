@@ -1,0 +1,44 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  annotations:
+    meta.helm.sh/release-name: nai-core
+    meta.helm.sh/release-namespace: nai-system
+  labels:
+    app.kubernetes.io/component: prometheus
+    app.kubernetes.io/instance: nutanix-ai
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: nai-iep
+    app.kubernetes.io/part-of: nai-core
+    app.kubernetes.io/version: v2.54.0
+    helm.sh/chart: nai-core-2.4.0
+  name: nai-prometheus
+rules:
+- apiGroups:
+  - ""
+  resources:
+  - services
+  - endpoints
+  - pods
+  verbs:
+  - get
+  - list
+  - watch
+- apiGroups:
+  - ""
+  resources:
+  - configmaps
+  verbs:
+  - get
+- nonResourceURLs:
+  - /metrics
+  - /metrics/resources
+  - /metrics/all
+  verbs:
+  - get
+- apiGroups:
+  - ""
+  resources:
+  - services/kube-prometheus-stack-prometheus-node-exporter
+  verbs:
+  - get
