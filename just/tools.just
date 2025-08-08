@@ -2,19 +2,22 @@ GOOS := `go env GOOS`
 GOARCH := `go env GOARCH`
 
 REPO_ROOT := justfile_directory()
-LOCAL_DIR := REPO_ROOT+"/.local"
+LOCAL_DIR := REPO_ROOT + "/.local"
+BIN_DIR := LOCAL_DIR + "/bin"
 
-# TODO: update the version to latest stable once available
-NKP_CLI_VERSION := "0.0.0-dev.0"
-NKP_CLI := LOCAL_DIR+"/bin/nkp_v"+NKP_CLI_VERSION
-NKP_CLI_ASSET := "nkp_v"+NKP_CLI_VERSION+"_"+GOOS+"_amd64"
+NKP_CLI_VERSION := "0.0.0-dev.0"  # TODO: Update to latest stable
+NKP_CLI := BIN_DIR + "/nkp_v" + NKP_CLI_VERSION
 
-# Command line tool to validate the catalog applications.
+# Download nkp CLI if it's not already present
+[script]
 nkp-cli:
-    [ -f "{{NKP_CLI}}" ] || ( \
-        echo "Building {{NKP_CLI}}..." && \
-        mkdir -p "{{LOCAL_DIR}}/bin" && \
-        curl -LO "https://downloads.d2iq.com/dkp/v{{NKP_CLI_VERSION}}/{{NKP_CLI_ASSET}}.tar.gz" && tar -xzf "{{NKP_CLI_ASSET}}.tar.gz" -C . && \
-        mv ./nkp "{{NKP_CLI}}" && \
-        echo "Successfully built {{NKP_CLI}}." \
-    )
+  if [ ! -f "{{NKP_CLI}}" ]; then
+    mkdir -p "{{BIN_DIR}}"
+    echo "Downloading nkp CLI to {{NKP_CLI}}"
+
+    asset="nkp_v{{NKP_CLI_VERSION}}_{{GOOS}}_amd64"
+    url="https://downloads.d2iq.com/dkp/v{{NKP_CLI_VERSION}}/${asset}.tar.gz"
+
+    curl -L --progress-bar "$url" | tar -xz -C .
+    mv nkp "{{NKP_CLI}}"
+  fi

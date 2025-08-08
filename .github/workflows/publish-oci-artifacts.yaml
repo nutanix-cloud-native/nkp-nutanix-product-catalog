@@ -1,29 +1,11 @@
 name: Publish OCI Artifacts
 
 on:
-  workflow_call:
-    inputs:
-      COLLECTION_TAG:
-        description: 'Tag to give to new version to be published'
-        required: true
-        type: string
-      ARTIFACT_CONSTRAINT:
-        description: "Constraints to filter the applications that are selected (e.g., nkpVersion=2.16)"
-        required: false
-        type: string
-      ARTIFACT_APPS:
-        description: "Apps to bundle (name=version)"
-        required: false
-        type: string
   workflow_dispatch:
     inputs:
       COLLECTION_TAG:
         description: 'Tag to give to new version to be published'
         required: true
-        type: string
-      ARTIFACT_CONSTRAINT:
-        description: "Constraints to filter the applications that are selected (e.g., nkpVersion=2.16)"
-        required: false
         type: string
       ARTIFACT_APPS:
         description: "Apps to bundle (name=version)"
@@ -59,7 +41,4 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
      
       - name: Create and publish artifacts
-        run: |
-            export GOOS=linux
-            export GOARCH=amd64
-            devbox run -- just create-publish-artifacts ghcr.io/nutanix-cloud-native ${{ inputs.COLLECTION_TAG }} "${{ inputs.ARTIFACT_CONSTRAINT }}" "${{ inputs.ARTIFACT_APPS }}"
+        run: devbox run -- just publish-artifacts ghcr.io/nutanix-cloud-native ${{ inputs.COLLECTION_TAG }} "${{ inputs.ARTIFACT_APPS }}"
