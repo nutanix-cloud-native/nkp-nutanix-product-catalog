@@ -12,7 +12,6 @@ licensing:
   - Ultimate
 dependencies:
   - cert-manager
-  - envoy-gateway
   - kube-prometheus-stack
   - nvidia-gpu-operator
 scope:
