@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  annotations:
+    meta.helm.sh/release-name: nai-core
+    meta.helm.sh/release-namespace: nai-system
+  labels:
+    app.kubernetes.io/instance: nutanix-ai
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: nai-iep
+    app.kubernetes.io/part-of: nai-core
+    helm.sh/chart: nai-core-2.4.0
+    prometheus: nai
+  name: nai-node-exporter-monitor
+  namespace: nai-system
+spec:
+  attachMetadata:
+    node: false
+  endpoints:
+  - bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+    port: http-metrics
+    relabelings:
+    - action: replace
+      regex: (.*)
+      replacement: $1
+      sourceLabels:
+      - __meta_kubernetes_pod_node_name
+      targetLabel: node
+    scheme: https
+    tlsConfig:
+      insecureSkipVerify: true
+  jobLabel: jobLabel
+  namespaceSelector:
+    matchNames:
+    - ${workspaceNamespace}
+  selector:
+    matchLabels:
+      app.kubernetes.io/instance: kube-prometheus-stack
+      app.kubernetes.io/name: prometheus-node-exporter
