@@ -7,7 +7,7 @@ metadata:
 spec:
   url: oci://ghcr.io/kserve/charts/kserve
   ref:
-    tag: v0.14.0
+    tag: v0.15.0
   interval: 10m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
@@ -37,8 +37,9 @@ spec:
   targetNamespace: kserve
   values:
     kserve:
-      modelmesh:
-        enabled: false
       controller:
         image: docker.io/nutanix/nai-kserve-controller
-        tag: v0.14.0
+        tag: v0.15.0
+        deploymentMode: RawDeployment
+        gateway:
+          disableIngressCreation: true

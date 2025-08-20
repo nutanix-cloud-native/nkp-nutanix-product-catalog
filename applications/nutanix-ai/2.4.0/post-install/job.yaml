@@ -25,11 +25,11 @@ spec:
             - -c
             - |
               set -eu
-              echo "Waiting for istio-ingressgateway external IP/FQDN..."
+              echo "Waiting for NAI envoy-gateway-system external IP/FQDN..."
 
               for i in $(seq 1 60); do
-                IP=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
-                HOSTNAME=$(kubectl get svc istio-ingressgateway -n istio-system -ojsonpath='{.status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+                IP=$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+                HOSTNAME=$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
 
                 if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
                   break
@@ -38,7 +38,7 @@ spec:
               done
 
               if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
-                echo "ERROR: Could not resolve istio ingress IP or HOSTNAME"
+                echo "ERROR: Could not resolve NAI envoy-gateway-system ingress IP or HOSTNAME"
                 exit 1
               fi
 

@@ -11,7 +11,7 @@ spec:
   # allow secret population here if configured.
   url: oci://ghcr.io/kserve/charts/kserve-crd
   ref:
-    tag: v0.14.0
+    tag: v0.15.0
   interval: 10m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"

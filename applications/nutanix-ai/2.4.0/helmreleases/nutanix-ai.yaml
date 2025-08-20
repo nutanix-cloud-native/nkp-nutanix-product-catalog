@@ -7,7 +7,7 @@ spec:
   interval: 1m
   url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-core"
   ref:
-    tag: 2.3.0
+    tag: 2.4.0
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
@@ -35,5 +35,7 @@ spec:
   releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-2.3.0-nkp-defaults
+      name: nutanix-ai-2.4.0-nkp-defaults
+    - kind: ConfigMap
+      name: service-monitor-defaults
   targetNamespace: nai-system

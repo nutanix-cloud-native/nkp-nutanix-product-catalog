@@ -13,8 +13,6 @@ licensing:
   - Ultimate
 dependencies:
   - cert-manager
-  - istio
-  - knative
   - kube-prometheus-stack
   - nvidia-gpu-operator
 scope:
@@ -28,15 +26,12 @@ overview: |-
   - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
-  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.30
-  ### Nutanix Enterprise AI requires the following applications to be installed on the workload cluster:
-  - cert-manager v1.16.1
-  - istio 1.23.3
-  - knative-operator v1.17.1
-  - knative-serving 1.17.0
-  - kube-prometheus-stack 69.1.2
-  - nvidia-gpu-operator v24.9.2
-  - nvidia-container-toolkit v1.17.4-ubuntu20.04
+  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.31
+  ### Nutanix Enterprise AI 2.4.0 requires the following applications to be installed on the workload cluster:
+  - cert-manager v1.16.4
+  - envoy-gateway v1.3.2
+  - kube-prometheus-stack 70.4.2
+  - nvidia-gpu-operator v25.3.0
 
   ### Create NutanixFiles storage class using the following manifest by replacing <nfs-path> and <nfs-server>:
     ```
@@ -71,4 +66,12 @@ overview: |-
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
 
-  NOTE: Currently, Nutanix Enterprise AI UI is hosted using self-signed certificate for HTTPS out of the box. You can create a new certificate by updating the nai-self-signed-cert.yaml file with your domain name and apply it to the cluster.
+  ### By default, Nutanix Enterprise AI uses a self-signed HTTPS certificate; follow the provided steps to replace it with a custom certificate for secure access.
+  Create kubernetes secret of type tls with the certificate and key:
+  ```
+  kubectl create secret tls nai-ingress-certificate -n nai-system --cert=path/to/certificate.crt --key=path/to/private.key
+  ```
+  Patch the gateway nai-ingress-gateway with the secret:
+  ```
+  kubectl patch gateway nai-ingress-gateway -n nai-system --type='json' -p='[{"op": "replace", "path": "/spec/listeners/1/tls/certificateRefs/0/name", "value": "nai-ingress-certificate"}]'
+  ```
