@@ -2,6 +2,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: nai-postinstall-2.4.0
+  namespace: ${workspaceNamespace}
 spec:
   backoffLimit: 3
   ttlSecondsAfterFinished: null
