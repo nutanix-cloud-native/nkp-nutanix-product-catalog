@@ -26,7 +26,7 @@ spec:
             - -c
             - |
               set -eu
-              echo "Waiting for NAI envoy-gateway-system external IP/FQDN..."
+              echo "Waiting for NAI envoy-gateway-system external IP..."
 
               for i in $(seq 1 60); do
                 IP=$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
