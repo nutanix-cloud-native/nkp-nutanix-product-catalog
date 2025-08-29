@@ -1,0 +1,14 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: nai-ingressgateway-selfsigned-certificate
+  namespace: nai-system
+spec:
+  secretName: ingress-certificate
+  commonName: nai.example.com
+  issuerRef:
+    name: selfsigned-issuer
+    kind: ClusterIssuer
+    group: cert-manager.io
+  dnsNames:
+  - nai.example.com
