@@ -61,7 +61,8 @@ overview: |-
       username: <username>
       password: <password>
       email: <email>
-  storageClassName: nai-nfs-storage
+  naiApi:
+    storageClassName: nai-nfs-storage
   ```
   
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
