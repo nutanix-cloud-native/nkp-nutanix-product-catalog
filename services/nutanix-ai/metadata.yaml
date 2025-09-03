@@ -61,7 +61,8 @@ overview: |-
       username: <username>
       password: <password>
       email: <email>
-  storageClassName: nai-nfs-storage
+  naiApi:
+    storageClassName: nai-nfs-storage
   ```
   ### After enabling Nutanix Enterprise AI 2.4.0, update the endpoint with FQDN or EXTERNAL-IP of envoy-nai-system-nai-ingress-gateway service in the Nutanix Enterprise AI dashboard ConfigMap.
   ```
