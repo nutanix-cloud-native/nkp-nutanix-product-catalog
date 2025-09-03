@@ -68,10 +68,6 @@ overview: |-
   ```
   export NAI_UI_ENDPOINT=https://<FQDN>/
   ```
-  Or, on the terminal, run the following command to get the EXTERNAL-IP of the envoy-nai-system-nai-ingress-gateway service from respective cluster:
-  ```
-  export NAI_UI_ENDPOINT=https://$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' | grep -v '^$' || kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}')/
-  ```
   Update the dashboard link in config map as follows:
   ```
   kubectl patch cm nai-ui -n <workspace_namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'

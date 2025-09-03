@@ -9,6 +9,5 @@ metadata:
     "kustomize.toolkit.fluxcd.io/ssa": "Merge"
 data:
   name: "Nutanix Enterprise AI"
-  dashboardLink: "https://<ip_or_fqdn_istio_ingress_svc>/"
   docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_4:Nutanix-Enterprise-AI-v2_4"
   version: "2.4.0"
