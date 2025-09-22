@@ -1,0 +1,10 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - serviceaccount.yaml
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
+  - job.yaml
+  - nai-node-exporter-monitor.yaml
+  - nai-self-signed-cert.yaml
+  - node-exporter-rbac-cluster-role.yaml

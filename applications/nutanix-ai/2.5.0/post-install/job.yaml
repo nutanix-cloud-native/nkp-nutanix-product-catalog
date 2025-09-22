@@ -1,0 +1,57 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-postinstall-2.4.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: nai-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: post-install-nai-patch
+          image: bitnami/kubectl:1.30.5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KUBECONFIG
+              value: /opt/bitnami/kubectl/.kube/config
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              echo "Waiting for NAI envoy-gateway-system external IP/FQDN..."
+
+              for i in $(seq 1 60); do
+                IP=$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+                HOSTNAME=$(kubectl get svc -n envoy-gateway-system -l "gateway.envoyproxy.io/owning-gateway-name=nai-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=nai-system" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+
+                if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
+                  break
+                fi
+                echo "Waiting..."; sleep 5
+              done
+
+              if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
+                echo "ERROR: Could not resolve NAI envoy-gateway-system ingress IP or HOSTNAME"
+                exit 1
+              fi
+
+              if [ -n "$IP" ]; then
+                ENDPOINT=$(printf "https://%s/" "$IP")
+              else
+                ENDPOINT=$(printf "https://%s/" "$HOSTNAME")
+              fi
+
+              PAYLOAD=$(printf '{"data": {"dashboardLink": "%s"}}' "$ENDPOINT")
+
+              kubectl patch configmap nai-ui -n "$WORKSPACE_NAMESPACE" \
+                --type=merge -p "$PAYLOAD"
+
+              echo "Dashboard link updated successfully."

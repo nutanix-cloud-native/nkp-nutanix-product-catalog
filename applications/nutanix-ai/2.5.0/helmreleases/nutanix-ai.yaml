@@ -1,0 +1,48 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: nutanix-ai
+  namespace: ${workspaceNamespace}
+spec:
+  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core
+  ref:
+    tag: 0.1.0_build.1942
+  secretRef:
+    name: artifactory-secret
+  interval: 1m
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nutanix-ai
+  namespace: ${workspaceNamespace}
+spec:
+  dependsOn:
+    - name: kserve
+      namespace: ${workspaceNamespace}
+    - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: nai-core-crds
+      namespace: ${workspaceNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: nutanix-ai
+    namespace: ${workspaceNamespace}
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: nutanix-ai
+  valuesFrom:
+    - kind: ConfigMap
+      name: nutanix-ai-2.5.0-nkp-defaults
+    - kind: ConfigMap
+      name: service-monitor-defaults
+  targetNamespace: nai-system
