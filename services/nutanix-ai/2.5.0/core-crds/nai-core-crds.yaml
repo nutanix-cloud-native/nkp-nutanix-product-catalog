@@ -9,7 +9,7 @@ spec:
   ref:
     tag: 0.1.0_build.1942
   secretRef:
-    name: artifactory-secret-vijay
+    name: artifactory-secret
   interval: 10m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"

@@ -12,14 +12,10 @@ spec:
       namespace: ${workspaceNamespace}
     - name: nai-core-crds
       namespace: ${workspaceNamespace}
-  chart:
-    spec:
-      chart: nai-core
-      sourceRef:
-        kind: HelmRepository
-        name: nutanix.github.io-helm-releases
-        namespace: ${workspaceNamespace}
-      version: 0.1.0+build.1942
+  chartRef:
+    kind: OCIRepository
+    name: nutanix.github.io-helm-releases
+    namespace: ${workspaceNamespace}
   interval: 15s
   install:
     remediation:

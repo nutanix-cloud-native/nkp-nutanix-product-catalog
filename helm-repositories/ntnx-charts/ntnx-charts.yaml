@@ -1,13 +1,18 @@
 ---
 apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: HelmRepository
+kind: OCIRepository
 metadata:
   name: nutanix.github.io-helm-releases
   namespace: ${workspaceNamespace}
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
-  url: "${helmMirrorURL:=https://artifactory-edge-01.corp.p10y.ntnxdpro.com/artifactory/canaveral-helm}"
-  interval: 10m
+  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core
+  ref:
+    tag: 0.1.0_build.1942
   secretRef:
     name: artifactory-secret
+  interval: 10m
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
