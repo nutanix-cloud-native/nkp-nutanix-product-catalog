@@ -5,7 +5,7 @@ metadata:
   name: ghcr.io-nai-core-crds
   namespace: ${workspaceNamespace}
 spec:
-  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core
+  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core-crds
   ref:
     tag: 0.1.0+build.1942
   secretRef:
