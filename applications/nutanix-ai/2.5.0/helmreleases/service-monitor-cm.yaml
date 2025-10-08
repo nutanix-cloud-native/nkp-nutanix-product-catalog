@@ -8,14 +8,7 @@ data:
   values.yaml: |-
     naiMonitoring:
       dcgmExporter:
-        podLevelMetrics: true
         serviceMonitor:
-          enabled: true
-          endpoint:
-            targetPort: 9400
           namespaceSelector:
             matchNames:
             - ${workspaceNamespace}
-          serviceSelector:
-            matchLabels:
-              app: nvidia-dcgm-exporter
