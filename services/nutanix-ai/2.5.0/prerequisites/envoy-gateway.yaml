@@ -1,0 +1,40 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: OCIRepository
+metadata:
+  name: docker.io-envoyproxy-gateway-helm
+  namespace: ${workspaceNamespace}
+spec:
+  url: oci://docker.io/envoyproxy/gateway-helm
+  ref:
+    tag: v1.5.0
+  interval: 10m
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: envoy-gateway
+  namespace: ${workspaceNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: docker.io-envoyproxy-gateway-helm
+    namespace: ${workspaceNamespace}
+  dependsOn:
+  - name: envoy-gateway-crd
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+    skipCRDs: true
+  upgrade:
+    remediation:
+      retries: 30
+    skipCRDs: true
+  releaseName: eg
+  targetNamespace: envoy-gateway-system
+

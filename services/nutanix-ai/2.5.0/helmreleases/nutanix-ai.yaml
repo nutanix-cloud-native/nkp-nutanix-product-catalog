@@ -10,6 +10,12 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
+    - name: envoy-gateway
+      namespace: ${workspaceNamespace}
+    - name: envoy-gateway-crd
+      namespace: ${workspaceNamespace}
     - name: nai-core-crds
       namespace: ${workspaceNamespace}
   chartRef:

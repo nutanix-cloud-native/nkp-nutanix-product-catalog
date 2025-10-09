@@ -12,7 +12,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: post-install-nai-patch
-          image: bitnami/kubectl:1.30.5
+          image: bitnamilegacy/kubectl:1.30.5
           imagePullPolicy: IfNotPresent
           env:
             - name: WORKSPACE_NAMESPACE
