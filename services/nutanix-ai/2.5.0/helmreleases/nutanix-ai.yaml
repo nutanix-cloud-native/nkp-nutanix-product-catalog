@@ -14,8 +14,6 @@ spec:
       namespace: ${workspaceNamespace}
     - name: envoy-gateway
       namespace: ${workspaceNamespace}
-    - name: envoy-gateway-crd
-      namespace: ${workspaceNamespace}
     - name: nai-operators
       namespace: ${workspaceNamespace}
   chartRef:
