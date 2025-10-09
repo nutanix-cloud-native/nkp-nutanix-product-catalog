@@ -40,6 +40,8 @@ spec:
       retries: 30
   releaseName: nai-operators
   targetNamespace: nai-system
-  values:
-    naiAIGateway:
-      enabled: false
+  valuesFrom:
+    - kind: ConfigMap
+      name: nutanix-ai-2.5.0-nkp-defaults
+    - kind: ConfigMap
+      name: nutanix-ai-cluster-overrides
