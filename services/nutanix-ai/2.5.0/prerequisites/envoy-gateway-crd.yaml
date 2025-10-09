@@ -1,63 +1,67 @@
 ---
-apiVersion: v1
-kind: ServiceAccount
+# Gateway API CRDs (Experimental Channel)
+# This is equivalent to setting: crds.gatewayAPI.enabled=true in Helm
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
 metadata:
-  name: envoy-gateway-crd-installer
+  name: gateway-api
   namespace: ${workspaceNamespace}
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: envoy-gateway-crd-installer
-rules:
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions"]
-  verbs: ["get", "list", "create", "update", "patch", "delete"]
-- apiGroups: ["gateway.networking.k8s.io"]
-  resources: ["*"]
-  verbs: ["*"]
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: envoy-gateway-crd-installer
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: envoy-gateway-crd-installer
-subjects:
-- kind: ServiceAccount
-  name: envoy-gateway-crd-installer
-  namespace: ${workspaceNamespace}
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: envoy-gateway-crd-installer
-  namespace: ${workspaceNamespace}
-  annotations:
-    helm.toolkit.fluxcd.io/driftDetection: disabled
 spec:
-  backoffLimit: 10
-  template:
-    metadata:
-      name: envoy-gateway-crd-installer
-    spec:
-      serviceAccountName: envoy-gateway-crd-installer
-      restartPolicy: OnFailure
-      containers:
-      - name: install-crds
-        image: alpine/helm:3.16.3
-        command:
-        - /bin/sh
-        - -c
-        - |
-          set -e
-          echo "Installing Envoy Gateway CRDs..."
-          helm template eg oci://docker.io/envoyproxy/gateway-crds-helm \
-            --version v1.5.0 \
-            --set crds.gatewayAPI.enabled=true \
-            --set crds.envoyGateway.enabled=true | \
-            kubectl apply --server-side --force-conflicts -f -
-          echo "Envoy Gateway CRDs installed successfully"
+  url: https://github.com/kubernetes-sigs/gateway-api
+  ref:
+    tag: v1.3.0
+  interval: 10m
+  ignore: |
+    /*
+    !/config/crd/experimental/
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: gateway-api-crd
+  namespace: ${workspaceNamespace}
+spec:
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: gateway-api
+  path: ./config/crd/experimental
+  prune: true
+  wait: true
+---
+# Envoy Gateway CRDs
+# This is equivalent to setting: crds.envoyGateway.enabled=true in Helm
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: envoy-gateway
+  namespace: ${workspaceNamespace}
+spec:
+  url: https://github.com/envoyproxy/gateway
+  ref:
+    tag: v1.5.0
+  interval: 10m
+  ignore: |
+    /*
+    !/charts/gateway-helm/crds/
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: envoy-gateway-crd
+  namespace: ${workspaceNamespace}
+spec:
+  dependsOn:
+  - name: gateway-api-crd
+  interval: 10m
+  retryInterval: 1m
+  timeout: 5m
+  sourceRef:
+    kind: GitRepository
+    name: envoy-gateway
+  path: ./charts/gateway-helm/crds
+  prune: true
+  wait: true
 
