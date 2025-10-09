@@ -16,7 +16,7 @@ spec:
       namespace: ${workspaceNamespace}
     - name: envoy-gateway-crd
       namespace: ${workspaceNamespace}
-    - name: nai-core-crds
+    - name: nai-operators
       namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository

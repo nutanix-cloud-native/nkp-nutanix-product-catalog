@@ -30,11 +30,11 @@ spec:
     remediation:
       retries: 30
     createNamespace: true
-    skipCRDs: true
+    crds: Skip
   upgrade:
     remediation:
       retries: 30
-    skipCRDs: true
+    crds: Skip
   releaseName: eg
   targetNamespace: envoy-gateway-system
 
