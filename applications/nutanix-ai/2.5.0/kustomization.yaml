@@ -3,6 +3,6 @@ kind: Kustomization
 resources:
   - ./prerequisites
   - ./defaults
-  - ./core-crds
+  - ./nai-operators
   - ./helmreleases
   - ./post-install
