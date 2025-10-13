@@ -26,9 +26,13 @@ spec:
     name: ghcr.io-nai-operators
     namespace: ${workspaceNamespace}
   dependsOn:
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
     - name: kserve
       namespace: ${workspaceNamespace}
     - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: envoy-gateway
       namespace: ${workspaceNamespace}
   interval: 15s
   install:
@@ -42,6 +46,4 @@ spec:
   targetNamespace: nai-system
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-2.5.0-nkp-defaults
-    - kind: ConfigMap
-      name: nutanix-ai-cluster-overrides
+      name: nutanix-operators-2.5.0-nkp-defaults
