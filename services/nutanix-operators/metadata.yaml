@@ -1,5 +1,5 @@
-displayName: Nutanix Enterprise AI
-description: Inference endpoint management platform.
+displayName: Nutanix AI Operators
+description: Nutanix AI Operators.
 type: catalog
 allowMultipleInstances: false
 category:
