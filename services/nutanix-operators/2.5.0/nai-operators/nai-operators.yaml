@@ -39,9 +39,11 @@ spec:
     remediation:
       retries: 30
     createNamespace: true
+    crds: Skip
   upgrade:
     remediation:
       retries: 30
+    crds: Skip
   releaseName: nai-operators
   targetNamespace: nai-system
   valuesFrom:
