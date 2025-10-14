@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: nutanix-operators-2.5.0-nkp-defaults
+  name: nutanix-ai-operators-2.5.0-nkp-defaults
   namespace: ${workspaceNamespace}
 data:
   values.yaml: ""

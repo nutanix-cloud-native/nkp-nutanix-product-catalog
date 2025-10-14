@@ -10,12 +10,6 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
-    - name: opentelemetry-operator
-      namespace: ${workspaceNamespace}
-    - name: envoy-gateway
-      namespace: ${workspaceNamespace}
-    - name: nai-operators
-      namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
     name: nutanix.github.io-helm-releases
