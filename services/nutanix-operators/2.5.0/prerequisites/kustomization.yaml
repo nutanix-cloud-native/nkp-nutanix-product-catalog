@@ -4,6 +4,4 @@ resources:
 - kserve-crd.yaml
 - kserve.yaml
 - opentelemetry.yaml
-- envoy-gateway-crd.yaml
-- envoy-gateway.yaml
 - namespace.yaml

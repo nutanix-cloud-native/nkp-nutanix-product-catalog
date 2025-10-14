@@ -23,6 +23,9 @@ spec:
     kind: OCIRepository
     name: docker.io-envoyproxy-gateway-helm
     namespace: ${workspaceNamespace}
+  dependsOn:
+    - name: envoy-gateway-crd
+      namespace: ${workspaceNamespace}
   interval: 15s
   install:
     remediation:
