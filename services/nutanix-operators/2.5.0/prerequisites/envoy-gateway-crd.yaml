@@ -33,7 +33,7 @@ spec:
     crds: CreateReplace
   storageNamespace: ${workspaceNamespace}
   driftDetection:
-    mode: none
+    mode: disabled
   values:
     crds:
       gatewayAPI:
