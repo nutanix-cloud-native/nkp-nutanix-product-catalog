@@ -22,10 +22,18 @@ spec:
     kind: OCIRepository
     name: envoy-gateway-crds
   install:
+    disableWait: true
+    remediation:
+      retries: 3
     crds: CreateReplace
     createNamespace: false
   upgrade:
+    remediation:
+      retries: 3
     crds: CreateReplace
+  storageNamespace: ${workspaceNamespace}
+  driftDetection:
+    mode: none
   values:
     crds:
       gatewayAPI:
