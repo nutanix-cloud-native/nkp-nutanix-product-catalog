@@ -1,67 +1,34 @@
 ---
-# Gateway API CRDs (Experimental Channel)
-# This is equivalent to setting: crds.gatewayAPI.enabled=true in Helm
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
+kind: OCIRepository
 metadata:
-  name: gateway-api
-  namespace: ${workspaceNamespace}
-spec:
-  url: https://github.com/kubernetes-sigs/gateway-api
-  ref:
-    tag: v1.3.0
-  interval: 10m
-  ignore: |
-    /*
-    !/config/crd/experimental/
----
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
-metadata:
-  name: gateway-api-crd
+  name: envoy-gateway-crds
   namespace: ${workspaceNamespace}
 spec:
   interval: 10m
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: gateway-api
-  path: ./config/crd/experimental
-  prune: true
-  wait: true
----
-# Envoy Gateway CRDs
-# This is equivalent to setting: crds.envoyGateway.enabled=true in Helm
-apiVersion: source.toolkit.fluxcd.io/v1
-kind: GitRepository
-metadata:
-  name: envoy-gateway
-  namespace: ${workspaceNamespace}
-spec:
-  url: https://github.com/envoyproxy/gateway
+  url: oci://docker.io/envoyproxy/gateway-crds-helm
   ref:
     tag: v1.5.0
-  interval: 10m
-  ignore: |
-    /*
-    !/charts/gateway-helm/crds/
 ---
-apiVersion: kustomize.toolkit.fluxcd.io/v1
-kind: Kustomization
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
 metadata:
-  name: envoy-gateway-crd
+  name: envoy-gateway-crds
   namespace: ${workspaceNamespace}
 spec:
-  dependsOn:
-  - name: gateway-api-crd
-  interval: 10m
-  retryInterval: 1m
-  timeout: 5m
-  sourceRef:
-    kind: GitRepository
-    name: envoy-gateway
-  path: ./charts/gateway-helm/crds
-  prune: true
-  wait: true
-
+  interval: 15s
+  releaseName: envoy-gateway-crds
+  chartRef:
+    kind: OCIRepository
+    name: envoy-gateway-crds
+  install:
+    crds: CreateReplace
+    createNamespace: false
+  upgrade:
+    crds: CreateReplace
+  values:
+    crds:
+      gatewayAPI:
+        enabled: true
+      envoyGateway:
+        enabled: true
