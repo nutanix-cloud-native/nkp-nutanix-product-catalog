@@ -10,6 +10,10 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
+    - name: nutanix-ai-operators
+      namespace: ${workspaceNamespace}
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
     name: nutanix.github.io-helm-releases

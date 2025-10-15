@@ -7,7 +7,7 @@ metadata:
 spec:
   url: oci://repos.ntnxdpro.com/ai-nai-core/nai-operators
   ref:
-    tag: 0.1.0_build.2332
+    tag: 0.1.0_build.2356
   secretRef:
     name: artifactory-secret
   interval: 10m
