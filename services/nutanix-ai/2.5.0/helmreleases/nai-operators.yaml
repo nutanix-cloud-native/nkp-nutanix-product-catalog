@@ -51,5 +51,8 @@ spec:
       name: nutanix-ai-config-overrides
       optional: true
     - kind: ConfigMap
+      name: nutanix-ai-cluster-overrides
+      optional: true
+    - kind: ConfigMap
       name: nutanix-ai-overrides
       optional: true
