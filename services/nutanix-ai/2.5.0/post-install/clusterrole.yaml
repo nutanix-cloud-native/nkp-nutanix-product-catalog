@@ -18,3 +18,7 @@ rules:
   - apiGroups: [""]
     resources: ["secrets"]
     verbs: ["get", "list"]
+  # Permissions for Prometheus ServiceMonitor resources
+  - apiGroups: ["monitoring.coreos.com"]
+    resources: ["servicemonitors"]
+    verbs: ["get", "list", "create", "update", "patch"]
