@@ -3,3 +3,4 @@ kind: Kustomization
 resources:
 - cm.yaml
 - kserve.yaml
+- kserve-crd.yaml
