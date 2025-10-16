@@ -6,5 +6,6 @@ resources:
   - clusterrolebinding.yaml
   - job.yaml
   - nai-node-exporter-monitor.yaml
-  - nai-self-signed-cert.yaml
   - node-exporter-rbac-cluster-role.yaml
+  # Certificate applier job
+  - cert-apply-job.yaml

@@ -1,0 +1,103 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-apply-selfsigned-cert-2.5.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: nai-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: apply-certificate
+          image: bitnamilegacy/kubectl:1.30.5
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: KUBECONFIG
+              value: /opt/bitnami/kubectl/.kube/config
+            - name: MAX_RETRIES
+              value: "5"
+            - name: RETRY_DELAY
+              value: "10"
+            - name: TARGET_NAMESPACE
+              value: "nai-system"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              echo "Starting NAI self-signed certificate application..."
+
+              # Certificate manifest
+              cat <<'EOF' > /tmp/nai-self-signed-cert.yaml
+              apiVersion: cert-manager.io/v1
+              kind: Certificate
+              metadata:
+                name: nai-ingressgateway-selfsigned-certificate
+                namespace: nai-system
+              spec:
+                secretName: ingress-certificate
+                commonName: nai.example.com
+                issuerRef:
+                  name: selfsigned-issuer
+                  kind: ClusterIssuer
+                  group: cert-manager.io
+                dnsNames:
+                - nai.example.com
+              EOF
+
+              # Apply with retry logic
+              RETRY_COUNT=0
+              SUCCESS=false
+
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                ATTEMPT=$((RETRY_COUNT + 1))
+                echo "=========================================="
+                echo "Attempt $ATTEMPT of $MAX_RETRIES"
+                echo "=========================================="
+                
+                if kubectl apply -f /tmp/nai-self-signed-cert.yaml; then
+                  echo ""
+                  echo "✅ Certificate applied successfully on attempt $ATTEMPT!"
+                  SUCCESS=true
+                  
+                  # Verify the certificate was created
+                  echo ""
+                  echo "Verifying certificate creation..."
+                  if kubectl get certificate nai-ingressgateway-selfsigned-certificate -n $TARGET_NAMESPACE; then
+                    echo "✅ Certificate resource confirmed in cluster"
+                  fi
+                  break
+                else
+                  RETRY_COUNT=$((RETRY_COUNT + 1))
+                  if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                    echo ""
+                    echo "⚠️ Failed to apply certificate."
+                    echo "   Retrying in ${RETRY_DELAY} seconds..."
+                    echo ""
+                    sleep $RETRY_DELAY
+                  fi
+                fi
+              done
+
+              if [ "$SUCCESS" = false ]; then
+                echo ""
+                echo "=========================================="
+                echo "❌ FAILED"
+                echo "=========================================="
+                echo "Failed to apply certificate after $MAX_RETRIES attempts"
+                exit 1
+              fi
+
+              echo ""
+              echo "=========================================="
+              echo "✅ SUCCESS"
+              echo "=========================================="
+              echo "Certificate application completed successfully"
+

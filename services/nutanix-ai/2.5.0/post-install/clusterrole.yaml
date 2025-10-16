@@ -6,3 +6,15 @@ rules:
   - apiGroups: [""]
     resources: ["configmaps", "services"]
     verbs: ["get", "list", "patch"]
+  # Permissions for cert-manager Certificate resources
+  - apiGroups: ["cert-manager.io"]
+    resources: ["certificates"]
+    verbs: ["get", "list", "create", "update", "patch"]
+  # Permissions to read ClusterIssuers (needed for certificate validation)
+  - apiGroups: ["cert-manager.io"]
+    resources: ["clusterissuers"]
+    verbs: ["get", "list"]
+  # Permissions to read secrets (for certificate verification if needed)
+  - apiGroups: [""]
+    resources: ["secrets"]
+    verbs: ["get", "list"]
