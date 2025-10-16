@@ -48,11 +48,5 @@ spec:
     - kind: ConfigMap
       name: nutanix-ai-operators-2.5.0-nkp-defaults
     - kind: ConfigMap
-      name: nutanix-ai-config-overrides
-      optional: true
-    - kind: ConfigMap
       name: nutanix-ai-cluster-overrides
-      optional: true
-    - kind: ConfigMap
-      name: nutanix-ai-overrides
       optional: true
