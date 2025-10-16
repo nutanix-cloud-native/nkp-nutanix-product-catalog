@@ -144,6 +144,20 @@ spec:
                     app.kubernetes.io/name: prometheus-node-exporter
               EOF
 
+              # ConfigMap manifest
+              cat <<EOF > /tmp/nai-pre-delete-hook-cm.yaml
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: nai-operators-pre-delete-hook-cm
+                namespace: nai-system
+              data:
+                WORKSPACE_NAMESPACE: "$WORKSPACE_NAMESPACE"
+                HELMRELEASE_NAME: "nutanix-ai"
+                POLL_INTERVAL: "10"
+                TIMEOUT: "1800"
+              EOF
+
               # Track overall success
               OVERALL_SUCCESS=true
 
@@ -154,6 +168,11 @@ spec:
 
               # Apply ServiceMonitor
               if ! apply_resource "ServiceMonitor" "/tmp/nai-node-exporter-monitor.yaml" "servicemonitor" "nai-node-exporter-monitor"; then
+                OVERALL_SUCCESS=false
+              fi
+
+              # Apply ConfigMap
+              if ! apply_resource "ConfigMap" "/tmp/nai-pre-delete-hook-cm.yaml" "configmap" "nai-operators-pre-delete-hook-cm"; then
                 OVERALL_SUCCESS=false
               fi
 

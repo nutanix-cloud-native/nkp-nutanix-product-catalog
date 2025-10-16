@@ -5,7 +5,7 @@ metadata:
 rules:
   - apiGroups: [""]
     resources: ["configmaps", "services"]
-    verbs: ["get", "list", "patch"]
+    verbs: ["get", "list", "create", "update", "patch"]
   # Permissions for cert-manager Certificate resources
   - apiGroups: ["cert-manager.io"]
     resources: ["certificates"]
