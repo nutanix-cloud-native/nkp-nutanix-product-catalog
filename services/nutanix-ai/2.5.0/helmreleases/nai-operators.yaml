@@ -42,6 +42,8 @@ spec:
     remediation:
       retries: 5
     crds: Skip
+  uninstall:
+    timeout: 15m
   releaseName: nutanix-ai-operators
   targetNamespace: nai-system
   valuesFrom:

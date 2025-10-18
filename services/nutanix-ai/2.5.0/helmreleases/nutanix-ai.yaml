@@ -26,6 +26,8 @@ spec:
   upgrade:
     remediation:
       retries: 30
+  uninstall:
+    timeout: 15m
   releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap
