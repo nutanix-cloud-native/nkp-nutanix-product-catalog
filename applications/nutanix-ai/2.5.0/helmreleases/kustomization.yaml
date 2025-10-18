@@ -3,4 +3,5 @@ kind: Kustomization
 resources:
 - service-monitor-cm.yaml
 - nai-ui-dashboard-cm.yaml
+- nai-operators.yaml
 - nutanix-ai.yaml

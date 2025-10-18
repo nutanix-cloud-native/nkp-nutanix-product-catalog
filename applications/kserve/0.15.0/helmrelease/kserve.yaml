@@ -1,5 +1,5 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1
+apiVersion: source.toolkit.fluxcd.io/v1beta2
 kind: OCIRepository
 metadata:
   name: ghcr.io-kserve-charts-kserve
@@ -28,18 +28,13 @@ spec:
   interval: 15s
   install:
     remediation:
-      retries: 30
+      retries: 5
     createNamespace: true
   upgrade:
     remediation:
-      retries: 30
+      retries: 5
   releaseName: kserve
   targetNamespace: kserve
-  values:
-    kserve:
-      controller:
-        image: docker.io/nutanix/nai-kserve-controller
-        tag: v0.15.0
-        deploymentMode: RawDeployment
-        gateway:
-          disableIngressCreation: true
+  valuesFrom:
+    - kind: ConfigMap
+      name: kserve-0.15.0-nkp-defaults

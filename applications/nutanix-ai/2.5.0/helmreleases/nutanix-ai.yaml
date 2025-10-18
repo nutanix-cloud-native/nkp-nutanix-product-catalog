@@ -3,10 +3,12 @@ kind: OCIRepository
 metadata:
   name: nutanix-ai
   namespace: ${workspaceNamespace}
+  labels:
+    kommander.d2iq.io/dkp-airgapped: supported
 spec:
   url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core
   ref:
-    tag: 0.1.0_build.2249
+    tag: 0.1.0_build.2422
   secretRef:
     name: artifactory-secret
   interval: 1m
@@ -39,6 +41,8 @@ spec:
   upgrade:
     remediation:
       retries: 30
+  uninstall:
+    timeout: 15m
   releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap

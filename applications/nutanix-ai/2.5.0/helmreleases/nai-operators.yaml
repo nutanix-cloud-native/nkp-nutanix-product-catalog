@@ -4,13 +4,15 @@ kind: OCIRepository
 metadata:
   name: ghcr.io-nai-operators
   namespace: ${workspaceNamespace}
+  labels:
+    kommander.d2iq.io/dkp-airgapped: supported
 spec:
   url: oci://repos.ntnxdpro.com/ai-nai-core/nai-operators
   ref:
-    tag: 0.1.0_build.2249
+    tag: 0.1.0_build.2422
   secretRef:
     name: artifactory-secret
-  interval: 10m
+  interval: 1m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
@@ -18,7 +20,7 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: nai-operators
+  name: nutanix-ai-operators
   namespace: ${workspaceNamespace}
 spec:
   chartRef:
@@ -29,19 +31,26 @@ spec:
     - name: kserve
       namespace: ${workspaceNamespace}
     - name: kserve-crd
+      namespace: ${workspaceNamespace}   
+    - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
   interval: 15s
   install:
     remediation:
-      retries: 30
+      retries: 5
     createNamespace: true
+    crds: Skip
   upgrade:
     remediation:
-      retries: 30
-  releaseName: nai-operators
+      retries: 5
+    crds: Skip
+  uninstall:
+    timeout: 15m
+  releaseName: nutanix-ai-operators
   targetNamespace: nai-system
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-2.5.0-nkp-defaults
+      name: nutanix-ai-operators-2.5.0-nkp-defaults
     - kind: ConfigMap
       name: nutanix-ai-cluster-overrides
+      optional: true
