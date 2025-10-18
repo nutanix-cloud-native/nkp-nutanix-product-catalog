@@ -14,7 +14,6 @@ requiredDependencies:
   - cert-manager
   - kube-prometheus-stack
   - nvidia-gpu-operator
-  - kserve
   - opentelemetry-operator
 scope:
   - workspace
