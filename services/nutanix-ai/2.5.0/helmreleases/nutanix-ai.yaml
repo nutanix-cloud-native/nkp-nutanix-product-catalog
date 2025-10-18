@@ -1,22 +1,4 @@
 ---
-apiVersion: source.toolkit.fluxcd.io/v1beta2
-kind: OCIRepository
-metadata:
-  name: nutanix.github.io-helm-releases
-  namespace: ${workspaceNamespace}
-  labels:
-    kommander.d2iq.io/dkp-airgapped: supported
-spec:
-  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-core
-  ref:
-    tag: 0.1.0_build.2422
-  secretRef:
-    name: artifactory-secret
-  interval: 10m
-  layerSelector:
-    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
-    operation: copy
----
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
@@ -32,10 +14,14 @@ spec:
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
-  chartRef:
-    kind: OCIRepository
-    name: nutanix.github.io-helm-releases
-    namespace: ${workspaceNamespace}
+  chart:
+    spec:
+      chart: nai-core
+      sourceRef:
+        kind: HelmRepository
+        name: nutanix.github.io-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 0.1.0+build.2422
   interval: 15s
   install:
     remediation:
