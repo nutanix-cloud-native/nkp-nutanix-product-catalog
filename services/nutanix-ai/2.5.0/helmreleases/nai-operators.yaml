@@ -4,6 +4,8 @@ kind: OCIRepository
 metadata:
   name: ghcr.io-nai-operators
   namespace: ${workspaceNamespace}
+  labels:
+    kommander.d2iq.io/dkp-airgapped: supported
 spec:
   url: oci://repos.ntnxdpro.com/ai-nai-core/nai-operators
   ref:
