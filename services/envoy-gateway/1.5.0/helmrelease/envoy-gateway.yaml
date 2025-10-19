@@ -33,10 +33,6 @@ spec:
     crds: Skip
     remediation:
       retries: 5
-  dependsOn:
-    - name: envoy-gateway-crds
-      namespace: ${workspaceNamespace}
-      kind: Kustomization
   releaseName: eg
   targetNamespace: envoy-gateway-system
   valuesFrom:
