@@ -36,6 +36,7 @@ spec:
   dependsOn:
     - name: envoy-gateway-crds
       namespace: ${workspaceNamespace}
+      kind: Kustomization
   releaseName: eg
   targetNamespace: envoy-gateway-system
   valuesFrom:
