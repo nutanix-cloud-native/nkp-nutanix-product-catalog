@@ -30,10 +30,10 @@ spec:
   interval: 15s
   install:
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
   upgrade:
     remediation:
-      retries: 5
+      retries: 30
   releaseName: kserve-crd
   targetNamespace: kserve

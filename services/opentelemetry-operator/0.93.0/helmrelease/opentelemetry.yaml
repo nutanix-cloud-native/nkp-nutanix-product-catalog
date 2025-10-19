@@ -26,11 +26,11 @@ spec:
   interval: 15s
   install:
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
   upgrade:
     remediation:
-      retries: 5
+      retries: 30
   releaseName: opentelemetry-operator
   targetNamespace: opentelemetry
   valuesFrom:

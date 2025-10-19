@@ -27,12 +27,12 @@ spec:
   install:
     crds: Skip
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
   upgrade:
     crds: Skip
     remediation:
-      retries: 5
+      retries: 30
   releaseName: eg
   targetNamespace: envoy-gateway-system
   valuesFrom:
