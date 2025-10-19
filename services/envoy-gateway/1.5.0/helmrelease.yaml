@@ -8,7 +8,7 @@ spec:
   retryInterval: 1m
   path: ./services/envoy-gateway/1.5.0/helmrelease
   prune: true
-  force: false
+  force: true
   wait: true
   targetNamespace: envoy-gateway-system
   sourceRef:
