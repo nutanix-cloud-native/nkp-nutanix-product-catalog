@@ -15,5 +15,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: management
-    name: kommander-flux
+    namespace: kommander-flux
   timeout: 10m
