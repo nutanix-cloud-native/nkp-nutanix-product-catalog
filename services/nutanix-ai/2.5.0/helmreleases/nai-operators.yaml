@@ -36,11 +36,13 @@ spec:
       namespace: ${workspaceNamespace}
   interval: 15s
   install:
+    timeout: 15m
     remediation:
       retries: 30
     createNamespace: true
     crds: Skip
   upgrade:
+    timeout: 15m
     remediation:
       retries: 30
     crds: Skip
