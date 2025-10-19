@@ -1,3 +1,4 @@
+---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
@@ -6,7 +7,7 @@ metadata:
 spec:
   interval: 6h
   retryInterval: 1m
-  path: ./services/envoy-gateway/1.5.0/helmrelease
+  path: ./services/envoy-gateway/1.5.0/crds
   prune: true
   force: true
   wait: true
@@ -16,6 +17,3 @@ spec:
     name: management
     name: kommander-flux
   timeout: 10m
-  # Apply only the CRD manifest
-  includes:
-    - ./helmrelease/envoy-gateway-crds.yaml
