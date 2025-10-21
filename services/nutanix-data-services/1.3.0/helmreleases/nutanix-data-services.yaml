@@ -1,0 +1,27 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nutanix-data-services
+  namespace: ${workspaceNamespace}
+spec:
+  chart:
+    spec:
+      chart: ndk
+      sourceRef:
+        kind: HelmRepository
+        name: nutanix.github.io-helm-releases
+        namespace: ${workspaceNamespace}
+      version: 1.3.0
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: false # Since "ntnx-system" namespace is already created during csi installation.
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: nutanix-data-services
+  valuesFrom:
+    - kind: ConfigMap
+      name: nutanix-data-services-1.3.0-defaults
+  targetNamespace: ntnx-system
