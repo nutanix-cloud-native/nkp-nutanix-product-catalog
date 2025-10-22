@@ -14,6 +14,8 @@ spec:
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
+    - name: envoy-gateway
+      namespace: ${workspaceNamespace}
   chart:
     spec:
       chart: nai-core

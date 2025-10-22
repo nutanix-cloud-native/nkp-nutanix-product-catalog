@@ -34,6 +34,8 @@ spec:
       namespace: ${workspaceNamespace}   
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
+    - name: envoy-gateway
+      namespace: ${workspaceNamespace}
   interval: 15s
   install:
     timeout: 15m
