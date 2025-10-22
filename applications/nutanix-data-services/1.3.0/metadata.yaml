@@ -1,2 +1,56 @@
-# This is meant for e2e testing and not for production use
-k8sVersionSupport: ">=1.26.0"
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: Nutanix Data Services for Kubernetes
+description: Nutanix Data Services for Kubernetes
+type: catalog
+category: 
+  - application-and-data-management
+certifications:
+  - nutanix-supported
+  - airgapped
+licensing:
+  - Pro
+  - Ultimate
+dependencies:
+  - cert-manager
+scope:
+  - workspace
+icon: PHN2ZyB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIHZpZXdCb3g9IjAgMCA0OCA0OCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGcgY2xpcC1wYXRoPSJ1cmwoI2NsaXAwXzI2MTlfMTEwMzUpIj4KPHBhdGggZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGQ9Ik0yOS45MjE2IDI1Ljk0NTZDMzAuMDY2MSAyNS45NDU2IDMwLjE5NjUgMjYuMDA4MyAzMC4yOTEzIDI2LjEwOTJMMzkuNzk0IDM0Ljk5MTNDMzkuOTE5MSAzNS4wOTQgMzkuOTk5OSAzNS4yNTU5IDM5Ljk5OTkgMzUuNDM4MUMzOS45OTk5IDM1Ljc0ODEgMzkuNzY1OSAzNS45OTk4IDM5LjQ3NzIgMzUuOTk5OEgzMy4wMDM4QzMyLjg2MTIgMzUuOTk5OCAzMi43MzE2IDM1LjkzODIgMzIuNjM3MyAzNS44Mzg0TDI2LjM0ODggMjkuOTYxNkMyNi4yMzQzIDI5Ljg1NzggMjYuMTYyMSAyOS43MDM5IDI2LjE2MjEgMjkuNTMxMUMyNi4xNjIxIDI5LjM4NTkgMjYuMjEzNiAyOS4yNTM2IDI2LjI5NzggMjkuMTUzOUwyOS41MzQ0IDI2LjEyOTJDMjkuNjMgMjYuMDE2NiAyOS43NjgxIDI1Ljk0NTYgMjkuOTIxNiAyNS45NDU2Wk0zOS40NzcyIDEyQzM5Ljc2NTkgMTIgMzkuOTk5OSAxMi4yNTE4IDM5Ljk5OTkgMTIuNTYxN0MzOS45OTk5IDEyLjc0MzkgMzkuOTE5MSAxMi45MDU2IDM5Ljc5NCAxMy4wMDgyTDMwLjI5MTMgMjEuODkwM0MzMC4xOTY1IDIxLjk5MTUgMzAuMDY2MSAyMi4wNTQzIDI5LjkyMTYgMjIuMDU0M0MyOS43NjgxIDIyLjA1NDMgMjkuNjMgMjEuOTgzNSAyOS41MzQ0IDIxLjg3MDZMMjYuMjk3OCAxOC44NDZDMjYuMjEzNiAxOC43NDYyIDI2LjE2MjEgMTguNjEzOSAyNi4xNjIxIDE4LjQ2ODdDMjYuMTYyMSAxOC4yOTYyIDI2LjIzNDMgMTguMTQyIDI2LjM0ODggMTguMDM4NUwzMi42MzczIDEyLjE2MTFDMzIuNzMxNiAxMi4wNjE2IDMyLjg2MTIgMTIgMzMuMDAzOCAxMkgzOS40NzcyWiIgZmlsbD0iIzc4NTVGQSIvPgo8cGF0aCBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZD0iTTE1LjM1NzUgMzUuODUyM0MxNS4yNjQ1IDM1Ljk0MzUgMTUuMTQwNSAzNiAxNS4wMDQzIDM2SDguNTIyNjVDOC4yMzM5NyAzNiA4IDM1Ljc0ODIgOCAzNS40MzhDOCAzNS4yODMyIDguMDU4NDMgMzUuMTQyOSA4LjE1Mjk3IDM1LjA0MTZMMTkuNTExMSAyNC40MjkxQzE5LjYyNSAyNC4zMjYyIDE5LjY5NzIgMjQuMTcxOSAxOS42OTcyIDIzLjk5OTRDMTkuNjk3MiAyMy44MzYzIDE5LjYzMjQgMjMuNjg5OCAxOS41Mjk0IDIzLjU4NzRMOC4xODUxMSAxMi45OUM4LjA3MTcxIDEyLjg4NyA4IDEyLjczMzYgOCAxMi41NjE3QzggMTIuMjUxOCA4LjIzMzk3IDEyIDguNTIyNjUgMTJIMTUuMDA0M0MxNS4xNDEgMTIgMTUuMjY1NiAxMi4wNTYyIDE1LjM1ODUgMTIuMTQ4M0wyNy41ODYxIDIzLjU3NTdDMjcuNjk2OSAyMy42Nzg0IDI3Ljc2NjcgMjMuODI5OCAyNy43NjY3IDIzLjk5OTRDMjcuNzY2NyAyNC4xNjk0IDI3LjY5NjYgMjQuMzIxOSAyNy41ODUzIDI0LjQyNTFMMTUuMzU3NSAzNS44NTIzWiIgZmlsbD0iIzc4NTVGQSIvPgo8L2c+CjxkZWZzPgo8Y2xpcFBhdGggaWQ9ImNsaXAwXzI2MTlfMTEwMzUiPgo8cmVjdCB3aWR0aD0iNDgiIGhlaWdodD0iNDgiIGZpbGw9IndoaXRlIi8+CjwvY2xpcFBhdGg+CjwvZGVmcz4KPC9zdmc+Cg==
+overview: |-
+  # Overview
+  Nutanix Data Services for Kubernetes (NDK) simplifies and unifies the life cycle management of business-critical applications by extending enterprise data services to containerized applications.
+  ## For Information on Features
+  - [Nutanix Data Services for Kubernetes](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Services-for-Kubernetes-v1_3)
+  
+  ## Prerequisites and Configuration Guide
+  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.26.0 and CSI version 3.0 installed.
+  ### Nutanix Data Services for Kubernetes 1.3.0 requires the following applications to be installed on the cluster:
+  - cert-manager v1.13.0
+
+  ### By default, NDK will be configured to use a self-signed certificates orchestrated by default cert-manager. However you can configure NDK to use certificates issued by a custom Issuer or you can use certifiactes backed by a custom secret. Following are the steps to configure NDK to use certificates issued by a custom Issuer:
+  ### For using a custom issuer (issuer should already be created in the namespace "ntnx-system", and it's reference should be provided as mentioned below)
+  ```
+  tls:
+    webhook:
+      mode: "ISSUER"
+      issuer:
+        issuerName: <issuer-name>
+    server:
+      mode: "ISSUER"
+      issuer:
+        issuerName: <issuer-name>
+      clusterName: <name of the NKP cluster to be used as the subject alternative name (SAN) in the TLS certificate in the TLS certificate.>
+  ```
+  ### For using a custom secret (secret should already be created in the namespace "ntnx-system", and it's reference should be provided as mentioned below)
+  tls:
+    webhook:
+      mode: "SECRET"
+      secretName: <name of the secret for webhook server>
+    server:
+      mode: "SECRET"
+  For enabling MTLS between NDK intercom service running on source and replication kubernetes clusters, make sure that same certificate authority signs and issues certificates to NDK intercom service on primary and replication clusters. 
+  To configure MTLS, following change in configuration should be made:
+  ```
+  tls:
+    server:
+      enableMTLS: true
+  ```
