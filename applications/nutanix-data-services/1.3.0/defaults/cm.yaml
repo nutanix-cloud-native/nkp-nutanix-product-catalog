@@ -43,4 +43,4 @@ data:
       # @Required-- secret should be in the helm release namespace
       secret:
         # pointer to the secret to be consumed by controllers
-        name: ntnx-pc-secret
+        name: nutanix-csi-credentials
