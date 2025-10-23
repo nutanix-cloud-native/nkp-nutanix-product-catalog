@@ -38,3 +38,9 @@ data:
         # By default, mTLS will be disabled for the NDK server.
         enableMTLS: false
         mode: "SELF_SIGNED"
+    config:
+      # To provide secret to be used by controllers for storage backend authentication
+      # @Required-- secret should be in the helm release namespace
+      secret:
+        # pointer to the secret to be consumed by controllers
+        name: ntnx-pc-secret
