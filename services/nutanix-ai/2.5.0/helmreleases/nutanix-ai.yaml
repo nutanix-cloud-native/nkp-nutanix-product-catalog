@@ -23,7 +23,7 @@ spec:
         kind: HelmRepository
         name: nutanix.github.io-helm-releases
         namespace: ${workspaceNamespace}
-      version: 0.1.0+build.2422
+      version: 2.5.0-release-branch+build.2451
   interval: 15s
   install:
     timeout: 15m
