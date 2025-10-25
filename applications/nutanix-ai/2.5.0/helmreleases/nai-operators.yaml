@@ -7,12 +7,10 @@ metadata:
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
-  url: oci://repos.ntnxdpro.com/ai-nai-core/nai-operators
-  ref:
-    tag: 0.1.0_build.2422
-  secretRef:
-    name: artifactory-secret
   interval: 1m
+  url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-operators"
+  ref:
+    tag: 2.5.0-rc0
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
