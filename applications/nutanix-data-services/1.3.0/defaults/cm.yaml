@@ -33,8 +33,8 @@ data:
         # By default, the webhook will be configured to use a self-signed certificate orchestrated by default cert-manager.
         mode: "SELF_SIGNED"
       server:
-        # By default, TLS will be enabled for the NDK server.
-        enable: true
+        # By default, TLS will be disabled for the NDK server.
+        enable: false
         # By default, mTLS will be disabled for the NDK server.
         enableMTLS: false
         mode: "SELF_SIGNED"
