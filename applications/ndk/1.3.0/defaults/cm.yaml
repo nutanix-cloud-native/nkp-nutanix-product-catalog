@@ -17,7 +17,7 @@ data:
       digest: null
       pullPolicy: IfNotPresent
     kubeRbacProxy:
-      repository: docker.io/nutanix/kube-rbac-proxy
+      repository: 
       tag: v0.15.0
       digest: null
       pullPolicy: IfNotPresent
