@@ -8,9 +8,11 @@ metadata:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
   interval: 1m
-  url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-core"
+  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core"
   ref:
-    tag: 2.5.0-rc0
+    tag: 0.1.0_build.2249
+  secretRef:
+    name: artifactory-secret
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
