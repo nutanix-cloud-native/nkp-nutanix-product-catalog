@@ -2,6 +2,7 @@ schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Data Services for Kubernetes
 description: Nutanix Data Services for Kubernetes
 type: nkp-catalog
+allowMultipleInstances: false
 category: 
   - application-and-data-management
 certifications:

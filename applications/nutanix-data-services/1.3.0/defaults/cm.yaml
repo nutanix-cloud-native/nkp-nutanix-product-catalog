@@ -6,6 +6,26 @@ metadata:
   namespace: ${workspaceNamespace}
 data:
   values.yaml: |-
+    manager:
+      repository: docker.io/nutanix/ndk-manager
+      tag: null
+      digest: null
+      pullPolicy: IfNotPresent
+    infraManager:
+      repository: docker.io/nutanix/ndk-infra-manager
+      tag: null
+      digest: null
+      pullPolicy: IfNotPresent
+    kubeRbacProxy:
+      repository: docker.io/nutanix/kube-rbac-proxy
+      tag: null
+      digest: null
+      pullPolicy: IfNotPresent
+    jobScheduler:
+      repository: docker.io/nutanix/ndk-job-scheduler
+      tag: null
+      digest: null
+      pullPolicy: IfNotPresent
     # Set Values for NDK Metrics Monitoring using Prometheus
     prometheus:
       # Requires Prometheus Operator CRDs
