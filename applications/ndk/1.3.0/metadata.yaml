@@ -29,15 +29,15 @@ overview: |-
 
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration (MUST):
   ```
-  imagePullSecret:
+  imageCredentials:
     # Name of the image pull secret
-    name: nai-iep-secret
+    name: ndk-image-pull-secret
     # Image registry credentials
     credentials:
       registry: https://index.docker.io/v1/
-      username: <username>
-      password: <password>
-      email: <email>
+      username: 
+      password: 
+      email:
   ```
   ### For using self-signed certificates (to be issued by existing cert-manager)
   ```
@@ -54,7 +54,7 @@ overview: |-
       mode: "ISSUER"
       issuer:
         issuerName: <issuer-name>
-      clusterName: <name of NKP cluster>
+      clusterName: <Name of NKP cluster>
   ```
   ### For using a custom Secret (a pre-existing secret in ntnx-system namespace)
   ```
@@ -62,8 +62,8 @@ overview: |-
     server:
       enable: true
       mode: "SECRET"
-      clusterName: <name of NKP cluster>
-      secretName: <name of pre-existing secret in ntnx-system namespace>
+      clusterName: <Name of NKP cluster>
+      secretName: <Name of pre-existing secret>
   ```
   ### For enabling MTLS between NDK intercom service running on source and replication kubernetes clusters, make sure that same certificate authority signs and issues certificates to NDK intercom service on primary and replication clusters. 
   To configure MTLS, the following change in configuration should be made:
