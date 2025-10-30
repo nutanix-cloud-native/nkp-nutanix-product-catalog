@@ -18,7 +18,7 @@ data:
       pullPolicy: IfNotPresent
     kubeRbacProxy:
       repository: docker.io/nutanix/kube-rbac-proxy
-      tag: null
+      tag: v0.15.0
       digest: null
       pullPolicy: IfNotPresent
     jobScheduler:
