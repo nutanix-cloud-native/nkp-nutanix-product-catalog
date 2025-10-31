@@ -8,28 +8,20 @@ data:
   values.yaml: |-
     manager:
       repository: docker.io/nutanix/ndk-manager
-      tag: null
-      digest: null
       pullPolicy: IfNotPresent
     infraManager:
       repository: docker.io/nutanix/ndk-infra-manager
-      tag: null
-      digest: null
       pullPolicy: IfNotPresent
     kubeRbacProxy:
       repository: quay.io/brancz/kube-rbac-proxy
       tag: v0.15.0
-      digest: null
       pullPolicy: IfNotPresent
     jobScheduler:
       repository: docker.io/nutanix/ndk-job-scheduler
-      tag: null
-      digest: null
       pullPolicy: IfNotPresent
     kubectl:
       repository: docker.io/bitnamilegacy/kubectl
       tag: 1.33.2
-      digest: null
       pullPolicy: IfNotPresent
     # Set Values for NDK Metrics Monitoring using Prometheus
     prometheus:
