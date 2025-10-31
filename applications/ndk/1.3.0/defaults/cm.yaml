@@ -26,6 +26,11 @@ data:
       tag: null
       digest: null
       pullPolicy: IfNotPresent
+    kubectl:
+      repository: docker.io/bitnamilegacy/kubectl
+      tag: 1.33.2
+      digest: null
+      pullPolicy: IfNotPresent
     # Set Values for NDK Metrics Monitoring using Prometheus
     prometheus:
       # Requires Prometheus Operator CRDs
