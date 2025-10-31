@@ -31,20 +31,6 @@ data:
       serviceMonitor:
         # Add Custom labels for serviceMonitor here
         customLabels: {}
-    imageCredentials:
-      # Name of the secret containing the credentials to pull image from the container registry.
-      imagePullSecretName: ndk-image-pull-secret
-      # Image registry credentials
-      # The credentials are used to create the image pull secret during helm install.
-      # If the username is specified, the password and email must also be specified.
-      # If the username is not specified, it is assumed the image pull secret already
-      # exists in the cluster.
-      # @default -- ""
-      credentials:
-        registry: https://index.docker.io/v1/
-        username: 
-        password: 
-        email:
     tls:
       webhook:
         # By default, the webhook will be configured to use a self-signed certificate orchestrated by default cert-manager.
