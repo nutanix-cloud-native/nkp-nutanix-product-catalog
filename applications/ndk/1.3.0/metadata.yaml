@@ -63,7 +63,6 @@ overview: |-
     server:
       enable: true
       mode: "SECRET"
-      clusterName: <Name of NKP cluster>
       secretName: <Name of pre-existing secret>
   ```
   ### For enabling MTLS between NDK intercom service running on source and replication kubernetes clusters, make sure that same certificate authority signs and issues certificates to NDK intercom service on primary and replication clusters. 
