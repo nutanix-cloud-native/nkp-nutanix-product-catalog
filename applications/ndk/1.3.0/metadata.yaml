@@ -29,7 +29,7 @@ overview: |-
   - cert-manager v1.13.0
   - csi v3.3.4 or higher
 
-  ### During enabling of Nutanix Data Services for Kubernetes from UI, provide following configuration (MUST):
+  ### While enabling Nutanix Data Services for Kubernetes from UI, provide following configuration (MUST):
   ```
   imageCredentials:
     # Name of the image pull secret
@@ -41,6 +41,7 @@ overview: |-
       password: 
       email:
   ```
+  ### TLS will be disabled by default. To enable TLS, please follow the section below.
   ### For using self-signed certificates (to be issued by existing cert-manager)
   ```
   tls:
