@@ -2,12 +2,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-opentelemetry-operator
+  name: envoy-gateway
   namespace: ${workspaceNamespace}
 spec:
-  url: oci://ghcr.io/open-telemetry/opentelemetry-helm-charts/opentelemetry-operator
+  url: oci://docker.io/envoyproxy/gateway-helm
   ref:
-    tag: 0.93.0
+    tag: v1.5.0
   interval: 10m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
@@ -16,23 +16,25 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: opentelemetry-operator
+  name: envoy-gateway
   namespace: ${workspaceNamespace}
 spec:
+  interval: 15s
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-opentelemetry-operator
+    name: envoy-gateway
     namespace: ${workspaceNamespace}
-  interval: 15s
   install:
+    crds: Skip
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
   upgrade:
+    crds: Skip
     remediation:
-      retries: 5
-  releaseName: opentelemetry-operator
-  targetNamespace: opentelemetry
+      retries: 30
+  releaseName: eg
+  targetNamespace: envoy-gateway-system
   valuesFrom:
     - kind: ConfigMap
-      name: opentelemetry-operator-0.93.0-nkp-defaults
+      name: envoy-gateway-1.5.0-nkp-defaults
