@@ -24,8 +24,7 @@ overview: |-
   
   ## Prerequisites and Configuration Guide
   ### This application is supported only on NKP clusters backed by Nutanix Infrastructure. 
-  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.26.0 and CSI version 3.0 installed.
-  ### Nutanix Data Services for Kubernetes 1.3.0 requires the following applications to be installed on the cluster:
+  ### Nutanix Data Services for Kubernetes 2.0 requires the following applications to be installed on the cluster:
   - cert-manager v1.13.0
   - csi v3.3.4 or higher
 
