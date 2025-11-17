@@ -26,6 +26,8 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
     - name: nai-operators
       namespace: ${workspaceNamespace}
   chartRef:
