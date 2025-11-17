@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ndk-2.0.0-defaults
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |-
+    manager:
+      repository: docker.io/nutanix/ndk-manager
+      pullPolicy: IfNotPresent
+    infraManager:
+      repository: docker.io/nutanix/ndk-infra-manager
+      pullPolicy: IfNotPresent
+    kubeRbacProxy:
+      repository: quay.io/brancz/kube-rbac-proxy
+      tag: v0.15.0
+      pullPolicy: IfNotPresent
+    jobScheduler:
+      repository: docker.io/nutanix/ndk-job-scheduler
+      pullPolicy: IfNotPresent
+    kubectl:
+      pullPolicy: IfNotPresent
+    # Set Values for NDK Metrics Monitoring using Prometheus
+    prometheus:
+      # Requires Prometheus Operator CRDs
+      enable: false
+      # Set values for Prometheus serviceMonitor
+      serviceMonitor:
+        # Add Custom labels for serviceMonitor here
+        customLabels: {}
+    tls:
+      webhook:
+        # By default, the webhook will be configured to use a self-signed certificate orchestrated by default cert-manager.
+        mode: "SELF_SIGNED"
+      server:
+        # By default, TLS will be disabled for the NDK server.
+        enable: false
+        # By default, mTLS will be disabled for the NDK server.
+        enableMTLS: false
+        mode: "SELF_SIGNED"
+    config:
+      # To provide secret to be used by controllers for storage backend authentication
+      # @Required-- secret should be in the helm release namespace
+      secret:
+        # pointer to the secret to be consumed by controllers
+        name: nutanix-csi-credentials
