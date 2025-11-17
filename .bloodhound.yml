@@ -10,7 +10,9 @@ paths:
 strict: true
 
 # types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
-skip_types: []
+skip_types: [
+  "opentelemetry.io/v1beta1/OpenTelemetryCollector"
+]
 
 # load additional CRDs (URLs of CRD yaml files)
 additional_crds:

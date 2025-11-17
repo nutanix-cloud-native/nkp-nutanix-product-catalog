@@ -10,7 +10,7 @@ spec:
   interval: 1m
   url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-core"
   ref:
-    tag: 2.5.0-rc0
+    tag: 2.5.0
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
