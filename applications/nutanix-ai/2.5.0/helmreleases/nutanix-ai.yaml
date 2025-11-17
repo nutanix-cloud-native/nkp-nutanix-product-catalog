@@ -28,7 +28,7 @@ spec:
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
-    - name: nai-operators
+    - name: nutanix-ai-operators
       namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
