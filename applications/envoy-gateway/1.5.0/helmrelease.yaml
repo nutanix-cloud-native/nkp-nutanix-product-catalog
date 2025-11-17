@@ -14,6 +14,6 @@ spec:
   targetNamespace: envoy-gateway-system
   sourceRef:
     kind: GitRepository
-    name: nutanix-apps-catalog
-    namespace: ${workspaceNamespace}
+    name: management
+    namespace: kommander-flux
   timeout: 10m
