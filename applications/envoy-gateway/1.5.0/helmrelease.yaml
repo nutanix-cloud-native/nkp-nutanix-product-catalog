@@ -14,6 +14,18 @@ spec:
   targetNamespace: envoy-gateway-system
   sourceRef:
     kind: GitRepository
-    name: management
-    namespace: kommander-flux
+    name: nai-gitrepository
+    namespace: ${workspaceNamespace}
   timeout: 10m
+
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata:
+  name: nai-gitrepository
+  namespace: ${workspaceNamespace}
+spec:
+  interval: 1m0s
+  url: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog.git
+  ref:
+    branch: NAI-3088-v2
