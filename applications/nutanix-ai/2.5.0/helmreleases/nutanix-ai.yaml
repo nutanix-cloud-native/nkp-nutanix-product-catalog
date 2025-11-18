@@ -39,9 +39,11 @@ spec:
     remediation:
       retries: 30
     createNamespace: true
+    timeout: 15m
   upgrade:
     remediation:
       retries: 30
+    timeout: 15m
   uninstall:
     timeout: 15m
   releaseName: nutanix-ai
