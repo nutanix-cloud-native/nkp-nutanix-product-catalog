@@ -5,6 +5,5 @@ resources:
   - clusterrole.yaml
   - clusterrolebinding.yaml
   - job.yaml
-  - node-exporter-rbac-cluster-role.yaml
-  # Resources applier job (Certificate + ServiceMonitor + ConfigMap)
+  # Resources applier job (Certificate + ConfigMap)
   - apply-resources-job.yaml

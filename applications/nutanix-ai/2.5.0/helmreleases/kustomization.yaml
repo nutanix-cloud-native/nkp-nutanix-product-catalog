@@ -5,3 +5,5 @@ resources:
 - nai-ui-dashboard-cm.yaml
 - nai-operators.yaml
 - nutanix-ai.yaml
+patchesStrategicMerge:
+- clusterrole-otel-patch.yaml
