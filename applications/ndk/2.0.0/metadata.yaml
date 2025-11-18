@@ -26,7 +26,7 @@ overview: |-
   ### This application is supported only on NKP clusters backed by Nutanix Infrastructure. 
   ### Nutanix Data Services for Kubernetes 2.0 requires the following applications to be installed on the cluster:
   - cert-manager v1.13.0
-  - csi v3.3.4 or higher
+  - csi v3.3.8 or higher
 
   ### While enabling Nutanix Data Services for Kubernetes from UI, provide following configuration (MUST):
   ```
