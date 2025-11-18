@@ -51,3 +51,16 @@ spec:
     - kind: ConfigMap
       name: service-monitor-defaults
   targetNamespace: nai-system
+  postRender:
+    - kustomize:
+        patches:
+          - target:
+              kind: ClusterRole
+              name: nai-otel-role
+            patch: |
+              - op: add
+                path: /rules/-
+                value:
+                  apiGroups: [""]
+                  resources: ["services/kube-prometheus-stack-prometheus-node-exporter"]
+                  verbs: ["get"]
