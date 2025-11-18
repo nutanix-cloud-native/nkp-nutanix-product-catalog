@@ -51,7 +51,7 @@ spec:
     - kind: ConfigMap
       name: service-monitor-defaults
   targetNamespace: nai-system
-  postRender:
+  postRenderers:
     - kustomize:
         patches:
           - target:
