@@ -1,6 +1,54 @@
 {
   "lockfile_version": "1",
   "packages": {
+    "actionlint@latest": {
+      "last_modified": "2025-11-15T07:28:48Z",
+      "resolved": "github:NixOS/nixpkgs/1d4c88323ac36805d09657d13a5273aea1b34f0c#actionlint",
+      "source": "devbox-search",
+      "version": "1.7.8",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/wxpbffqcl2l231x77z1fgimnfq5wg4hh-actionlint-1.7.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/wxpbffqcl2l231x77z1fgimnfq5wg4hh-actionlint-1.7.8"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/nnq4jq1971asi9fxba2fkvqyh6vm8rfq-actionlint-1.7.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/nnq4jq1971asi9fxba2fkvqyh6vm8rfq-actionlint-1.7.8"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/sxmacq449rpk46kdh4bscn3qh47yjpz8-actionlint-1.7.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/sxmacq449rpk46kdh4bscn3qh47yjpz8-actionlint-1.7.8"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/wf2iq8j4lwqyca85ls8klcsrjqjgnmh3-actionlint-1.7.8",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/wf2iq8j4lwqyca85ls8klcsrjqjgnmh3-actionlint-1.7.8"
+        }
+      }
+    },
     "gettext@latest": {
       "last_modified": "2025-07-22T02:38:50Z",
       "resolved": "github:NixOS/nixpkgs/83e677f31c84212343f4cc553bab85c2efcad60a#gettext",
@@ -258,6 +306,118 @@
             }
           ],
           "store_path": "/nix/store/d6mqkpggmqq2mvb34n3s34n09rxsmw8j-just-1.42.3"
+        }
+      }
+    },
+    "pre-commit@latest": {
+      "last_modified": "2025-11-15T07:28:48Z",
+      "resolved": "github:NixOS/nixpkgs/1d4c88323ac36805d09657d13a5273aea1b34f0c#pre-commit",
+      "source": "devbox-search",
+      "version": "4.3.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/aiqzf62kmsx0qx72dif0fv5cdcvv60fb-pre-commit-4.3.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/sfy0cl3czwhsgzbkvcvf4yqiv93zqc8k-pre-commit-4.3.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/aiqzf62kmsx0qx72dif0fv5cdcvv60fb-pre-commit-4.3.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hxqjghwlfxh5wgcgb518sw1zv4mz6n10-pre-commit-4.3.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/cbpwn26qga7mqcm6wl26rgiaazw8s1ff-pre-commit-4.3.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/hxqjghwlfxh5wgcgb518sw1zv4mz6n10-pre-commit-4.3.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6c4cfkq9qskggfgn3iq7zvp088n83lp4-pre-commit-4.3.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/l974p8r0li0cxsy9x85mhvm5dhclagy4-pre-commit-4.3.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/6c4cfkq9qskggfgn3iq7zvp088n83lp4-pre-commit-4.3.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fimns39yyrscnydjw4b308yx19qp0z4s-pre-commit-4.3.0",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/xk11m7gp1f0jjvlsdw4aip80mcpbrldl-pre-commit-4.3.0-dist"
+            }
+          ],
+          "store_path": "/nix/store/fimns39yyrscnydjw4b308yx19qp0z4s-pre-commit-4.3.0"
+        }
+      }
+    },
+    "shfmt@latest": {
+      "last_modified": "2025-11-15T07:28:48Z",
+      "resolved": "github:NixOS/nixpkgs/1d4c88323ac36805d09657d13a5273aea1b34f0c#shfmt",
+      "source": "devbox-search",
+      "version": "3.12.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/df3aajx1phm3hiizc3xfwsym2wgpb9ja-shfmt-3.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/df3aajx1phm3hiizc3xfwsym2wgpb9ja-shfmt-3.12.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gnk9rvb9f049c598bs21k6x39l0jymp3-shfmt-3.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/gnk9rvb9f049c598bs21k6x39l0jymp3-shfmt-3.12.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/bfzcd10knbrnn1nr7whrlnj0i3dpg2kq-shfmt-3.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/bfzcd10knbrnn1nr7whrlnj0i3dpg2kq-shfmt-3.12.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qqzrqcclsvw1bb2z4x43x23r10hw9xfr-shfmt-3.12.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/qqzrqcclsvw1bb2z4x43x23r10hw9xfr-shfmt-3.12.0"
         }
       }
     }
