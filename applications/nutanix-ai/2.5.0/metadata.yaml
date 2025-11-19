@@ -29,8 +29,8 @@ overview: |-
   - [Nutanix Enterprise AI Guide](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI)
 
   ## Prerequisites and Configuration Guide
-  ### Before you begin, ensure that you have a workload cluster running Kubernetes version >= 1.33
-  ### Nutanix Enterprise AI 2.5.0 requires the following applications to be installed on the workload cluster:
+  ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.33
+  ### Nutanix Enterprise AI 2.5.0 requires the following applications to be installed on the NKP cluster:
   - cert-manager v1.17.2
   - envoy-gateway v1.5.0
   - kube-prometheus-stack 71.0.0
