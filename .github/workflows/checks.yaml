@@ -26,7 +26,9 @@ defaults:
 
 jobs:
   lint-gha:
-    runs-on: self-hosted-ncn-docker-medium
+    runs-on:
+    - self-hosted-nutanix-medium
+    - ubuntu-latest # TODO: revert after canaveral-team helps us.
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -40,7 +42,7 @@ jobs:
           reporter: github-pr-review
 
   pre-commit:
-    runs-on: self-hosted-ncn-docker-medium
+    runs-on: self-hosted-nutanix-medium
     steps:
       - name: Check out code
         uses: actions/checkout@v4

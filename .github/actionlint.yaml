@@ -4,6 +4,4 @@
 self-hosted-runner:
   labels:
     # See https://confluence.eng.nutanix.com:8443/pages/viewpage.action?spaceKey=KAR&title=Github+Actions+for+NKP
-    - self-hosted-ncn-dind
-    - self-hosted-ncn-docker-medium
-    - self-hosted-ncn-docker-large
+    - self-hosted-nutanix-medium

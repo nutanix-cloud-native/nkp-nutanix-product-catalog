@@ -12,7 +12,8 @@ jobs:
   manifest-validation:
     name: Manifest validation
     runs-on:
-      - self-hosted-ncn-docker-medium
+      - self-hosted-nutanix-medium
+      - ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

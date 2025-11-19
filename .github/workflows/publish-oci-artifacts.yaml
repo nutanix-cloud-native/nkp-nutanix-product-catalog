@@ -16,7 +16,8 @@ jobs:
   publish-oci-artifacts:
     name: Publish OCI Artifacts
     runs-on:
-      - ubuntu-latest
+      - self-hosted-nutanix-medium
+      - ubuntu-latest # TODO: revert after canaveral-team helps us.
     permissions:
       contents: read
       packages: write
