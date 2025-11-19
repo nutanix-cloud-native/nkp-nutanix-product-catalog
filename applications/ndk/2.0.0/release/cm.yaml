@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ndk-2.0.0-defaults
+  name: ${releaseName}-${appVersion}-defaults
   namespace: ${releaseNamespace}
 data:
   values.yaml: |-
