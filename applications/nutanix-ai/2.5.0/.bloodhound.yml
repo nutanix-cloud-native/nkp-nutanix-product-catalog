@@ -3,9 +3,6 @@
 k8s_versions:
   - 1.33.0
 
-paths:
-  - applications
-
 # use strict validation (reject unknown fields in resources)
 strict: true
 

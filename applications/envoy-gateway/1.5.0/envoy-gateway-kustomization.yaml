@@ -16,5 +16,5 @@ spec:
   sourceRef:
     kind: OCIRepository
     name: ${releaseName}-source
-    namespace: ${workspaceNamespace}
+    namespace: ${releaseNamespace}
   timeout: 10m
