@@ -11,7 +11,7 @@ certifications:
 licensing:
   - Pro
   - Ultimate
-requiredDependencies:
+dependencies:
   - cert-manager
 scope:
   - workspace

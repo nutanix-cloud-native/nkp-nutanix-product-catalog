@@ -11,8 +11,9 @@ certifications:
 licensing:
   - Pro
   - Ultimate
-requiredDependencies:
+dependencies:
   - cert-manager
+requiredDependencies:
   - kube-prometheus-stack
 scope:
   - workspace
