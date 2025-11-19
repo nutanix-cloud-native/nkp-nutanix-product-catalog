@@ -13,7 +13,6 @@ jobs:
     name: Manifest validation
     runs-on:
       - self-hosted-nutanix-medium
-      - ubuntu-latest
     steps:
       - name: Checkout code
         uses: actions/checkout@v4

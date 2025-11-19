@@ -28,7 +28,6 @@ jobs:
   lint-gha:
     runs-on:
     - self-hosted-nutanix-medium
-    - ubuntu-latest # TODO: revert after canaveral-team helps us.
     steps:
       - name: Check out code
         uses: actions/checkout@v4
