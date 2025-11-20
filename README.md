@@ -1,3 +1,7 @@
+# Nutanix NKP Product Catalog
+
+All source code and other contents in this repository are covered by the Nutanix License and Services Agreement, which is located at https://www.nutanix.com/legal/eula 
+
 # Overview
 
 This catalog repository holds all the Nutanix Products and their respective version HelmRepositories and HelmReleases.

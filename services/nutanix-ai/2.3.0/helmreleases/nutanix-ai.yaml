@@ -1,5 +1,5 @@
 ---
-apiVersion: helm.toolkit.fluxcd.io/v2beta1
+apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
   name: nutanix-ai
@@ -17,7 +17,7 @@ spec:
         kind: HelmRepository
         name: nutanix.github.io-helm-releases
         namespace: ${workspaceNamespace}
-      version: 1.0.0-rc1
+      version: 2.3.0
   interval: 15s
   install:
     remediation:
@@ -29,5 +29,5 @@ spec:
   releaseName: nutanix-ai
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-1.0.0-nkp-defaults
+      name: nutanix-ai-2.3.0-nkp-defaults
   targetNamespace: nai-system
