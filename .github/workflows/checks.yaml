@@ -27,7 +27,7 @@ defaults:
 jobs:
   lint-gha:
     runs-on:
-    - self-hosted-nutanix-medium
+    - self-hosted-nutanix-docker-medium
     steps:
       - name: Check out code
         uses: actions/checkout@v4
