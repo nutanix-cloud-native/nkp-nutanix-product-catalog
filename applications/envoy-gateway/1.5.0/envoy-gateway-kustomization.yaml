@@ -18,3 +18,8 @@ spec:
     name: ${releaseName}-source
     namespace: ${releaseNamespace}
   timeout: 10m
+  postBuild:
+    substitute:
+      releaseName: ${releaseName}
+      releaseNamespace: ${releaseNamespace}
+      workspaceNamespace: ${workspaceNamespace}
