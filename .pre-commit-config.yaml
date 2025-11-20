@@ -1,0 +1,57 @@
+# Copyright 2025 Nutanix. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v5.0.0
+    hooks:
+      - id: trailing-whitespace
+        stages: [pre-commit]
+      - id: check-yaml
+        args: ["-m", "--unsafe"]
+        stages: [pre-commit]
+      - id: mixed-line-ending
+        args: ["-f", "lf"]
+        exclude: \.bat$
+        stages: [pre-commit]
+      - id: no-commit-to-branch
+        stages: [pre-commit]
+      - id: check-added-large-files
+        stages: [pre-commit]
+      - id: check-case-conflict
+        stages: [pre-commit]
+      - id: check-merge-conflict
+        stages: [pre-commit]
+      - id: check-executables-have-shebangs
+        stages: [pre-commit]
+      - id: check-symlinks
+        stages: [pre-commit]
+      - id: end-of-file-fixer
+        stages: [pre-commit]
+  - repo: https://github.com/rhysd/actionlint
+    rev: v1.7.7
+    hooks:
+      - id: actionlint-system
+        stages: [pre-commit]
+  - repo: https://github.com/jorisroovers/gitlint
+    rev: v0.19.1
+    hooks:
+      - id: gitlint
+      - id: gitlint-ci
+  - repo: https://github.com/jumanjihouse/pre-commit-hooks
+    rev: 3.0.0
+    hooks:
+      - id: shfmt
+        stages: [pre-commit]
+        args: ["-s", "-i", "2"]
+      - id: git-check
+      - id: git-dirty
+      - id: script-must-have-extension
+        stages: [pre-commit]
+        exclude: ^\.envrc$
+  - repo: https://github.com/shellcheck-py/shellcheck-py
+    rev: v0.10.0.1
+    hooks:
+      - id: shellcheck
+        stages: [pre-commit]
+        exclude: ^\.envrc$

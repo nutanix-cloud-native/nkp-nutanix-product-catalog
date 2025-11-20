@@ -6,14 +6,16 @@ k8s_versions:
 # use strict validation (reject unknown fields in resources)
 strict: true
 
+<<<<<<<< HEAD:applications/nutanix-ai/2.5.0/.bloodhound.yaml
 # types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
 skip_types: [
   "opentelemetry.io/v1beta1/OpenTelemetryCollector"
 ]
 
+========
+>>>>>>>> release-2.x:applications/nutanix-ai/2.4.0/.bloodhound.yml
 # load additional CRDs (URLs of CRD yaml files)
 additional_crds:
- - https://raw.githubusercontent.com/istio/istio/1.9.1/manifests/charts/base/crds/crd-all.gen.yaml
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
  - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_prometheusrules.yaml
