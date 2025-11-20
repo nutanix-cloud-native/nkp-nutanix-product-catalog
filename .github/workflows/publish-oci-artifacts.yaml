@@ -16,7 +16,7 @@ jobs:
   publish-oci-artifacts:
     name: Publish OCI Artifacts
     runs-on:
-      - ubuntu-latest
+      - self-hosted-nutanix-medium
     permissions:
       contents: read
       packages: write
@@ -39,6 +39,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-     
+
       - name: Create and publish artifacts
         run: devbox run -- just publish-artifacts ghcr.io/nutanix-cloud-native ${{ inputs.COLLECTION_TAG }} "${{ inputs.ARTIFACT_APPS }}"

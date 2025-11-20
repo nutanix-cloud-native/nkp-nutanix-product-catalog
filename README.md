@@ -1,6 +1,6 @@
 # Nutanix NKP Product Catalog
 
-All source code and other contents in this repository are covered by the Nutanix License and Services Agreement, which is located at https://www.nutanix.com/legal/eula 
+All source code and other contents in this repository are covered by the Nutanix License and Services Agreement, which is located at https://www.nutanix.com/legal/eula
 
 # Overview
 

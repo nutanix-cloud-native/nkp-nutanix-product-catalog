@@ -1,5 +1,5 @@
-GOOS := `go env GOOS`
-GOARCH := `go env GOARCH`
+GOOS := `go env GOOS 2>/dev/null || echo "linux"`
+GOARCH := `go env GOARCH 2>/dev/null || echo "amd64"`
 
 REPO_ROOT := justfile_directory()
 LOCAL_DIR := REPO_ROOT + "/.local"
