@@ -41,22 +41,22 @@ spec:
                 local RESOURCE_FILE=$2
                 local RESOURCE_TYPE=$3
                 local RESOURCE_K8S_NAME=$4
-                
+
                 echo "=========================================="
                 echo "Applying $RESOURCE_NAME"
                 echo "=========================================="
-                
+
                 RETRY_COUNT=0
                 SUCCESS=false
 
                 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
                   ATTEMPT=$((RETRY_COUNT + 1))
                   echo "Attempt $ATTEMPT of $MAX_RETRIES for $RESOURCE_NAME..."
-                  
+
                   if kubectl apply -f "$RESOURCE_FILE"; then
                     echo "✅ $RESOURCE_NAME applied successfully on attempt $ATTEMPT!"
                     SUCCESS=true
-                    
+
                     # Verify the resource was created
                     echo "Verifying $RESOURCE_NAME creation..."
                     if kubectl get "$RESOURCE_TYPE" "$RESOURCE_K8S_NAME" -n "$TARGET_NAMESPACE" 2>/dev/null; then
@@ -79,7 +79,7 @@ spec:
                   echo "❌ FAILED: Could not apply $RESOURCE_NAME after $MAX_RETRIES attempts"
                   return 1
                 fi
-                
+
                 return 0
               }
 
