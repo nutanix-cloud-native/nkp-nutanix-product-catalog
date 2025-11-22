@@ -46,6 +46,7 @@ repos:
         args: ["-s", "-i", "2"]
       - id: git-check
       - id: git-dirty
+        stages: [manual]
       - id: script-must-have-extension
         stages: [pre-commit]
         exclude: ^\.envrc$
