@@ -1,0 +1,4 @@
+[rules]
+
+[general]
+ignore=B6,body-is-missing
