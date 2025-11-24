@@ -29,11 +29,13 @@ spec:
     namespace: ${workspaceNamespace}
   interval: 15s
   install:
+    crds: CreateReplace
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
   upgrade:
+    crds: CreateReplace
     remediation:
-      retries: 5
+      retries: 30
   releaseName: kserve-crd
   targetNamespace: kserve

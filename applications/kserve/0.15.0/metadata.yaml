@@ -22,6 +22,6 @@ overview: |-
 
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.33
-  ### Kserve 0.15.0 requires the following applications to be installed on the NKP cluster:
+  ### Kserve requires the following applications to be installed on the NKP cluster:
   - cert-manager v1.17.2
   - envoy-gateway v1.5.0
