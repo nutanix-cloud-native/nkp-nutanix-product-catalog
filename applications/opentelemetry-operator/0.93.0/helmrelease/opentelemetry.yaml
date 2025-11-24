@@ -33,6 +33,3 @@ spec:
       retries: 5
   releaseName: opentelemetry-operator
   targetNamespace: opentelemetry
-  valuesFrom:
-    - kind: ConfigMap
-      name: opentelemetry-operator-0.93.0-nkp-defaults
