@@ -24,6 +24,6 @@ overview: |-
 
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.33
-  ### OpenTelemetry Operator 0.93.0 requires the following applications to be installed on the NKP cluster:
+  ### OpenTelemetry Operator requires the following applications to be installed on the NKP cluster:
   - cert-manager v1.17.2
   - kube-prometheus-stack 71.0.0
