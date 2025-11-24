@@ -35,6 +35,3 @@ spec:
       retries: 30
   releaseName: eg
   targetNamespace: envoy-gateway-system
-  valuesFrom:
-    - kind: ConfigMap
-      name: envoy-gateway-1.5.0-nkp-defaults
