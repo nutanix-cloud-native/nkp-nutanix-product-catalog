@@ -25,8 +25,3 @@ additional_crds:
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
   - https://raw.githubusercontent.com/open-telemetry/opentelemetry-operator/main/config/crd/bases/opentelemetry.io_opentelemetrycollectors.yaml
-
-# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
-substitution_vars:
-  releaseNamespace: kommander
-  workspaceNamespace: workspace
