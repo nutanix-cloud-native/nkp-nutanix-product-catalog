@@ -3,6 +3,7 @@ displayName: Kserve
 description: Highly scalable and standards based Model Inference Platform on Kubernetes for Trusted AI.
 type: nkp-catalog
 allowMultipleInstances: false
+nkpVersionSupport: ">=2.16.0"
 category:
   - artificial-intelligence
 certifications:
@@ -23,5 +24,5 @@ overview: |-
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.33
   ### Kserve requires the following applications to be installed on the NKP cluster:
-  - cert-manager v1.17.2
+  - cert-manager >= v1.17.2
   - envoy-gateway v1.5.0
