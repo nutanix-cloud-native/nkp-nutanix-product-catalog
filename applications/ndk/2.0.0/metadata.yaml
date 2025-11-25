@@ -12,6 +12,7 @@ certifications:
 licensing:
   - Pro
   - Ultimate
+  - Enterprise
 dependencies:
   - cert-manager
 scope:
