@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-kserve-charts-kserve
+  name: kserve-0.15.0
   namespace: ${workspaceNamespace}
 spec:
   url: oci://ghcr.io/kserve/charts/kserve
@@ -21,7 +21,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-kserve-charts-kserve
+    name: kserve-0.15.0
     namespace: ${workspaceNamespace}
   dependsOn:
   - name: kserve-crd

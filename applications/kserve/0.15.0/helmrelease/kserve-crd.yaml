@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-kserve-charts-kserve-crd
+  name: kserve-crd-0.15.0
   namespace: ${workspaceNamespace}
 spec:
   # TODO(takirala): This does not work in airgapped as of today as the url here is
@@ -25,7 +25,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-kserve-charts-kserve-crd
+    name: kserve-crd-0.15.0
     namespace: ${workspaceNamespace}
   interval: 15s
   install:
