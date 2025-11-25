@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-nai-operators
+  name: nai-operators-2.5.0
   namespace: ${workspaceNamespace}
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
@@ -23,7 +23,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-nai-operators
+    name: nai-operators-2.5.0
     namespace: ${workspaceNamespace}
   dependsOn:
     - name: kserve
