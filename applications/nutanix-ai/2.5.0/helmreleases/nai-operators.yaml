@@ -36,12 +36,10 @@ spec:
       retries: 5
     createNamespace: true
     timeout: 15m
-    crds: Skip
   upgrade:
     remediation:
       retries: 5
     timeout: 15m
-    crds: Skip
   uninstall:
     timeout: 15m
   releaseName: nutanix-ai-operators
