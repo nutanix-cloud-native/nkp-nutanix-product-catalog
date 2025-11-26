@@ -4,11 +4,9 @@ kind: OCIRepository
 metadata:
   name: nai-operators-2.5.0
   namespace: ${workspaceNamespace}
-  labels:
-    kommander.d2iq.io/dkp-airgapped: supported
 spec:
   interval: 1m
-  url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-operators"
+  url: "oci://ghcr.io/mesosphere/charts/nai-operators"
   ref:
     tag: 2.5.0
   layerSelector:

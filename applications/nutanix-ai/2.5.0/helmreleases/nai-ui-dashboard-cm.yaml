@@ -9,5 +9,5 @@ metadata:
     "kustomize.toolkit.fluxcd.io/ssa": "Merge"
 data:
   name: "Nutanix Enterprise AI"
-  docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_4:Nutanix-Enterprise-AI-v2_4"
+  docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Enterprise-AI-v2_5:Nutanix-Enterprise-AI-v2_5"
   version: "2.5.0"
