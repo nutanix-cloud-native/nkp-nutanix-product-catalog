@@ -1,16 +1,10 @@
 # Kubernetes versions
 # (e.g. 1.33.0 - has to match versions in https://github.com/yannh/kubernetes-json-schema)
 k8s_versions:
-  - 1.32.0
   - 1.33.0
 
 # use strict validation (reject unknown fields in resources)
 strict: true
-
-# types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
-skip_types: [
-  "opentelemetry.io/v1beta1/OpenTelemetryCollector"
-]
 
 # load additional CRDs (URLs of CRD yaml files)
 additional_crds:
@@ -23,8 +17,6 @@ additional_crds:
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
   - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
-  - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
-  - https://raw.githubusercontent.com/open-telemetry/opentelemetry-operator/main/config/crd/bases/opentelemetry.io_opentelemetrycollectors.yaml
 
 substitution_vars:
   releaseNamespace: kommander
