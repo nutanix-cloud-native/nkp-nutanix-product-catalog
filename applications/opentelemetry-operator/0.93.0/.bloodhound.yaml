@@ -1,0 +1,16 @@
+# Kubernetes versions
+# (e.g. 1.33.0 - has to match versions in https://github.com/yannh/kubernetes-json-schema)
+k8s_versions:
+  - 1.33.0
+  - 1.34.0
+
+# use strict validation (reject unknown fields in resources)
+strict: true
+
+# types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
+skip_types: []
+
+# load additional CRDs (URLs of CRD yaml files)
+additional_crds:
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
+  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
