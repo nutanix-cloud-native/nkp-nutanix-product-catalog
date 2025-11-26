@@ -2,15 +2,9 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-kserve-charts-kserve-crd
+  name: kserve-crd-0.15.0
   namespace: ${workspaceNamespace}
-  labels:
-    kustomize.toolkit.fluxcd.io/prune: "disabled"
 spec:
-  # TODO(takirala): This does not work in airgapped as of today as the url here is
-  # hardcoded and we do not accept any secretRef here. If/when NKP supports oci in
-  # airgapped (2.14 hopefully) we need to parametrize the URL here as well as
-  # allow secret population here if configured.
   url: oci://ghcr.io/kserve/charts/kserve-crd
   ref:
     tag: v0.15.0
@@ -24,19 +18,19 @@ kind: HelmRelease
 metadata:
   name: kserve-crd
   namespace: ${workspaceNamespace}
-  labels:
-    kustomize.toolkit.fluxcd.io/prune: "disabled"
 spec:
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-kserve-charts-kserve-crd
+    name: kserve-crd-0.15.0
     namespace: ${workspaceNamespace}
   interval: 15s
   install:
+    crds: CreateReplace
     remediation:
       retries: 30
     createNamespace: true
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 30
   releaseName: kserve-crd

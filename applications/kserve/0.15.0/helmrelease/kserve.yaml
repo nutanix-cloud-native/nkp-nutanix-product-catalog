@@ -2,10 +2,8 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ghcr.io-kserve-charts-kserve
+  name: kserve-0.15.0
   namespace: ${workspaceNamespace}
-  labels:
-    kustomize.toolkit.fluxcd.io/prune: "disabled"
 spec:
   url: oci://ghcr.io/kserve/charts/kserve
   ref:
@@ -20,30 +18,23 @@ kind: HelmRelease
 metadata:
   name: kserve
   namespace: ${workspaceNamespace}
-  labels:
-    kustomize.toolkit.fluxcd.io/prune: "disabled"
 spec:
   chartRef:
     kind: OCIRepository
-    name: ghcr.io-kserve-charts-kserve
+    name: kserve-0.15.0
     namespace: ${workspaceNamespace}
   dependsOn:
   - name: kserve-crd
   interval: 15s
   install:
     remediation:
-      retries: 30
+      retries: 5
     createNamespace: true
   upgrade:
     remediation:
-      retries: 30
+      retries: 5
   releaseName: kserve
   targetNamespace: kserve
-  values:
-    kserve:
-      controller:
-        image: docker.io/nutanix/nai-kserve-controller
-        tag: v0.15.0
-        deploymentMode: RawDeployment
-        gateway:
-          disableIngressCreation: true
+  valuesFrom:
+    - kind: ConfigMap
+      name: kserve-0.15.0-nkp-defaults
