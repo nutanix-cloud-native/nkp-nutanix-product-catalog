@@ -1,0 +1,24 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: service-monitor-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    naiMonitoring:
+      nodeExporter:
+        serviceMonitor:
+          endpoint:
+            bearerTokenFile: /var/run/secrets/kubernetes.io/serviceaccount/token
+            scheme: https
+            tlsConfig:
+              insecureSkipVerify: true
+          namespaceSelector:
+            matchNames:
+            - ${workspaceNamespace}
+      dcgmExporter:
+        serviceMonitor:
+          namespaceSelector:
+            matchNames:
+            - ${workspaceNamespace}
