@@ -21,7 +21,7 @@ overview: |-
   # Overview
   Nutanix Data Services for Kubernetes (NDK) simplifies and unifies the life cycle management of business-critical applications by extending enterprise data services to containerized applications.
   ## For Information on Features
-  - [Nutanix Data Services for Kubernetes](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Services-for-Kubernetes-v1_3)
+  - [Nutanix Data Services for Kubernetes](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Services-for-Kubernetes-v2_0:Nutanix-Data-Services-for-Kubernetes-v2_0)
 
   ## Prerequisites and Configuration Guide
   ### This application is supported only on NKP clusters backed by Nutanix Infrastructure.
