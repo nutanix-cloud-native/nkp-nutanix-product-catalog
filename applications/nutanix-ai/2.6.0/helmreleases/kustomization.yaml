@@ -1,0 +1,8 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- cm.yaml
+- service-monitor-cm.yaml
+- nai-ui-dashboard-cm.yaml
+- nai-operators.yaml
+- nutanix-ai.yaml

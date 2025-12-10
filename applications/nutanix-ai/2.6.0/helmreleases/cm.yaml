@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nutanix-ai-2.6.0-nkp-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    naiMonitoring:
+      opentelemetry:
+        common:
+          resources:
+            requests:
+              cpu: 0.1

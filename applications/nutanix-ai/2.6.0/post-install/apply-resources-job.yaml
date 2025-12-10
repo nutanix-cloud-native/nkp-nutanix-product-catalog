@@ -1,0 +1,141 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-apply-resources-2.5.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: nai-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: apply-resources
+          image: mesosphere/kubectl:v1.33.2-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MAX_RETRIES
+              value: "5"
+            - name: RETRY_DELAY
+              value: "10"
+            - name: TARGET_NAMESPACE
+              value: "nai-system"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              echo "Starting NAI resources application..."
+              echo ""
+
+              # Function to apply resource with retry logic
+              apply_resource() {
+                local RESOURCE_NAME=$1
+                local RESOURCE_FILE=$2
+                local RESOURCE_TYPE=$3
+                local RESOURCE_K8S_NAME=$4
+
+                echo "=========================================="
+                echo "Applying $RESOURCE_NAME"
+                echo "=========================================="
+
+                RETRY_COUNT=0
+                SUCCESS=false
+
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  ATTEMPT=$((RETRY_COUNT + 1))
+                  echo "Attempt $ATTEMPT of $MAX_RETRIES for $RESOURCE_NAME..."
+
+                  if kubectl apply -f "$RESOURCE_FILE"; then
+                    echo "✅ $RESOURCE_NAME applied successfully on attempt $ATTEMPT!"
+                    SUCCESS=true
+
+                    # Verify the resource was created
+                    echo "Verifying $RESOURCE_NAME creation..."
+                    if kubectl get "$RESOURCE_TYPE" "$RESOURCE_K8S_NAME" -n "$TARGET_NAMESPACE" 2>/dev/null; then
+                      echo "✅ $RESOURCE_NAME resource confirmed in cluster"
+                    fi
+                    echo ""
+                    break
+                  else
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                      echo "⚠️ Failed to apply $RESOURCE_NAME."
+                      echo "   Retrying in ${RETRY_DELAY} seconds..."
+                      echo ""
+                      sleep $RETRY_DELAY
+                    fi
+                  fi
+                done
+
+                if [ "$SUCCESS" = false ]; then
+                  echo "❌ FAILED: Could not apply $RESOURCE_NAME after $MAX_RETRIES attempts"
+                  return 1
+                fi
+
+                return 0
+              }
+
+              # Certificate manifest
+              cat <<'EOF' > /tmp/nai-self-signed-cert.yaml
+              apiVersion: cert-manager.io/v1
+              kind: Certificate
+              metadata:
+                name: nai-ingressgateway-selfsigned-certificate
+                namespace: nai-system
+              spec:
+                secretName: ingress-certificate
+                commonName: nai.example.com
+                issuerRef:
+                  name: selfsigned-issuer
+                  kind: ClusterIssuer
+                  group: cert-manager.io
+                dnsNames:
+                - nai.example.com
+              EOF
+
+              # ConfigMap manifest
+              cat <<EOF > /tmp/nai-pre-delete-hook-cm.yaml
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: nai-operators-pre-delete-hook-cm
+                namespace: nai-system
+              data:
+                WORKSPACE_NAMESPACE: "$WORKSPACE_NAMESPACE"
+                HELMRELEASE_NAME: "nutanix-ai"
+                POLL_INTERVAL: "10"
+                TIMEOUT: "1800"
+              EOF
+
+              # Track overall success
+              OVERALL_SUCCESS=true
+
+              # Apply Certificate
+              if ! apply_resource "Certificate" "/tmp/nai-self-signed-cert.yaml" "certificate" "nai-ingressgateway-selfsigned-certificate"; then
+                OVERALL_SUCCESS=false
+              fi
+
+              # Apply ConfigMap
+              if ! apply_resource "ConfigMap" "/tmp/nai-pre-delete-hook-cm.yaml" "configmap" "nai-operators-pre-delete-hook-cm"; then
+                OVERALL_SUCCESS=false
+              fi
+
+              # Final status
+              echo "=========================================="
+              if [ "$OVERALL_SUCCESS" = true ]; then
+                echo "✅ SUCCESS"
+                echo "=========================================="
+                echo "All resources applied successfully"
+                exit 0
+              else
+                echo "❌ FAILED"
+                echo "=========================================="
+                echo "Some resources failed to apply"
+                exit 1
+              fi

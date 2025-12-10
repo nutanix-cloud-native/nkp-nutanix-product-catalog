@@ -1,0 +1,54 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: nai-operators-2.6.0
+  namespace: ${workspaceNamespace}
+spec:
+  interval: 1m
+  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-operators"
+  ref:
+    tag: 0.1.0_build.2801
+  secretRef:
+    name: artifactory-secret
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nutanix-ai-operators
+  namespace: ${workspaceNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: nai-operators-2.6.0
+    namespace: ${workspaceNamespace}
+  dependsOn:
+    - name: kserve
+      namespace: ${workspaceNamespace}
+    - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
+  interval: 15s
+  install:
+    remediation:
+      retries: 5
+    createNamespace: true
+    timeout: 15m
+    crds: Skip
+  upgrade:
+    remediation:
+      retries: 5
+    timeout: 15m
+    crds: Skip
+  uninstall:
+    timeout: 15m
+  releaseName: nutanix-ai-operators
+  targetNamespace: nai-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: nutanix-ai-cluster-overrides
+      optional: true
