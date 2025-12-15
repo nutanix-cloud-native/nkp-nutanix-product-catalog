@@ -11,8 +11,6 @@ spec:
   url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core"
   ref:
     tag: 0.1.0_build.2801
-  secretRef:
-    name: artifactory-secret
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
@@ -27,6 +25,8 @@ spec:
     - name: kserve
       namespace: ${workspaceNamespace}
     - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: envoy-gateway
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
