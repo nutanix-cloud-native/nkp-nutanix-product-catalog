@@ -26,6 +26,8 @@ spec:
       namespace: ${workspaceNamespace}
     - name: kserve-crd
       namespace: ${workspaceNamespace}
+    - name: envoy-gateway
+      namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
     - name: nutanix-ai-operators
