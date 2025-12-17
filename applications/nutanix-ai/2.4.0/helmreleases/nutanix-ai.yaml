@@ -1,7 +1,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: nutanix-ai
+  name: nutanix-ai-2.4.0-chart
   namespace: ${workspaceNamespace}
 spec:
   interval: 1m
@@ -22,7 +22,7 @@ spec:
       namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
-    name: nutanix-ai
+    name: nutanix-ai-2.4.0-chart
     namespace: ${workspaceNamespace}
   interval: 15s
   install:
