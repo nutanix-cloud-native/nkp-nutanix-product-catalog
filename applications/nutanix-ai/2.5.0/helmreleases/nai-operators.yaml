@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: nai-operators-2.5.0
+  name: ${releaseName}-nai-operators-2.5.0-chart
   namespace: ${workspaceNamespace}
 spec:
   interval: 1m
@@ -21,7 +21,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: nai-operators-2.5.0
+    name: ${releaseName}-nai-operators-2.5.0-chart
     namespace: ${workspaceNamespace}
   dependsOn:
     - name: kserve
