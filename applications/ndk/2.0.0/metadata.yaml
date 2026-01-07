@@ -33,7 +33,7 @@ overview: |-
   ```
   imageCredentials:
     # Name of the image pull secret
-    name: <name of the image pull secret>
+    imagePullSecretName: <name of the image pull secret>
   ```
   ### Or credentials can be provided with below configuration:
   ```
