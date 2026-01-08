@@ -66,9 +66,23 @@ overview: |-
       username: <username>
       password: <password>
       email: <email>
+  nai-clickhouse-keeper:
+    clickhouseKeeper:
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 1Gi
   ```
 
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
+
+  ### (Optional) Setup FQDN for Nutanix Enterprise AI dashboard:
+  Create a DNS record to map the NAI ingress gateway IP to a FQDN.
+  ```
+  export NAI_UI_ENDPOINT=https://<FQDN>/
+  kubectl patch cm nai-ui -n <workspace-namespace> -p '{"data":{"dashboardLink":"'${NAI_UI_ENDPOINT}'"}}'
+  ```
 
   ### By default, Nutanix Enterprise AI uses a self-signed HTTPS certificate; follow the provided steps to replace it with a custom certificate for secure access.
   Create kubernetes secret of type tls with the certificate and key:
