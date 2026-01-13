@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: envoy-gateway-1.6.0
+  name: ${releaseName}-1.6.0-chart
   namespace: ${workspaceNamespace}
 spec:
   url: oci://docker.io/envoyproxy/gateway-helm
@@ -22,7 +22,7 @@ spec:
   interval: 15s
   chartRef:
     kind: OCIRepository
-    name: envoy-gateway-1.6.0
+    name: ${releaseName}-1.6.0-chart
     namespace: ${workspaceNamespace}
   install:
     crds: Skip

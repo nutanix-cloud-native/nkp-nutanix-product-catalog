@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: nutanix-ai-2.6.0
+  name: ${releaseName}-nutanix-ai-2.6.0-chart
   namespace: ${workspaceNamespace}
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
@@ -10,7 +10,7 @@ spec:
   interval: 1m
   url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core"
   ref:
-    tag: 0.1.0_build.2801
+    tag: 0.1.0_build.3091
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
@@ -34,7 +34,7 @@ spec:
       namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
-    name: nutanix-ai-2.6.0
+    name: ${releaseName}-nutanix-ai-2.6.0-chart
     namespace: ${workspaceNamespace}
   interval: 15s
   install:

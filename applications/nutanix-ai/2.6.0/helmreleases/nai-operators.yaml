@@ -2,13 +2,13 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: nai-operators-2.6.0
+  name: ${releaseName}-nai-operators-2.6.0-chart
   namespace: ${workspaceNamespace}
 spec:
   interval: 1m
   url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-operators"
   ref:
-    tag: 0.1.0_build.2801
+    tag: 0.1.0_build.3091
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
@@ -21,7 +21,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: nai-operators-2.6.0
+    name: ${releaseName}-nai-operators-2.6.0-chart
     namespace: ${workspaceNamespace}
   dependsOn:
     - name: kserve
@@ -35,13 +35,13 @@ spec:
   interval: 15s
   install:
     remediation:
-      retries: 5
+      retries: 30
     createNamespace: true
     timeout: 15m
     crds: Skip
   upgrade:
     remediation:
-      retries: 5
+      retries: 30
     timeout: 15m
     crds: Skip
   uninstall:
@@ -50,5 +50,8 @@ spec:
   targetNamespace: nai-system
   valuesFrom:
     - kind: ConfigMap
-      name: nutanix-ai-cluster-overrides
+      name: ${releaseName}-config-overrides
+      optional: true
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
       optional: true
