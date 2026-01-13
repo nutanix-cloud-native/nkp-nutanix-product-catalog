@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: nutanix-ai-2.5.0
+  name: ${releaseName}-nutanix-ai-2.5.0-chart
   namespace: ${workspaceNamespace}
   labels:
     kommander.d2iq.io/dkp-airgapped: supported
@@ -34,7 +34,7 @@ spec:
       namespace: ${workspaceNamespace}
   chartRef:
     kind: OCIRepository
-    name: nutanix-ai-2.5.0
+    name: ${releaseName}-nutanix-ai-2.5.0-chart
     namespace: ${workspaceNamespace}
   interval: 15s
   install:

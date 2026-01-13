@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: opentelemetry-operator-0.93.0
+  name: ${releaseName}-0.93.0-chart
   namespace: ${workspaceNamespace}
 spec:
   url: oci://ghcr.io/open-telemetry/opentelemetry-helm-charts/opentelemetry-operator
@@ -21,7 +21,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: opentelemetry-operator-0.93.0
+    name: ${releaseName}-0.93.0-chart
     namespace: ${workspaceNamespace}
   interval: 15s
   install:

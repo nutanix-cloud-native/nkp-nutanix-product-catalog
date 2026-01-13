@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: kserve-crd-0.15.0
+  name: ${releaseName}-crd-0.15.0-chart
   namespace: ${workspaceNamespace}
 spec:
   url: oci://ghcr.io/kserve/charts/kserve-crd
@@ -21,7 +21,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: kserve-crd-0.15.0
+    name: ${releaseName}-crd-0.15.0-chart
     namespace: ${workspaceNamespace}
   interval: 15s
   install:

@@ -29,11 +29,15 @@ overview: |-
   - cert-manager v1.13.0
   - csi v3.3.8 or higher
 
-  ### While enabling Nutanix Data Services for Kubernetes from UI, provide following configuration (MUST):
+  ### While enabling Nutanix Data Services for Kubernetes from UI, image pull credentials need to be provided. If the secret object already exists in ntnx-system namespace, it's reference can be provided:
   ```
   imageCredentials:
     # Name of the image pull secret
-    name: ndk-image-pull-secret
+    imagePullSecretName: <name of the image pull secret>
+  ```
+  ### Or credentials can be provided with below configuration:
+  ```
+  imageCredentials:
     # Image registry credentials
     credentials:
       registry: https://index.docker.io/v1/
