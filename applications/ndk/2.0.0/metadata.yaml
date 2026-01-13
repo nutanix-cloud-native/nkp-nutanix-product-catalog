@@ -51,7 +51,7 @@ overview: |-
   tls:
     server:
       enable: true
-      clusterName: <name of NKP cluster>
+      clusterName: <Name of NKP cluster>
   ```
   ### For using a custom issuer (a pre-existing issuer in ntnx-system namespace)
   ```
@@ -70,11 +70,15 @@ overview: |-
       enable: true
       mode: "SECRET"
       secretName: <Name of pre-existing secret>
+      clusterName: <Name of NKP cluster>
   ```
-  ### For enabling MTLS between NDK intercom service running on source and replication kubernetes clusters, make sure that same certificate authority signs and issues certificates to NDK intercom service on primary and replication clusters.
+  ### For enabling MTLS between NDK intercom service running on source and replication kubernetes clusters, make sure that same certificate authority (CA) signs and issues certificates to NDK intercom service on primary and replication clusters.
   To configure MTLS, the following change in configuration should be made:
   ```
   tls:
     server:
       enableMTLS: true
+      mode: "SECRET"
+      secretName: <Name of pre-existing secret>
+      clusterName: <Name of NKP cluster>
   ```
