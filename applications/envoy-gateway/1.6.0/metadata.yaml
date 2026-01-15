@@ -24,4 +24,4 @@ overview: |-
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.34
   ### Envoy Gateway requires the following applications to be installed on the NKP cluster:
-  - cert-manager >= v1.17.2
+  - cert-manager >= v1.18.2
