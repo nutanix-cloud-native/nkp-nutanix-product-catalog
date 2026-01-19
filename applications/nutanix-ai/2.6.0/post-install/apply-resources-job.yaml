@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: nai-apply-resources-2.5.0
+  name: nai-apply-resources-2.6.0
   namespace: ${workspaceNamespace}
 spec:
   backoffLimit: 5
