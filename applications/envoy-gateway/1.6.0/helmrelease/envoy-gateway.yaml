@@ -35,3 +35,10 @@ spec:
       retries: 30
   releaseName: eg
   targetNamespace: envoy-gateway-system
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-config-overrides
+      optional: true
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
+      optional: true
