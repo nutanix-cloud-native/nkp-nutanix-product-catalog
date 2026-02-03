@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: nai-postinstall-2.5.0
+  name: nai-postinstall-2.6.0
   namespace: ${workspaceNamespace}
 spec:
   backoffLimit: 3
@@ -12,7 +12,7 @@ spec:
       restartPolicy: OnFailure
       containers:
         - name: post-install-nai-patch
-          image: mesosphere/kubectl:v1.33.2-alpine
+          image: mesosphere/kubectl:v1.34.1-alpine
           imagePullPolicy: IfNotPresent
           env:
             - name: WORKSPACE_NAMESPACE
