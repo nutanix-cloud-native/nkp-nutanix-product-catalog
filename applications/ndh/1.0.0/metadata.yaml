@@ -46,7 +46,7 @@ overview: |
     --from-file=dl_collector.pem=<your-dl-pem> \
     --namespace=ndh-core
 
-  # For NDH operators
+  # For NDH operators (create namespace first)
   kubectl create namespace ndh-operators
 
   kubectl create secret docker-registry ndh-iep-secret \
