@@ -10,7 +10,7 @@ data:
     # Reference to pre-created image pull secret (REQUIRED)
     # Secret must be created in the target namespace before enabling NDH
     imagePullSecret:
-      name: ndh-image-pull-secret
+      name: ndh-iep-secret
 ---
 # ConfigMap for NDH Core default values
 # Users MUST pre-create the image pull secret before enabling NDH
@@ -24,7 +24,5 @@ data:
     # Reference to pre-created image pull secret (REQUIRED)
     # Secret must be created in the target namespace before enabling NDH
     imagePullSecret:
-      name: ndh-image-pull-secret
-    dlIngestionWorker:
-      enabled: true
+      name: ndh-iep-secret
 ---

@@ -1,8 +1,9 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Data Hub (NDH)
 description: Nutanix Data Hub is a comprehensive data platform for Kubernetes.
-type: custom
+type: nkp-catalog # TODO: Should it be custom or nkp-catalog?
 allowMultipleInstances: false
+nkpVersionSupport: ">=2.16.0"
 category:
 - data-platform
 - data-services
@@ -29,15 +30,31 @@ overview: |
   ```bash
   # For NDH core components
   kubectl create namespace ndh-core
+<<<<<<< HEAD
   kubectl create secret docker-registry ndh-image-pull-secret \
+=======
+  kubectl create secret docker-registry ndh-iep-secret \
+>>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
     --namespace=ndh-core \
     --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
     --docker-password=<your-api-key>
 
+<<<<<<< HEAD
   # For NDH operators
   kubectl create namespace ndh-operators
   kubectl create secret docker-registry ndh-image-pull-secret \
+=======
+  kubectl create secret generic dl-collector-certs \
+    --from-file=.crypto.priv=<your-dl-key> \
+    --from-file=dl_collector.crt=<your-dl-crt> \
+    --from-file=dl_collector.pem=<your-dl-pem> \
+    --namespace=ndh-core
+
+  # For NDH operators
+  kubectl create namespace ndh-operators
+  kubectl create secret docker-registry ndh-iep-secret \
+>>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
     --namespace=ndh-operators \
     --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
@@ -49,5 +66,9 @@ overview: |
   NDH requires approximately 8 worker nodes with 4 CPU / 8GB RAM each.
 scope:
 - workspace
+<<<<<<< HEAD
 supportLink: "https://google.com"
+=======
+supportLink: "https://google.com" # TODO: Sanath, please provide the support link
+>>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
 ---

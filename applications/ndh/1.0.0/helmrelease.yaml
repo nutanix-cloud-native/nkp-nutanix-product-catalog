@@ -4,7 +4,7 @@ metadata:
   name: ${releaseName}-helmrelease
   namespace: ${releaseNamespace}
 spec:
-  interval: 6h
+  interval: 6h0m0s
   path: ./helmrelease
   postBuild:
     substitute:
