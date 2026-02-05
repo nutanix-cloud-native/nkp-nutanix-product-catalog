@@ -21,31 +21,26 @@ overview: |
 
   ## Prerequisites (REQUIRED)
 
-  Before enabling NDH, create the following secrets on the target cluster.
+  Before enabling NDH, create the namespaces and the following secrets on the target cluster.
+  **Namespaces must exist before enabling;** NDH is installed with createNamespace: false so that
+  your namespaces and secrets are not deleted when NDH is disabled or uninstalled.
 
   ### Container Image Registry Secrets (Artifactory)
 
   Create in both application namespaces:
 
   ```bash
-  # For NDH core components
+  # For NDH core components (create namespace first)
   kubectl create namespace ndh-core
-<<<<<<< HEAD
-  kubectl create secret docker-registry ndh-image-pull-secret \
-=======
+
   kubectl create secret docker-registry ndh-iep-secret \
->>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
     --namespace=ndh-core \
     --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
-    --docker-password=<your-api-key>
+    --docker-password=<your-api-key> \
+    --namespace=ndh-core
 
-<<<<<<< HEAD
-  # For NDH operators
-  kubectl create namespace ndh-operators
-  kubectl create secret docker-registry ndh-image-pull-secret \
-=======
-  kubectl create secret generic dl-collector-certs \
+  kubectl create secret dl-collector-certs \
     --from-file=.crypto.priv=<your-dl-key> \
     --from-file=dl_collector.crt=<your-dl-crt> \
     --from-file=dl_collector.pem=<your-dl-pem> \
@@ -53,12 +48,13 @@ overview: |
 
   # For NDH operators
   kubectl create namespace ndh-operators
+
   kubectl create secret docker-registry ndh-iep-secret \
->>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
-    --namespace=ndh-operators \
+    --namespace=ndh-core \
     --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
-    --docker-password=<your-api-key>
+    --docker-password=<your-api-key> \
+    --namespace=ndh-operators
   ```
 
   ## Resource Requirements
@@ -66,9 +62,5 @@ overview: |
   NDH requires approximately 8 worker nodes with 4 CPU / 8GB RAM each.
 scope:
 - workspace
-<<<<<<< HEAD
-supportLink: "https://google.com"
-=======
 supportLink: "https://google.com" # TODO: Sanath, please provide the support link
->>>>>>> 509f483 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
 ---

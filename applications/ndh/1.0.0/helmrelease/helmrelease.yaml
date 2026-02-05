@@ -35,7 +35,8 @@ spec:
     namespace: ${releaseNamespace}
   install:
     crds: CreateReplace
-    createNamespace: true
+    # false = do not create/manage namespace; user must pre-create ndh-operators and secrets (avoids deleting namespace on uninstall)
+    createNamespace: false
     remediation:
       retries: 30
   uninstall:
@@ -72,7 +73,8 @@ spec:
     namespace: ${releaseNamespace}
   install:
     crds: CreateReplace
-    createNamespace: true
+    # false = do not create/manage namespace; user must pre-create ndh-core and secrets (avoids deleting namespace on uninstall)
+    createNamespace: false
     remediation:
       retries: 30
     timeout: 20m
