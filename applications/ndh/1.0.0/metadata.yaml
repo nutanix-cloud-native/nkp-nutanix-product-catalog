@@ -1,28 +1,22 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
-allowMultipleInstances: true
+displayName: Nutanix Data Hub (NDH)
+description: Nutanix Data Hub is a comprehensive data platform for Kubernetes.
+type: custom
+allowMultipleInstances: false
 category:
 - data-platform
-- workflow
-description: |
-  NDH (Nutanix Data Hub) is a comprehensive data platform that ...
-displayName: NDH (Nutanix Data Hub)
-# requiredDependencies:
-# - name: kube-prometheus-stack
-#   version: ">=80.13.3" # Not sure about the version?
-#   description: Prometheus and Grafana for metrics storage and visualization
-#   required: true
-# - name: loki
-#   version: ">=6.46.0" # Not sure about the version?
-#   description: Log aggregation system with OTLP support
-#   required: true
-icon: ""
+- data-services
+dependencies:
+  - kube-prometheus-stack
+  - loki
+icon: "" # TODO: Sanath, please provide the icon
 licensing:
 - Pro
 - Ultimate
 overview: |
-  # NDH (Nutanix Data Hub)
+  # Nutanix Data Hub (NDH)
 
-  NDH is a comprehensive data platform for Kubernetes.
+  Nutanix Data Hub (NDH) is a comprehensive data platform for Kubernetes.
 
   ## Prerequisites (REQUIRED)
 
@@ -37,7 +31,7 @@ overview: |
   kubectl create namespace ndh-core
   kubectl create secret docker-registry ndh-image-pull-secret \
     --namespace=ndh-core \
-    --docker-server=artifactory-edge-01.corp.p10y.ntnxdpro.com \
+    --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
     --docker-password=<your-api-key>
 
@@ -45,18 +39,9 @@ overview: |
   kubectl create namespace ndh-operators
   kubectl create secret docker-registry ndh-image-pull-secret \
     --namespace=ndh-operators \
-    --docker-server=artifactory-edge-01.corp.p10y.ntnxdpro.com \
+    --docker-server=<your-artifactory-server> \
     --docker-username=<your-username> \
     --docker-password=<your-api-key>
-  ```
-
-  ## Configuration
-
-  When enabling NDH, reference the pre-created secret name:
-
-  ```yaml
-  imagePullSecrets:
-    - name: ndh-image-pull-secret
   ```
 
   ## Resource Requirements
@@ -64,6 +49,5 @@ overview: |
   NDH requires approximately 8 worker nodes with 4 CPU / 8GB RAM each.
 scope:
 - workspace
-- project
-supportLink: https://github.com/mirko38
+supportLink: "https://google.com"
 ---

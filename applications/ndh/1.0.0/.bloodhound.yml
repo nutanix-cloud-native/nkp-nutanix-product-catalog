@@ -1,6 +1,5 @@
 # Kubernetes versions
 k8s_versions:
-  - 1.33.0
   - 1.34.0
 
 # use strict validation (reject unknown fields in resources)
@@ -16,4 +15,5 @@ additional_crds: []
 substitution_vars:
   releaseNamespace: kommander
   releaseName: ndh-1
-  appVersion: "1.0.39"
+  workspaceNamespace: workspace
+  appVersion: "1.0.0"

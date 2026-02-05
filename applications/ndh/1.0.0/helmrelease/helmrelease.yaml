@@ -5,9 +5,9 @@ metadata:
   name: ${releaseName}-operators-chart
   namespace: ${releaseNamespace}
 spec:
-  interval: 1m
+  interval: 10m
   ref:
-    tag: 0.1.5
+    tag: 0.1.8
   url: "oci://ghcr.io/mirko38/ndh-operators"
 ---
 # OCI Repository for the NDH core
@@ -17,9 +17,9 @@ metadata:
   name: ${releaseName}-core-chart
   namespace: ${releaseNamespace}
 spec:
-  interval: 1m
+  interval: 10m
   ref:
-    tag: 0.1.23
+    tag: 0.1.29
   url: "oci://ghcr.io/mirko38/ndh-core"
 ---
 # Helm Release for the NDH operators
@@ -54,6 +54,9 @@ spec:
     name: ${releaseName}-operators-config
   - kind: ConfigMap
     name: ${releaseName}-config-overrides
+    optional: true
+  - kind: ConfigMap
+    name: ${releaseName}-cluster-overrides
     optional: true
 ---
 # Helm Release for the NDH core
@@ -91,5 +94,8 @@ spec:
     name: ${releaseName}-core-config
   - kind: ConfigMap
     name: ${releaseName}-config-overrides
+    optional: true
+  - kind: ConfigMap
+    name: ${releaseName}-cluster-overrides
     optional: true
 ---
