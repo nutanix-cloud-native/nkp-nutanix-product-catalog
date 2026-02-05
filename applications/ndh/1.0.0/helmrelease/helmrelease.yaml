@@ -7,8 +7,8 @@ metadata:
 spec:
   interval: 6h0m0s
   ref:
-    tag: 0.3.0
-  url: "oci://ghcr.io/mirko38/ndh-operators"
+    tag: 0.1.0
+  url: "oci://repos.ntnxdpro.com/ndh/ndh-operators"
 ---
 # OCI Repository for the NDH core
 apiVersion: source.toolkit.fluxcd.io/v1
@@ -19,8 +19,8 @@ metadata:
 spec:
   interval: 6h0m0s
   ref:
-    tag: 0.3.0
-  url: "oci://ghcr.io/mirko38/ndh-core"
+    tag: 0.1.0
+  url: "oci://repos.ntnxdpro.com/ndh/ndh-core"
 ---
 # Helm Release for the NDH operators
 apiVersion: helm.toolkit.fluxcd.io/v2
