@@ -8,7 +8,7 @@ spec:
   interval: 1m
   url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-operators"
   ref:
-    tag: 2.6.0-rc0
+    tag: 2.6.0-release-branch_build.3359
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
