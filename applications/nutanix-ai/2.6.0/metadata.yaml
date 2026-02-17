@@ -36,7 +36,7 @@ overview: |-
   - cert-manager v1.17.2
   - envoy-gateway v1.6.3
   - kube-prometheus-stack 71.0.1
-  - nvidia-gpu-operator v25.3.3
+  - nvidia-gpu-operator v25.3.1
   - kserve v0.15.0
   - opentelemetry-operator 0.102.0
 
