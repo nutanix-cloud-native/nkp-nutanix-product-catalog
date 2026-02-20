@@ -24,6 +24,10 @@ spec:
     name: ${releaseName}-nai-operators-2.6.0-chart
     namespace: ${workspaceNamespace}
   dependsOn:
+    - name: kube-prometheus-stack
+      namespace: ${workspaceNamespace}
+    - name: nvidia-gpu-operator
+      namespace: ${workspaceNamespace}
     - name: kserve
       namespace: ${workspaceNamespace}
     - name: kserve-crd
