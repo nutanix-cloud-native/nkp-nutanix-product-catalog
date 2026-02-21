@@ -24,7 +24,7 @@ jobs:
   push-chart:
     name: Publish Chart to GHCR
     runs-on:
-      - self-hosted-nutanix-small
+      - self-hosted-nutanix-medium
     permissions:
       contents: read
       packages: write
