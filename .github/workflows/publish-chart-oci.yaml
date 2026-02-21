@@ -22,10 +22,12 @@ on:
 
 jobs:
   push-chart:
+    name: Publish Chart to GHCR
     runs-on:
-      - self-hosted
-      - small
-
+      - self-hosted-nutanix-small
+    permissions:
+      contents: read
+      packages: write
     steps:
       - name: Checkout repo
         uses: actions/checkout@v5
