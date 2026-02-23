@@ -8,12 +8,28 @@ on:
       - 'main'
       - 'v*'
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   manifest-validation:
     name: Manifest validation
     runs-on:
       - self-hosted-nutanix-medium
     steps:
+      # action-check-approvals (https://github.com/nutanix-cloud-native/action-check-approvals):
+      # Gates workflow on PRs until they have required approvals and labels. Ensures integration
+      # tests only run after maintainer sign-off. Requires PR to have one of: integration-test,
+      # skip_integration (default). Requires review_approvals_count approvals (default: 1).
+      # Uses @v1.0.1 tag for stability; use @main for latest (may break on upstream changes).
+      - name: Check integration test allowance status
+        if: github.event_name == 'pull_request'
+        id: check_approvals
+        uses: nutanix-cloud-native/action-check-approvals@v1.0.1
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout code
         uses: actions/checkout@v4
 
