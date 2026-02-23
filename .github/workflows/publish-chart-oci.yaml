@@ -4,19 +4,15 @@ on:
   workflow_dispatch:
     inputs:
       chart_repo:
-        description: 'Helm chart repository URL (e.g., https://mesosphere.github.io/charts/staging)'
+        description: 'Source repository URL for the chart (e.g., https://mesosphere.github.io/charts/staging)'
         type: string
         required: true
       chart_name:
-        description: 'Helm chart name (e.g., kube-prometheus-stack, istio-helm)'
+        description: 'Helm chart name (e.g., ndk, nutanix-ai, kserve, envoy-gateway etc.)'
         type: string
         required: true
       chart_version:
         description: 'Helm chart version'
-        type: string
-        required: true
-      repo_name:
-        description: 'Repo name'
         type: string
         required: true
 
@@ -25,6 +21,8 @@ jobs:
     name: Publish Chart to GHCR
     runs-on:
       - self-hosted-nutanix-medium
+    env:
+      TARGET_OCI_REGISTRY: oci://ghcr.io/mesosphere/charts
     permissions:
       contents: read
       packages: write
@@ -46,10 +44,10 @@ jobs:
       - name: Pull Helm chart
         run: |
           set -euo pipefail
-          helm repo add "${{ github.event.inputs.repo_name }}" "${{ github.event.inputs.chart_repo }}"
+          helm repo add "${{ github.event.inputs.chart_name }}" "${{ github.event.inputs.chart_repo }}"
           helm repo update
-          helm pull ${{ github.event.inputs.repo_name }}/${{ github.event.inputs.chart_name }} --version ${{ github.event.inputs.chart_version }}
+          helm pull ${{ github.event.inputs.chart_name }}/${{ github.event.inputs.chart_name }} --version ${{ github.event.inputs.chart_version }}
 
       - name: Push chart to GHCR
         run: |
-          helm push ${{ github.event.inputs.chart_name }}-${{ github.event.inputs.chart_version }}.tgz oci://ghcr.io/mesosphere/charts
+          helm push ${{ github.event.inputs.chart_name }}-${{ github.event.inputs.chart_version }}.tgz ${{ env.TARGET_OCI_REGISTRY }}
