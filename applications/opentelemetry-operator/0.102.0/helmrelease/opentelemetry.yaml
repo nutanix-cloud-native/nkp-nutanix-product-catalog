@@ -2,12 +2,12 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ${releaseName}-0.15.0-chart
+  name: ${releaseName}-0.102.0-chart
   namespace: ${workspaceNamespace}
 spec:
-  url: oci://ghcr.io/kserve/charts/kserve
+  url: oci://ghcr.io/open-telemetry/opentelemetry-helm-charts/opentelemetry-operator
   ref:
-    tag: v0.15.0
+    tag: 0.102.0
   interval: 10m
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
@@ -16,25 +16,22 @@ spec:
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: kserve
+  name: opentelemetry-operator
   namespace: ${workspaceNamespace}
 spec:
   chartRef:
     kind: OCIRepository
-    name: ${releaseName}-0.15.0-chart
+    name: ${releaseName}-0.102.0-chart
     namespace: ${workspaceNamespace}
-  dependsOn:
-  - name: kserve-crd
   interval: 15s
   install:
+    crds: CreateReplace
     remediation:
       retries: 30
     createNamespace: true
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 30
-  releaseName: kserve
-  targetNamespace: kserve
-  valuesFrom:
-    - kind: ConfigMap
-      name: kserve-0.15.0-nkp-defaults
+  releaseName: opentelemetry-operator
+  targetNamespace: opentelemetry
