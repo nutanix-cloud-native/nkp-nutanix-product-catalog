@@ -1,0 +1,109 @@
+# Build airgapped catalog bundle and push to S3 (similar to Kommander release.s3)
+# Uses just commands for local testability. Requires manual approval before running.
+#
+# Setup: Create GitHub Environment "airgapped-bundle-release" with required reviewers for approval.
+# Add these secrets to the environment or repository:
+#   S3_ACCESS_KEY_ID           - S3 bucket access key (username)
+#   S3_SECRET_ACCESS_KEY       - S3 bucket secret key (password)
+#   S3_BUCKET                 - S3 bucket name
+#   S3_PATH                   - Path prefix in bucket (e.g., catalog-bundles/)
+#   S3_REGION                 - AWS region for S3 (e.g., us-east-1)
+#   NUTANIX_DOCKERHUB_USERNAME - Docker Hub username (pulling private images)
+#   NUTANIX_DOCKERHUB_PASSWORD - Docker Hub password
+#   S3_ENDPOINT_URL           - (Optional) For S3-compatible storage (e.g., MinIO)
+name: Build Airgapped Bundle
+
+on:
+  workflow_dispatch:
+    inputs:
+      collection_tag:
+        description: 'Collection tag for the bundle'
+        type: choice
+        required: true
+        default: '2.17'
+        options:
+          - '2.16'
+          - '2.17'
+          - 'custom'
+      collection_tag_custom:
+        description: 'Custom collection tag (used when collection tag is "custom")'
+        type: string
+        required: false
+        default: ''
+      apps:
+        description: 'Comma-separated app=version to include. Leave empty to bundle all apps (except skipped).'
+        type: string
+        required: false
+        default: ''
+      skip:
+        description: 'Comma-separated app=version to skip (default excludes nutanix-ai 2.4.0 and 2.5.0)'
+        type: string
+        required: false
+        default: 'nutanix-ai=2.4.0,nutanix-ai=2.5.0'
+
+jobs:
+  build-and-push:
+    name: Build and push airgapped bundle to S3
+    runs-on:
+      - self-hosted-nutanix-medium
+    environment: airgapped-bundle-release  # Add required reviewers for approval gate
+    permissions:
+      contents: read
+    env:
+      S3_BUCKET: ${{ secrets.S3_BUCKET }}
+      S3_PATH: ${{ secrets.S3_PATH }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+      AWS_DEFAULT_REGION: ${{ secrets.S3_REGION }}
+      S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install NIX
+        uses: cachix/install-nix-action@v31
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.13.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: docker.io
+          username: ${{ secrets.NUTANIX_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.NUTANIX_DOCKERHUB_PASSWORD }}
+
+      - name: Resolve collection tag
+        id: tag
+        run: |
+          if [ "${{ github.event.inputs.collection_tag }}" = "custom" ]; then
+            if [ -z "${{ github.event.inputs.collection_tag_custom }}" ]; then
+              echo "Error: Custom collection tag is required when 'custom' is selected"
+              exit 1
+            fi
+            echo "tag=${{ github.event.inputs.collection_tag_custom }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ github.event.inputs.collection_tag }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build airgapped bundle
+        run: |
+          if [ -n "${{ github.event.inputs.apps }}" ]; then
+            devbox run -- just create-airgapped-bundle "${{ steps.tag.outputs.tag }}" "${{ github.event.inputs.apps }}"
+          else
+            devbox run -- just create-airgapped-bundle-skip "${{ steps.tag.outputs.tag }}" "${{ github.event.inputs.skip }}"
+          fi
+
+      - name: Push bundle to S3
+        env:
+          S3_BUCKET: ${{ secrets.S3_BUCKET }}
+          S3_PATH: ${{ secrets.S3_PATH }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.S3_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
+          AWS_DEFAULT_REGION: ${{ secrets.S3_REGION }}
+          S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
+        run: devbox run -- just push-bundle-to-s3 "${{ steps.tag.outputs.tag }}"
