@@ -60,28 +60,35 @@ overview: |-
   ### Create docker-registry secret in nai-system and envoy-gateway-system namespaces:
   Make sure secret name is same in both namespaces as the name is used in Catalog Application override values.
   ```
+  # Replace <docker-username>, <docker-password>, and <docker-email> with your actual Docker Hub credentials.
+  export REGISTRY_SECRET_NAME=nai-regcred
+  export DOCKER_SERVER=https://index.docker.io/v1/
+  export DOCKER_USERNAME=<docker-username>
+  export DOCKER_PASSWORD=<docker-password>
+  export DOCKER_EMAIL=<docker-email>
+
   kubectl create namespace nai-system --dry-run=client -o yaml | kubectl apply -f -
 
   kubectl create namespace envoy-gateway-system --dry-run=client -o yaml | kubectl apply -f -
 
-  kubectl -n nai-system create secret docker-registry nai-regcred \
-    --docker-server=https://index.docker.io/v1/ \
-    --docker-username=<docker-username> \
-    --docker-password=<docker-password> \
-    --docker-email=<docker-email> \
+  kubectl -n nai-system create secret docker-registry ${REGISTRY_SECRET_NAME} \
+    --docker-server=${DOCKER_SERVER} \
+    --docker-username=${DOCKER_USERNAME} \
+    --docker-password=${DOCKER_PASSWORD} \
+    --docker-email=${DOCKER_EMAIL} \
     --dry-run=client -o yaml | kubectl apply -f -
 
-  kubectl -n envoy-gateway-system create secret docker-registry nai-regcred \
-    --docker-server=https://index.docker.io/v1/ \
-    --docker-username=<docker-username> \
-    --docker-password=<docker-password> \
-    --docker-email=<docker-email> \
+  kubectl -n envoy-gateway-system create secret docker-registry ${REGISTRY_SECRET_NAME} \
+    --docker-server=${DOCKER_SERVER} \
+    --docker-username=${DOCKER_USERNAME} \
+    --docker-password=${DOCKER_PASSWORD} \
+    --docker-email=${DOCKER_EMAIL} \
     --dry-run=client -o yaml | kubectl apply -f -
   ```
 
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
-  global::
+  global:
     imagePullSecrets:
       - name: nai-regcred
   ```
