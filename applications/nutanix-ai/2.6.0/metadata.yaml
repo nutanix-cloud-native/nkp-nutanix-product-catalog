@@ -32,6 +32,7 @@ overview: |-
 
   ## Prerequisites and Configuration Guide
   ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.33
+  ### All the commands in this guide should be run on NKP cluster where Nutanix Enterprise AI is getting installed.
   ### Nutanix Enterprise AI 2.6.0 requires the following applications to be installed on the NKP cluster:
   - cert-manager v1.17.2
   - envoy-gateway v1.6.3
@@ -93,9 +94,27 @@ overview: |-
       - name: nai-regcred
   ```
 
+  ## Validating the Installation
+  Nutanix Enterprise AI card under cluster's Application page should be in Deployed state.
+  ### In case if Nutanix Enterprise AI card is in Error or Failed state, check the following:
+  - Check the status of Nutanix Enterprise AI HelmRelease:
+    ```
+    kubectl get helmrelease nutanix-ai-operators nutanix-ai -n <workspaceNamespace>
+    ```
+    - If any of above HelmReleases are in Error or Failed state, check the installation logs for errors.
+    - Check the status of NAI pods:
+      ```
+      kubectl get pods -n nai-system
+      ```
+      - If any of the pods are in Error or Failed state, check the respective pod logs for errors.
+
   ## Post Installation Configuration
 
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
+  
+  Default login credentials are:
+  - Username: admin
+  - Password: Nutanix.123
   ### Setup FQDN for Nutanix Enterprise AI dashboard:
   Create a DNS record to map the NAI ingress gateway IP to a FQDN.
   ```
