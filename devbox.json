@@ -2,6 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
   "packages": [
     "actionlint@latest",
+    "awscli2@latest",
     "gettext@latest",
     "git@latest",
     "just@latest",
