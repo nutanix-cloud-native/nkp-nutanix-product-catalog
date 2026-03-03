@@ -1,0 +1,293 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nai-apply-resources-2.7.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: nai-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: apply-resources
+          image: mesosphere/kubectl:v1.34.1-alpine
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: MAX_RETRIES
+              value: "5"
+            - name: RETRY_DELAY
+              value: "10"
+            - name: TARGET_NAMESPACE
+              value: "nai-system"
+            - name: CLUSTER_OVERRIDE_CM_NAME
+              value: "${releaseName}-cluster-overrides"
+            - name: CONFIG_OVERRIDE_CM_NAME
+              value: "${releaseName}-config-overrides"
+            - name: ENVOY_GW_NAMESPACE
+              value: "envoy-gateway-system"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -eu
+              echo "Starting NAI resources application..."
+              echo ""
+
+              # Function to apply resource with retry logic
+              apply_resource() {
+                local RESOURCE_NAME=$1
+                local RESOURCE_FILE=$2
+                local RESOURCE_TYPE=$3
+                local RESOURCE_K8S_NAME=$4
+
+                echo "=========================================="
+                echo "Applying $RESOURCE_NAME"
+                echo "=========================================="
+
+                RETRY_COUNT=0
+                SUCCESS=false
+
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  ATTEMPT=$((RETRY_COUNT + 1))
+                  echo "Attempt $ATTEMPT of $MAX_RETRIES for $RESOURCE_NAME..."
+
+                  if kubectl apply -f "$RESOURCE_FILE"; then
+                    echo "✅ $RESOURCE_NAME applied successfully on attempt $ATTEMPT!"
+                    SUCCESS=true
+
+                    # Verify the resource was created
+                    echo "Verifying $RESOURCE_NAME creation..."
+                    if kubectl get "$RESOURCE_TYPE" "$RESOURCE_K8S_NAME" -n "$TARGET_NAMESPACE" 2>/dev/null; then
+                      echo "✅ $RESOURCE_NAME resource confirmed in cluster"
+                    fi
+                    echo ""
+                    break
+                  else
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                      echo "⚠️ Failed to apply $RESOURCE_NAME."
+                      echo "   Retrying in ${RETRY_DELAY} seconds..."
+                      echo ""
+                      sleep $RETRY_DELAY
+                    fi
+                  fi
+                done
+
+                if [ "$SUCCESS" = false ]; then
+                  echo "❌ FAILED: Could not apply $RESOURCE_NAME after $MAX_RETRIES attempts"
+                  return 1
+                fi
+
+                return 0
+              }
+
+              # Certificate manifest
+              cat <<'EOF' > /tmp/nai-self-signed-cert.yaml
+              apiVersion: cert-manager.io/v1
+              kind: Certificate
+              metadata:
+                name: nai-ingressgateway-selfsigned-certificate
+                namespace: nai-system
+              spec:
+                secretName: ingress-certificate
+                commonName: nai.example.com
+                issuerRef:
+                  name: selfsigned-issuer
+                  kind: ClusterIssuer
+                  group: cert-manager.io
+                dnsNames:
+                - nai.example.com
+              EOF
+
+              # ConfigMap manifest
+              cat <<EOF > /tmp/nai-pre-delete-hook-cm.yaml
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: nai-operators-pre-delete-hook-cm
+                namespace: nai-system
+              data:
+                WORKSPACE_NAMESPACE: "$WORKSPACE_NAMESPACE"
+                HELMRELEASE_NAME: "nutanix-ai"
+                POLL_INTERVAL: "10"
+                TIMEOUT: "1800"
+              EOF
+
+              # Track overall success
+              OVERALL_SUCCESS=true
+
+              # Apply Certificate
+              if ! apply_resource "Certificate" "/tmp/nai-self-signed-cert.yaml" "certificate" "nai-ingressgateway-selfsigned-certificate"; then
+                OVERALL_SUCCESS=false
+              fi
+
+              # Apply ConfigMap
+              if ! apply_resource "ConfigMap" "/tmp/nai-pre-delete-hook-cm.yaml" "configmap" "nai-operators-pre-delete-hook-cm"; then
+                OVERALL_SUCCESS=false
+              fi
+
+              # Conditionally apply envoy-gateway-config based on naiAIGateway.enabled
+              # Priority: cluster-overrides > config-overrides > default (true)
+              echo "=========================================="
+              echo "Checking AI Gateway mode..."
+              echo "=========================================="
+
+              AI_GW_ENABLED=""
+
+              CLUSTER_DATA=$(kubectl get configmap "$CLUSTER_OVERRIDE_CM_NAME" -n "$WORKSPACE_NAMESPACE" \
+                -o jsonpath='{.data.values\.yaml}' 2>/dev/null || echo "")
+              # 1. Check cluster-overrides (highest priority)
+              if [ -n "$CLUSTER_DATA" ]; then
+                CLUSTER_VAL=$(echo "$CLUSTER_DATA" | yq '.naiAIGateway.enabled' 2>/dev/null || echo "")
+                if [ "$CLUSTER_VAL" = "true" ] || [ "$CLUSTER_VAL" = "false" ]; then
+                  AI_GW_ENABLED="$CLUSTER_VAL"
+                  echo "Found naiAIGateway.enabled=$AI_GW_ENABLED in cluster-overrides"
+                fi
+              fi
+
+              # 2. Fallback to config-overrides if not found in cluster-overrides
+              if [ -z "$AI_GW_ENABLED" ]; then
+                CONFIG_DATA=$(kubectl get configmap "$CONFIG_OVERRIDE_CM_NAME" -n "$WORKSPACE_NAMESPACE" \
+                  -o jsonpath='{.data.values\.yaml}' 2>/dev/null || echo "")
+                if [ -n "$CONFIG_DATA" ]; then
+                  CONFIG_VAL=$(echo "$CONFIG_DATA" | yq '.naiAIGateway.enabled' 2>/dev/null || echo "")
+                  if [ "$CONFIG_VAL" = "true" ] || [ "$CONFIG_VAL" = "false" ]; then
+                    AI_GW_ENABLED="$CONFIG_VAL"
+                    echo "Found naiAIGateway.enabled=$AI_GW_ENABLED in config-overrides"
+                  fi
+                fi
+              fi
+
+              # 3. Default to enabled if not specified in any override
+              if [ -z "$AI_GW_ENABLED" ]; then
+                AI_GW_ENABLED="true"
+                echo "naiAIGateway.enabled not found in overrides. Defaulting to enabled."
+              fi
+
+              # 4. Apply envoy-gateway-config with server-side apply to resolve ownership conflict
+              if [ "$AI_GW_ENABLED" = "true" ]; then
+                echo "AI Gateway mode is enabled. Applying envoy-gateway-config..."
+
+                cat <<'GWEOF' > /tmp/envoy-gateway-config.yaml
+              apiVersion: v1
+              kind: ConfigMap
+              metadata:
+                name: envoy-gateway-config
+                namespace: envoy-gateway-system
+              data:
+                envoy-gateway.yaml: |
+                  apiVersion: gateway.envoyproxy.io/v1alpha1
+                  kind: EnvoyGateway
+                  provider:
+                    type: Kubernetes
+                    kubernetes:
+                      rateLimitDeployment:
+                        container:
+                          image: docker.io/nutanix/nai-ratelimit:99d85510
+                        patch:
+                          type: StrategicMerge
+                          value:
+                            spec:
+                              template:
+                                spec:
+                                  containers:
+                                  - name: envoy-ratelimit
+                                    image: docker.io/nutanix/nai-ratelimit:99d85510
+                                    imagePullPolicy: IfNotPresent
+                      shutdownManager:
+                        image: docker.io/nutanix/nai-gateway:v1.6.3
+                  gateway:
+                    controllerName: gateway.envoyproxy.io/gatewayclass-controller
+                  logging:
+                    level:
+                      default: info
+                  rateLimit:
+                    backend:
+                      type: Redis
+                      redis:
+                        url: redis-sentinel.nai-system.svc.cluster.local:6379
+                  extensionApis:
+                    enableBackend: true
+                    enableEnvoyPatchPolicy: true
+                  extensionManager:
+                    maxMessageSize: 11Mi
+                    service:
+                      fqdn:
+                        hostname: ai-gateway-controller.nai-system.svc.cluster.local
+                        port: 1063
+                    backendResources:
+                    - group: inference.networking.k8s.io
+                      kind: InferencePool
+                      version: v1
+                    hooks:
+                      xdsTranslator:
+                        post:
+                        - Translation
+                        - Cluster
+                        - Route
+                        translation:
+                          cluster:
+                            includeAll: true
+                          listener:
+                            includeAll: true
+                          route:
+                            includeAll: true
+                          secret:
+                            includeAll: true
+              GWEOF
+
+                RETRY_COUNT=0
+                GW_SUCCESS=false
+
+                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                  ATTEMPT=$((RETRY_COUNT + 1))
+                  echo "Attempt $ATTEMPT of $MAX_RETRIES for envoy-gateway-config..."
+
+                  if kubectl apply --server-side --force-conflicts -f /tmp/envoy-gateway-config.yaml; then
+                    echo "✅ envoy-gateway-config applied successfully on attempt $ATTEMPT!"
+                    GW_SUCCESS=true
+
+                    echo "Verifying envoy-gateway-config creation..."
+                    if kubectl get configmap envoy-gateway-config -n "$ENVOY_GW_NAMESPACE" 2>/dev/null; then
+                      echo "✅ envoy-gateway-config confirmed in $ENVOY_GW_NAMESPACE"
+                    fi
+                    echo ""
+                    break
+                  else
+                    RETRY_COUNT=$((RETRY_COUNT + 1))
+                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                      echo "⚠️ Failed to apply envoy-gateway-config."
+                      echo "   Retrying in ${RETRY_DELAY} seconds..."
+                      echo ""
+                      sleep $RETRY_DELAY
+                    fi
+                  fi
+                done
+
+                if [ "$GW_SUCCESS" = false ]; then
+                  echo "❌ FAILED: Could not apply envoy-gateway-config after $MAX_RETRIES attempts"
+                  OVERALL_SUCCESS=false
+                fi
+              else
+                echo "AI Gateway mode is not enabled. Skipping envoy-gateway-config."
+              fi
+
+              # Final status
+              echo "=========================================="
+              if [ "$OVERALL_SUCCESS" = true ]; then
+                echo "✅ SUCCESS"
+                echo "=========================================="
+                echo "All resources applied successfully"
+                exit 0
+              else
+                echo "❌ FAILED"
+                echo "=========================================="
+                echo "Some resources failed to apply"
+                exit 1
+              fi
