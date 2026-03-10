@@ -111,10 +111,6 @@ overview: |-
   ## Post Installation Configuration
 
   Now you can access the Nutanix Enterprise AI dashboard by using cluster's Application Dashboard page card of Nutanix Enterprise AI.
-
-  Default login credentials for Nutanix Enterprise AI dashboard:
-  - Username: admin
-  - Password: Nutanix.123
   ### Setup FQDN for Nutanix Enterprise AI dashboard:
   Create a DNS record to map the NAI ingress gateway IP to a FQDN.
   ```
