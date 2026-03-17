@@ -132,49 +132,12 @@ spec:
                 OVERALL_SUCCESS=false
               fi
 
-              # Conditionally apply envoy-gateway-config based on naiAIGateway.enabled
-              # Priority: cluster-overrides > config-overrides > default (true)
+              # Apply envoy-gateway-config by default (AI Gateway mode is enabled by default)
               echo "=========================================="
-              echo "Checking AI Gateway mode..."
+              echo "Applying envoy-gateway-config (AI Gateway enabled by default)..."
               echo "=========================================="
 
-              AI_GW_ENABLED=""
-
-              CLUSTER_DATA=$(kubectl get configmap "$CLUSTER_OVERRIDE_CM_NAME" -n "$WORKSPACE_NAMESPACE" \
-                -o jsonpath='{.data.values\.yaml}' 2>/dev/null || echo "")
-              # 1. Check cluster-overrides (highest priority)
-              if [ -n "$CLUSTER_DATA" ]; then
-                CLUSTER_VAL=$(echo "$CLUSTER_DATA" | yq '.naiAIGateway.enabled' 2>/dev/null || echo "")
-                if [ "$CLUSTER_VAL" = "true" ] || [ "$CLUSTER_VAL" = "false" ]; then
-                  AI_GW_ENABLED="$CLUSTER_VAL"
-                  echo "Found naiAIGateway.enabled=$AI_GW_ENABLED in cluster-overrides"
-                fi
-              fi
-
-              # 2. Fallback to config-overrides if not found in cluster-overrides
-              if [ -z "$AI_GW_ENABLED" ]; then
-                CONFIG_DATA=$(kubectl get configmap "$CONFIG_OVERRIDE_CM_NAME" -n "$WORKSPACE_NAMESPACE" \
-                  -o jsonpath='{.data.values\.yaml}' 2>/dev/null || echo "")
-                if [ -n "$CONFIG_DATA" ]; then
-                  CONFIG_VAL=$(echo "$CONFIG_DATA" | yq '.naiAIGateway.enabled' 2>/dev/null || echo "")
-                  if [ "$CONFIG_VAL" = "true" ] || [ "$CONFIG_VAL" = "false" ]; then
-                    AI_GW_ENABLED="$CONFIG_VAL"
-                    echo "Found naiAIGateway.enabled=$AI_GW_ENABLED in config-overrides"
-                  fi
-                fi
-              fi
-
-              # 3. Default to enabled if not specified in any override
-              if [ -z "$AI_GW_ENABLED" ]; then
-                AI_GW_ENABLED="true"
-                echo "naiAIGateway.enabled not found in overrides. Defaulting to enabled."
-              fi
-
-              # 4. Apply envoy-gateway-config with server-side apply to resolve ownership conflict
-              if [ "$AI_GW_ENABLED" = "true" ]; then
-                echo "AI Gateway mode is enabled. Applying envoy-gateway-config..."
-
-                cat <<'GWEOF' > /tmp/envoy-gateway-config.yaml
+              cat <<'GWEOF' > /tmp/envoy-gateway-config.yaml
               apiVersion: v1
               kind: ConfigMap
               metadata:
@@ -242,40 +205,37 @@ spec:
                             includeAll: true
               GWEOF
 
-                RETRY_COUNT=0
-                GW_SUCCESS=false
+              RETRY_COUNT=0
+              GW_SUCCESS=false
 
-                while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-                  ATTEMPT=$((RETRY_COUNT + 1))
-                  echo "Attempt $ATTEMPT of $MAX_RETRIES for envoy-gateway-config..."
+              while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+                ATTEMPT=$((RETRY_COUNT + 1))
+                echo "Attempt $ATTEMPT of $MAX_RETRIES for envoy-gateway-config..."
 
-                  if kubectl apply --server-side --force-conflicts -f /tmp/envoy-gateway-config.yaml; then
-                    echo "✅ envoy-gateway-config applied successfully on attempt $ATTEMPT!"
-                    GW_SUCCESS=true
+                if kubectl apply --server-side --force-conflicts -f /tmp/envoy-gateway-config.yaml; then
+                  echo "✅ envoy-gateway-config applied successfully on attempt $ATTEMPT!"
+                  GW_SUCCESS=true
 
-                    echo "Verifying envoy-gateway-config creation..."
-                    if kubectl get configmap envoy-gateway-config -n "$ENVOY_GW_NAMESPACE" 2>/dev/null; then
-                      echo "✅ envoy-gateway-config confirmed in $ENVOY_GW_NAMESPACE"
-                    fi
-                    echo ""
-                    break
-                  else
-                    RETRY_COUNT=$((RETRY_COUNT + 1))
-                    if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
-                      echo "⚠️ Failed to apply envoy-gateway-config."
-                      echo "   Retrying in ${RETRY_DELAY} seconds..."
-                      echo ""
-                      sleep $RETRY_DELAY
-                    fi
+                  echo "Verifying envoy-gateway-config creation..."
+                  if kubectl get configmap envoy-gateway-config -n "$ENVOY_GW_NAMESPACE" 2>/dev/null; then
+                    echo "✅ envoy-gateway-config confirmed in $ENVOY_GW_NAMESPACE"
                   fi
-                done
-
-                if [ "$GW_SUCCESS" = false ]; then
-                  echo "❌ FAILED: Could not apply envoy-gateway-config after $MAX_RETRIES attempts"
-                  OVERALL_SUCCESS=false
+                  echo ""
+                  break
+                else
+                  RETRY_COUNT=$((RETRY_COUNT + 1))
+                  if [ $RETRY_COUNT -lt $MAX_RETRIES ]; then
+                    echo "⚠️ Failed to apply envoy-gateway-config."
+                    echo "   Retrying in ${RETRY_DELAY} seconds..."
+                    echo ""
+                    sleep $RETRY_DELAY
+                  fi
                 fi
-              else
-                echo "AI Gateway mode is not enabled. Skipping envoy-gateway-config."
+              done
+
+              if [ "$GW_SUCCESS" = false ]; then
+                echo "❌ FAILED: Could not apply envoy-gateway-config after $MAX_RETRIES attempts"
+                OVERALL_SUCCESS=false
               fi
 
               # Final status
