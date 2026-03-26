@@ -10,7 +10,7 @@ category:
 dependencies:
   - kube-prometheus-stack
   - loki
-icon: "" # TODO: Sanath, please provide the icon
+icon: "" # TODO: Sanath, please provide the icon here
 licensing:
 - Pro
 - Ultimate
@@ -62,5 +62,5 @@ overview: |
   NDH requires approximately 8 worker nodes with 4 CPU / 8GB RAM each.
 scope:
 - workspace
-supportLink: "https://google.com" # TODO: Sanath, please provide the support link
+supportLink: "https://google.com" # TODO: Sanath, please provide the support link here
 ---
