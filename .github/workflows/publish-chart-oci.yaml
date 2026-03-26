@@ -1,0 +1,53 @@
+name: Publish Chart to GHCR
+
+on:
+  workflow_dispatch:
+    inputs:
+      chart_repo:
+        description: 'Source repository URL for the chart (e.g., https://mesosphere.github.io/charts/staging)'
+        type: string
+        required: true
+      chart_name:
+        description: 'Helm chart name (e.g., ndk, nutanix-ai, kserve, envoy-gateway etc.)'
+        type: string
+        required: true
+      chart_version:
+        description: 'Helm chart version'
+        type: string
+        required: true
+
+jobs:
+  push-chart:
+    name: Publish Chart to GHCR
+    runs-on:
+      - self-hosted-nutanix-medium
+    env:
+      TARGET_OCI_REGISTRY: oci://ghcr.io/mesosphere/charts
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v5
+
+      - name: Install Helm
+        run: |
+          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull Helm chart
+        run: |
+          set -euo pipefail
+          helm repo add "${{ github.event.inputs.chart_name }}" "${{ github.event.inputs.chart_repo }}"
+          helm repo update
+          helm pull ${{ github.event.inputs.chart_name }}/${{ github.event.inputs.chart_name }} --version ${{ github.event.inputs.chart_version }}
+
+      - name: Push chart to GHCR
+        run: |
+          helm push ${{ github.event.inputs.chart_name }}-${{ github.event.inputs.chart_version }}.tgz ${{ env.TARGET_OCI_REGISTRY }}
