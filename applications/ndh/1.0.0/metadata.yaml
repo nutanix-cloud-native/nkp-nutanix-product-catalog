@@ -10,11 +10,7 @@ category:
 dependencies:
   - kube-prometheus-stack
   - loki
-<<<<<<< HEAD
-icon: "" # TODO: Sanath, please provide the icon here
-=======
 icon: "" # TODO: Sanath, please provide the icon here.
->>>>>>> 4769c19 (feat(ndh): add NDH v1.0.0 catalog application with security fixes)
 licensing:
 - Pro
 - Ultimate
