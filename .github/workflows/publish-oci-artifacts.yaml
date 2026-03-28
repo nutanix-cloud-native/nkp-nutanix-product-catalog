@@ -1,20 +1,31 @@
+# Copyright 2025 Nutanix. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
 name: Publish OCI Artifacts
 
 on:
   workflow_dispatch:
     inputs:
-      COLLECTION_TAG:
-        description: 'Tag to give to new version to be published'
+      release_spec:
+        description: "dev uses .release/dev.yaml; stable uses .release/stable.yaml"
         required: true
-        type: string
-      ARTIFACT_APPS:
-        description: "Apps to bundle (name=version)"
-        required: false
-        type: string
+        type: choice
+        options:
+          - dev
+          - stable
+  push:
+    branches:
+      - release-2.x
+    paths:
+      - ".release/**"
+      - "applications/**"
+
+permissions:
+  contents: read
 
 jobs:
-  publish-oci-artifacts:
-    name: Publish OCI Artifacts
+  release-artifacts:
+    name: Release
     runs-on:
       - self-hosted-nutanix-medium
     permissions:
@@ -28,17 +39,23 @@ jobs:
         uses: cachix/install-nix-action@v31
 
       - name: Install devbox
-        uses: jetify-com/devbox-install-action@v0.13.0
+        uses: jetify-com/devbox-install-action@v0.15.0
         with:
           enable-cache: true
           skip-nix-installation: true
 
       - name: Login to GHCR
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Create and publish artifacts
-        run: devbox run -- just publish-artifacts ghcr.io/nutanix-cloud-native ${{ inputs.COLLECTION_TAG }} "${{ inputs.ARTIFACT_APPS }}"
+      - name: Build Dev Release
+        if: github.event_name == 'push' || github.event.inputs.release_spec == 'dev'
+        run: devbox run -- just publish-artifacts ./.release/dev.yaml ghcr.io/nutanix-cloud-native
+
+      - name: Build Stable Release
+        # Production artifacts can be published only on the release-2.x branch.
+        if: github.ref_name == 'release-2.x' && (github.event_name == 'push' || github.event.inputs.release_spec == 'stable')
+        run: devbox run -- just publish-artifacts ./.release/stable.yaml ghcr.io/nutanix-cloud-native

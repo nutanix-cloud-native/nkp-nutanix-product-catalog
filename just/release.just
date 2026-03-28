@@ -3,10 +3,8 @@ set unstable
 # Release oci artifacts for catalog applications
 [no-exit-message]
 [script]
-publish-artifacts registry collection-tag apps: nkp-cli
-  tmpdir="$(mktemp -d)"
-  "{{ NKP_CLI }}" create catalog-bundle --repo-dir "{{ REPO_ROOT }}" --collection-tag "{{collection-tag}}" --apps="{{apps}}" --output-file "$tmpdir/bundle.tar"
-  "{{ NKP_CLI }}" push bundle --bundle "$tmpdir/bundle.tar" --to-registry "{{ registry }}"
+publish-artifacts release-spec registry: nkp-cli
+  {{ NKP_CLI }} experimental catalog release --release-spec {{ release-spec }} --repo-dir "{{ REPO_ROOT }}" --push-to-registry {{ registry}}
 
 # Create airgapped catalog bundle (includes container images and OCI artifacts)
 # Usage: just create-airgapped-bundle <collection-tag> [apps]
