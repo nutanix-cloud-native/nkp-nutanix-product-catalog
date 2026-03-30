@@ -1,4 +1,5 @@
 .local
 .idea
 untracked/*
-*-airgapped.tar
+*.tar
+.DS_Store

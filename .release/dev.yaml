@@ -1,0 +1,14 @@
+schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
+releases:
+  - tagName: 2.18-dev
+    fileName: nkp-nutanix-product-catalog-2.18-dev.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
+    constraints:
+      nkpVersion: "2.18"
+  - tagName: 2.19-dev
+    fileName: nkp-nutanix-product-catalog-2.19-dev.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
+    constraints:
+      nkpVersion: "2.19"
