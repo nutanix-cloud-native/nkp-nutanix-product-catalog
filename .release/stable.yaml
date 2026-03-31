@@ -15,7 +15,7 @@ releases:
       - name: opentelemetry-operator
         version: "0.93.0"
       - name: ndk
-        version: "2.0.0"
+        version: "2.1.0"
   - tagName: 2.17
     fileName: stable-nkp-nutanix-product-catalog-2.17.tar
     applications:
