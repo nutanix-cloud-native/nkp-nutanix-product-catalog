@@ -81,7 +81,7 @@ overview: |-
 
   ### During enabling of Nutanix Enterprise AI application from UI, provide following configuration:
   ```
-  global::
+  global:
     imagePullSecrets:
       - name: nai-regcred
   ```
