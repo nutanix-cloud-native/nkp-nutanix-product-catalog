@@ -1,0 +1,61 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-nutanix-ai-2.7.0-chart
+  namespace: ${workspaceNamespace}
+  labels:
+    kommander.d2iq.io/dkp-airgapped: supported
+spec:
+  interval: 1m
+  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core"
+  ref:
+    tag: 0.1.0_build.4141
+  layerSelector:
+    mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
+    operation: copy
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nutanix-ai
+  namespace: ${workspaceNamespace}
+spec:
+  dependsOn:
+    - name: kube-prometheus-stack
+      namespace: ${workspaceNamespace}
+    - name: nvidia-gpu-operator
+      namespace: ${workspaceNamespace}
+    - name: kserve
+      namespace: ${workspaceNamespace}
+    - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: envoy-gateway-nai
+      namespace: ${workspaceNamespace}
+    - name: opentelemetry-operator
+      namespace: ${workspaceNamespace}
+    - name: nutanix-ai-operators
+      namespace: ${workspaceNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-nutanix-ai-2.7.0-chart
+    namespace: ${workspaceNamespace}
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: true
+    timeout: 15m
+  upgrade:
+    remediation:
+      retries: 30
+    timeout: 15m
+  uninstall:
+    timeout: 15m
+  releaseName: nutanix-ai
+  valuesFrom:
+    - kind: ConfigMap
+      name: service-monitor-defaults
+    - kind: ConfigMap
+      name: gateway-selfsigned-defaults
+  targetNamespace: nai-system
