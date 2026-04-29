@@ -28,8 +28,8 @@ create-airgapped-bundle collection-tag output-file release-spec=".release/stable
   cp {{ REPO_ROOT }}/.release/airgapped.yaml.tmpl "$tmpfile"
 
   yq -i \
-    '.releases[0].tagName = "{{collection-tag}}" | 
-     .releases[0].fileName = "{{output-file}}" | 
+    '.releases[0].tagName = "{{collection-tag}}" |
+     .releases[0].fileName = "{{output-file}}" |
      .releases[0].applications = (load("{{release-spec}}") | .releases[] | select(.tagName == "'$tag_version'") | .applications)' \
     "$tmpfile"
 
