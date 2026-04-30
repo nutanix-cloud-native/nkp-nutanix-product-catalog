@@ -63,7 +63,6 @@ jobs:
         run: devbox run -- just create-airgapped-bundle "${{ inputs.collection_tag }}" airgapped-bundle-${{ inputs.collection_tag }}.tar
 
       - name: Push bundle to S3
-        if: ${{ false }} # TODO(takirala): We don't have S3 credentials for the airgapped bundle yet.
         env:
           S3_BUCKET: ${{ secrets.S3_BUCKET }}
           S3_PATH: ${{ secrets.S3_PATH }}
