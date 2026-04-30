@@ -7,6 +7,7 @@
     "git@latest",
     "just@latest",
     "pre-commit@latest",
-    "shfmt@latest"
+    "shfmt@latest",
+    "yq@latest"
   ]
 }
