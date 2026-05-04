@@ -1,3 +1,4 @@
+# TODO(takirala): This workflow is not used yet. We want to build and push the airgapped bundle to S3 in near future (from this public repo -> nutanix artifactory -> portal). This workflow is kept here to continue progress on this.
 # Build airgapped catalog bundle and push to S3 (similar to Kommander release.s3)
 # Uses just commands for local testability. Requires manual approval before running.
 #
