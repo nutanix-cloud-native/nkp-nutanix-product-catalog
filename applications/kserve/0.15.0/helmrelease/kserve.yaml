@@ -27,10 +27,14 @@ spec:
   - name: kserve-crd
   interval: 15s
   install:
+    strategy:
+      name: RetryOnFailure
     remediation:
       retries: 30
     createNamespace: true
   upgrade:
+    strategy:
+      name: RetryOnFailure
     remediation:
       retries: 30
   releaseName: kserve
