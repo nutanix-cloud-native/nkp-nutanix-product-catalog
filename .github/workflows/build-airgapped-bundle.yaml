@@ -1,3 +1,4 @@
+# TODO(takirala): This workflow is not used yet. We want to build and push the airgapped bundle to S3 in near future (from this public repo -> nutanix artifactory -> portal). This workflow is kept here to continue progress on this.
 # Build airgapped catalog bundle and push to S3 (similar to Kommander release.s3)
 # Uses just commands for local testability. Requires manual approval before running.
 #
@@ -16,30 +17,12 @@ name: Build Airgapped Bundle
 on:
   workflow_dispatch:
     inputs:
+      # If the input is not valid, just recipe has validation to handle it.
       collection_tag:
-        description: 'Collection tag for the bundle'
-        type: choice
+        description: 'Collection tag for the bundle. See .release/stable.yaml for supported versions.'
+        type: string
         required: true
-        default: '2.17'
-        options:
-          - '2.16'
-          - '2.17'
-          - 'custom'
-      collection_tag_custom:
-        description: 'Custom collection tag (used when collection tag is "custom")'
-        type: string
-        required: false
-        default: ''
-      apps:
-        description: 'Comma-separated app=version to include. Leave empty to bundle all apps (except skipped).'
-        type: string
-        required: false
-        default: ''
-      skip:
-        description: 'Comma-separated app=version to skip (default excludes nutanix-ai 2.4.0 and 2.5.0)'
-        type: string
-        required: false
-        default: 'nutanix-ai=2.4.0,nutanix-ai=2.5.0'
+        default: '2.18'
 
 jobs:
   build-and-push:
@@ -77,26 +60,8 @@ jobs:
           username: ${{ secrets.NUTANIX_DOCKERHUB_USERNAME }}
           password: ${{ secrets.NUTANIX_DOCKERHUB_PASSWORD }}
 
-      - name: Resolve collection tag
-        id: tag
-        run: |
-          if [ "${{ github.event.inputs.collection_tag }}" = "custom" ]; then
-            if [ -z "${{ github.event.inputs.collection_tag_custom }}" ]; then
-              echo "Error: Custom collection tag is required when 'custom' is selected"
-              exit 1
-            fi
-            echo "tag=${{ github.event.inputs.collection_tag_custom }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "tag=${{ github.event.inputs.collection_tag }}" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Build airgapped bundle
-        run: |
-          if [ -n "${{ github.event.inputs.apps }}" ]; then
-            devbox run -- just create-airgapped-bundle "${{ steps.tag.outputs.tag }}" "${{ github.event.inputs.apps }}"
-          else
-            devbox run -- just create-airgapped-bundle-skip "${{ steps.tag.outputs.tag }}" "${{ github.event.inputs.skip }}"
-          fi
+        run: devbox run -- just create-airgapped-bundle "${{ inputs.collection_tag }}" airgapped-bundle-${{ inputs.collection_tag }}.tar
 
       - name: Push bundle to S3
         env:
@@ -106,4 +71,4 @@ jobs:
           AWS_SECRET_ACCESS_KEY: ${{ secrets.S3_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: ${{ secrets.S3_REGION }}
           S3_ENDPOINT_URL: ${{ secrets.S3_ENDPOINT_URL }}
-        run: devbox run -- just push-bundle-to-s3 "${{ steps.tag.outputs.tag }}"
+        run: devbox run -- just push-bundle-to-s3 "${{ inputs.collection_tag }}"

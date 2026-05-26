@@ -1,0 +1,7 @@
+# Airgapped release spec template
+schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
+releases:
+  - tagName: ${TAG_NAME}
+    fileName: ${OUTPUT_FILE}
+    includeApplicationImages: true
+    baseRegistry: ghcr.io/nutanix-cloud-native
