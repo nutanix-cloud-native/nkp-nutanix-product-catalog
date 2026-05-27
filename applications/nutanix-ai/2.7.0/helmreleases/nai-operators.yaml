@@ -44,6 +44,8 @@ spec:
     timeout: 15m
     crds: Skip
   upgrade:
+    strategy:
+      name: RetryOnFailure
     remediation:
       retries: 30
     timeout: 15m

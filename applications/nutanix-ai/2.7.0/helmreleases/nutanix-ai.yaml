@@ -47,6 +47,8 @@ spec:
     createNamespace: true
     timeout: 15m
   upgrade:
+    strategy:
+      name: RetryOnFailure
     remediation:
       retries: 30
     timeout: 15m
