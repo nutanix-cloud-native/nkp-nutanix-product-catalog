@@ -9,7 +9,13 @@ strict: true
 
 # types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
 skip_types: [
-  "opentelemetry.io/v1beta1/OpenTelemetryCollector"
+  "opentelemetry.io/v1beta1/OpenTelemetryCollector",
+  "gateway.envoyproxy.io/v1alpha1/Backend",
+  "gateway.networking.k8s.io/v1beta1/ReferenceGrant",
+  "gateway.envoyproxy.io/v1alpha1/SecurityPolicy",
+  "gateway.envoyproxy.io/v1alpha1/ClientTrafficPolicy",
+  "gateway.envoyproxy.io/v1alpha1/EnvoyProxy",
+  "monitoring.coreos.com/v1/PodMonitor"
 ]
 
 # load additional CRDs (URLs of CRD yaml files)
