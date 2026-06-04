@@ -3,7 +3,7 @@ displayName: Kserve
 description: Highly scalable and standards based Model Inference Platform on Kubernetes for Trusted AI.
 type: nkp-catalog
 allowMultipleInstances: false
-nkpVersionSupport: ">=2.16.0"
+nkpVersionSupport: ">=2.14.0"
 category:
   - artificial-intelligence
 certifications:

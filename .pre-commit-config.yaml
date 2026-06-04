@@ -37,9 +37,9 @@ repos:
     rev: v0.19.1
     hooks:
       - id: gitlint
-        args: ["--ignore", "B1", "-c", "T1.line-length=200"]
+        args: ["--ignore", "B1,B6", "-c", "T1.line-length=200"]
       - id: gitlint-ci
-        args: ["--ignore", "B1", "-c", "T1.line-length=200"]
+        args: ["--ignore", "B1,B6", "-c", "T1.line-length=200"]
   - repo: https://github.com/jumanjihouse/pre-commit-hooks
     rev: 3.0.0
     hooks:
