@@ -9,7 +9,7 @@ publish-artifacts release-spec registry: nkp-cli
 # Usage: just create-airgapped-bundle <collection-tag> <output-file> [release-spec]
 # Example: just create-airgapped-bundle 2.18 my-airgapped.tar
 [script]
-create-airgapped-bundle collection-tag output-file release-spec=".release/stable.yaml": nkp-cli
+create-airgapped-bundle collection-tag output-file release-spec=".release/airgapped.yaml": nkp-cli
   tag_version=$(echo "{{collection-tag}}" | sed 's/^v\?\([0-9]*\.[0-9]*\).*/\1/')
 
   if ! echo "$tag_version" | grep -qE '^[0-9]+\.[0-9]+$'; then

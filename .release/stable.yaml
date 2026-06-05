@@ -1,4 +1,3 @@
-# TODO(takirala): Airgapped releases need to be synced with legal and devprod.
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
   - tagName: 2.18
