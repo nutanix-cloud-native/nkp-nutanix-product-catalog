@@ -45,3 +45,6 @@ jobs:
       - name: Run tests
         if: ${{ hashFiles('applications/**') != '' }}
         run: devbox run -- "GOOS=linux GOARCH=amd64 just validate-manifests"
+
+      - name: Check for unexpected changes
+        run: git diff --exit-code
