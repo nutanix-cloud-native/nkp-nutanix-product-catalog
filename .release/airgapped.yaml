@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
-  - tagName: 2.18
+  - tagName: "2.18.x-airgapped"
     fileName: airgapped-nkp-nutanix-product-catalog-2.18.tar
     applications:
       - name: ndk
