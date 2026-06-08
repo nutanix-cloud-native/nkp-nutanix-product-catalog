@@ -1,0 +1,59 @@
+---
+# ---------------------------------------------------------------------------
+# Catalog defaults ConfigMap.
+#
+# Sits at the second layer of the values-merge stack:
+#   1. Helm chart's bundled values.yaml      (inside the OCI chart)
+#   2. THIS ConfigMap                         (catalog default override)
+#   3. ${releaseName}-config-overrides        (user-supplied)
+#   4. ${releaseName}-cluster-overrides       (cluster/workspace policy)
+#
+# Keeping these defaults in the catalog (rather than only in the chart) lets
+# platform engineering tune a default without cutting a new chart release —
+# useful for, e.g., bumping the pinned `image.tag` after a CVE without
+# changing chart code.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-${appVersion}-defaults
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |-
+    defragmentation:
+      enabled: true
+      # Daily at 02:30 cluster-local time.
+      schedule: "30 2 * * *"
+      # Defrag when DB is over 50% of quota OR there are >200 MiB of free pages.
+      defragRule: "dbQuotaUsage > 0.5 || dbSize - dbSizeInUse > 200*1024*1024"
+      # Etcd is reached on host loopback because the pod uses hostNetwork.
+      endpoint: "https://127.0.0.1:2379"
+      # Single run defrags every member and turns on the cluster-health pre-check.
+      cluster: true
+      # Maps to --move-leader: transfer leadership before defragging the leader.
+      leaderLast: true
+      # Pause between members so the cluster stabilises.
+      waitBetweenDefrags: "1m"
+      # Do NOT auto-clear NOSPACE alarms — operators review them.
+      autoDisalarm: false
+      # Kubeadm canonical PKI directory.
+      etcdPkiHostPath: /etc/kubernetes/pki/etcd
+
+    image:
+      repository: ghcr.io/ahrtr/etcd-defrag
+      tag: v0.40.0
+      pullPolicy: IfNotPresent
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+
+    commonLabels: {}
+    cronJobAnnotations: {}

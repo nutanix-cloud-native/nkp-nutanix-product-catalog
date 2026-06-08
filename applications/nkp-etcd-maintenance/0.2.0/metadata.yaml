@@ -1,0 +1,88 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: NKP etcd Maintenance
+description: >-
+  Scheduled, leader-safe etcd defragmentation for kubeadm-managed NKP clusters.
+  Wraps the upstream ahrtr/etcd-defrag binary as a CronJob with threshold-based
+  execution, cluster health pre-checks, leader transfer, and configurable
+  per-member pauses.
+type: nkp-catalog
+allowMultipleInstances: false
+nkpVersionSupport: ">=2.18.0"
+category:
+  - application-and-data-management
+certifications:
+  - nutanix-supported
+licensing:
+  - Pro
+  - Ultimate
+scope:
+  - workspace
+icon: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4Ij4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM3ODU1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDxlbGxpcHNlIGN4PSIyNCIgY3k9IjExIiByeD0iMTQiIHJ5PSI0Ii8+CiAgICA8cGF0aCBkPSJNMTAgMTF2OWMwIDIuMiA2LjI3IDQgMTQgNHMxNC0xLjggMTQtNHYtOSIvPgogICAgPHBhdGggZD0iTTEwIDIwdjljMCAyLjIgNi4yNyA0IDE0IDRzMTQtMS44IDE0LTR2LTkiLz4KICAgIDxwYXRoIGQ9Ik0xMCAyOXY5YzAgMi4yIDYuMjcgNCAxNCA0czE0LTEuOCAxNC00di05Ii8+CiAgPC9nPgo8L3N2Zz4K
+overview: |-
+  # Overview
+  NKP etcd Maintenance keeps the on-disk size of the cluster's etcd database
+  bounded over time by running the open-source
+  [ahrtr/etcd-defrag](https://github.com/ahrtr/etcd-defrag) tool on a CronJob.
+
+  ## Why this exists
+  etcd's storage engine (bbolt) does not reclaim free pages after key deletion.
+  Without periodic defragmentation the database file grows monotonically until
+  it hits `--quota-backend-bytes`, triggers a `NOSPACE` alarm, and halts the
+  Kubernetes control plane. This application avoids that failure mode by
+  running a rule-gated defrag on a configurable schedule.
+
+  ## Safety model
+  - **Leader-last ordering.** Maps to `--move-leader`; etcd leadership is
+    transferred away from the current leader before that member is defragged,
+    so the cluster always has a healthy active leader during the maintenance
+    window.
+  - **Cluster health pre-check.** The job aborts before touching any member
+    if the cluster is unhealthy.
+  - **Threshold rule.** The defrag is a no-op when the database is already
+    compact, avoiding unnecessary disruption.
+  - **Configurable wait between members.** A pause between each member's
+    defrag lets the cluster stabilise.
+
+  ## Default behaviour
+  - Schedule: `30 2 * * *` (daily 02:30, cluster-local).
+  - Rule: defrag when `dbQuotaUsage > 0.5` OR more than 200 MiB of free pages
+    have accumulated.
+  - `waitBetweenDefrags: 1m`.
+  - `autoDisalarm: false` (NOSPACE alarms are NOT auto-cleared; operators
+    review them).
+
+  ## Supported topologies
+  - kubeadm-managed NKP clusters whose etcd runs as a static pod on
+    control-plane nodes (the standard NKP topology).
+
+  ## Unsupported topologies
+  - External etcd clusters (no `/etc/kubernetes/pki/etcd` on control-plane
+    nodes).
+  - Hosted control planes (AKS / EKS / GKE) where etcd is invisible to the
+    user.
+  - Operator-managed etcd (e.g., etcd-druid).
+  - Clusters whose admission policy denies `hostPath`.
+
+  A preflight Job that detects each of these is shipped with the chart at
+  `kommander/preflight/topology-check-job.yaml`. Run it on a candidate cluster
+  before enabling the addon and confirm the resulting ConfigMap
+  `kube-system/nkp-etcd-maintenance-topology` reports `result: PASS`.
+
+  ## Validation
+  End-to-end validated 2026-06-01 on a 3-control-plane NKP cluster
+  (`nkp-harsh-test`, NKP v2.18.0-dev.41, Kubernetes v1.35.2). The job
+  reclaimed ~229 MiB across three members in ~3 minutes with zero
+  control-plane downtime; the leader-transfer step was observed in the logs.
+
+  ## Overrides
+  Configuration is supplied through Helm values. The most common overrides
+  are exposed under the `defragmentation.*` tree:
+  ```yaml
+  defragmentation:
+    enabled: true
+    schedule: "30 2 * * *"
+    defragRule: "dbQuotaUsage > 0.5 || dbSize - dbSizeInUse > 200*1024*1024"
+    leaderLast: true        # → --move-leader
+    waitBetweenDefrags: "1m"
+    autoDisalarm: false
+  ```
