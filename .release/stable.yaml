@@ -1,5 +1,23 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
+  - tagName: "2.19.x-airgapped"
+    fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
+    applications:
+      - name: ndk
+        version: "2.1.0"
+  - tagName: 2.19
+    fileName: stable-nkp-nutanix-product-catalog-2.19.tar
+    applications:
+      - name: nutanix-ai
+        version: "2.7.0"
+      - name: kserve
+        version: "0.15.0"
+      - name: envoy-gateway-nai
+        version: "1.7.0"
+      - name: opentelemetry-operator
+        version: "0.102.0"
+      - name: ndk
+        version: "2.1.0"
   - tagName: "2.18.x-airgapped"
     fileName: airgapped-nkp-nutanix-product-catalog-2.18.tar
     applications:
