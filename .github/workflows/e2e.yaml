@@ -1,0 +1,124 @@
+name: E2E Tests
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, labeled]
+  workflow_dispatch:
+    inputs:
+      app:
+        description: "Application name (blank = all enabled)"
+        required: false
+        type: string
+      version:
+        description: "Version (blank = latest)"
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths: ["apptests/**"]
+
+concurrency:
+  group: e2e-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  detect-apps:
+    name: Detect Applications
+    if: >-
+      github.event.action != 'labeled'
+      || startsWith(github.event.label.name, 'e2e-')
+      || github.event.label.name == 'run-e2e-all'
+    runs-on: self-hosted-nutanix-xsmall
+    outputs:
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      has_entries: ${{ steps.matrix.outputs.has_entries }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build test matrix
+        id: matrix
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          LABEL: ${{ github.event.label.name }}
+          PR_LABELS: ${{ join(github.event.pull_request.labels.*.name, ' ') }}
+          INPUT_APP: ${{ inputs.app }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+
+          latest() { find "applications/$1" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort -V | tail -1; }
+
+          # Source of truth: every folder under applications/ minus the skipApps
+          # slice in suites_test.go (mirrors catalog.ScanAndRegister auto-discovery).
+          all_apps=$(find applications -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort -u)
+          skip=$(sed -n '/skipApps = \[\]string{/,/^}/p' apptests/suites/suites_test.go | grep -oE '"[^"]+"' | tr -d '"' | sort -u || true)
+          enabled=$(comm -23 <(echo "$all_apps") <(echo "$skip"))
+
+          if [[ -n "${INPUT_APP}" ]]; then
+            apps="${INPUT_APP}"
+          elif [[ " ${LABEL} ${PR_LABELS} " == *" run-e2e-all "* ]]; then
+            apps="$enabled"
+          elif [[ -n "${LABEL}${PR_LABELS}" ]]; then
+            apps=""
+            for l in $PR_LABELS ${LABEL}; do
+              [[ "$l" == e2e-* ]] && apps="${apps} ${l#e2e-}"
+            done
+          elif [[ "${EVENT_NAME}" != "pull_request" ]]; then
+            # push to main or workflow_dispatch with no app: run all enabled
+            apps="$enabled"
+          else
+            # PR with no e2e labels: skip
+            apps=""
+          fi
+
+          pairs=""
+          for app in $apps; do
+            # Only include if the app is in the enabled list
+            echo "$enabled" | grep -qw "$app" || continue
+            ver="${INPUT_VERSION:-$(latest "$app")}"
+            [[ -n "$ver" ]] && pairs=$(printf '%s\n%s/%s' "$pairs" "$app" "$ver")
+          done
+
+          entries=$(echo "$pairs" | awk -F/ 'NF==2 {printf "{\"app\":\"%s\",\"version\":\"%s\"}\n",$1,$2}' | jq -sc '.')
+          echo "matrix={\"include\":${entries}}" >> "$GITHUB_OUTPUT"
+          echo "has_entries=$([[ "$entries" != "[]" ]] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+  e2e:
+    name: "${{ matrix.app }} @ ${{ matrix.version }}"
+    needs: detect-apps
+    if: needs.detect-apps.outputs.has_entries == 'true'
+    runs-on: self-hosted-ncn-docker-large
+    strategy:
+      fail-fast: false
+      matrix: ${{ fromJson(needs.detect-apps.outputs.matrix) }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+
+      - uses: jetify-com/devbox-install-action@v0.15.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
+
+      - name: Run E2E tests
+        env:
+          SKIP_CLUSTER_TEARDOWN: "true"
+        run: devbox run -- just e2e-test "${{ matrix.app }}" "${{ matrix.version }}"
+
+      - name: Collect diagnostic bundle
+        if: failure()
+        run: |
+          devbox run -- kind export kubeconfig --name kommanderapptest --kubeconfig "$RUNNER_TEMP/kind-kubeconfig"
+          export KUBECONFIG="$RUNNER_TEMP/kind-kubeconfig"
+          devbox run -- nkp diagnose --bundle-name-prefix=e2e- || true
+
+      - name: Upload diagnostic bundle
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-${{ matrix.app }}-${{ matrix.version }}
+          path: e2e-*.tar.gz
