@@ -17,8 +17,10 @@ create-airgapped-bundle collection-tag output-file release-spec=".release/airgap
     exit 1
   fi
 
-  if ! yq '.releases[] | select(.tagName == "'$tag_version'")' {{release-spec}} > /dev/null 2>&1; then
-    echo "Error: Version '$tag_version' not found in {{release-spec}}"
+  airgapped_tag="${tag_version}.x-airgapped"
+
+  if [ -z "$(yq '.releases[] | select(.tagName == "'"$airgapped_tag"'")' {{release-spec}})" ]; then
+    echo "Error: Version '$airgapped_tag' not found in {{release-spec}}"
     exit 1
   fi
 
@@ -28,11 +30,11 @@ create-airgapped-bundle collection-tag output-file release-spec=".release/airgap
   cp {{ REPO_ROOT }}/.release/airgapped.yaml.tmpl "$tmpfile"
 
   yq -i \
-    '.releases[0].tagName = "'$tag_version'" |
+    '.releases[0].tagName = "'$airgapped_tag'" |
      .releases[0].fileName = "{{output-file}}" |
-     .releases[0].applications = (load("{{release-spec}}") | .releases[] | select(.tagName == "'$tag_version'") | .applications)' \
+     .releases[0].applications = (load("{{release-spec}}") | .releases[] | select(.tagName == "'"$airgapped_tag"'") | .applications)' \
     "$tmpfile"
 
-  echo "Building airgapped bundle for $tag_version..."
+  echo "Building airgapped bundle for $tag_version... (collection tag: $airgapped_tag)"
   cat "$tmpfile"
   "{{ NKP_CLI }}" experimental catalog release --release-spec "$tmpfile" --repo-dir "{{ REPO_ROOT }}"
