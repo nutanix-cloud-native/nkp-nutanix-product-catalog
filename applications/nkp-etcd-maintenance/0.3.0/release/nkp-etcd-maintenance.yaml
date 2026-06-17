@@ -3,15 +3,20 @@
 # OCIRepository: where the Helm chart is hosted.
 #
 # The chart was published with:
-#   helm push nkp-etcd-maintenance-0.2.0.tgz \
-#     oci://harbor.eng.nutanix.com/nkp-etcd-maintenance
+#   helm package .
+#   helm push nkp-etcd-maintenance-0.3.0.tgz \
+#     oci://ghcr.io/harshjha-nuta/charts
 #
-# NOTE: harbor.eng.nutanix.com is the internal Nutanix engineering registry.
-# Before this app is shipped to customers in a stable bundle, the chart must
-# be republished to a publicly reachable registry (e.g.,
-# `oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance`) and the
-# `url:` field below updated accordingly. The airgapped pipeline mirrors the
-# chart into the customer's local registry from that public source.
+# The package on GHCR is set to public visibility so airgap-mirror tooling
+# and out-of-VPN reviewers can pull it without authentication:
+#   helm pull oci://ghcr.io/harshjha-nuta/charts/nkp-etcd-maintenance \
+#     --version 0.3.0
+#
+# TODO(before stable bundling): move this from a personal GHCR namespace
+# (harshjha-nuta) to the Nutanix-owned org namespace
+# `oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance` (same
+# pattern as ndk / nai-core / kserve in this catalog) and update the
+# `url:` below + the `artifacts.yaml` entry accordingly.
 # ---------------------------------------------------------------------------
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -20,9 +25,9 @@ metadata:
   namespace: ${releaseNamespace}
 spec:
   interval: 1m
-  url: "oci://harbor.eng.nutanix.com/nkp-etcd-maintenance/nkp-etcd-maintenance"
+  url: "oci://ghcr.io/harshjha-nuta/charts/nkp-etcd-maintenance"
   ref:
-    tag: 0.2.0
+    tag: 0.3.0
 ---
 # ---------------------------------------------------------------------------
 # HelmRelease: instructs Flux to install the chart from the OCIRepository

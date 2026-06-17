@@ -1,10 +1,10 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: NKP etcd Maintenance
 description: >-
-  Scheduled, leader-safe etcd defragmentation for kubeadm-managed NKP clusters.
-  Wraps the upstream ahrtr/etcd-defrag binary as a CronJob with threshold-based
-  execution, cluster health pre-checks, leader transfer, and configurable
-  per-member pauses.
+  Scheduled etcd maintenance for kubeadm-managed NKP clusters. Includes
+  leader-safe defragmentation (always on, threshold-gated) and an optional
+  snapshot CronJob with verified output and optional S3-compatible upload.
+  Restore from a snapshot is intentionally a manual operator workflow.
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.18.0"
@@ -86,3 +86,23 @@ overview: |-
     waitBetweenDefrags: "1m"
     autoDisalarm: false
   ```
+
+  ## Snapshot (optional, disabled by default)
+  A second CronJob can take a verified etcd snapshot on a schedule and
+  optionally upload it to an S3-compatible bucket. To enable, set
+  `snapshot.enabled=true`; to also upload, set `snapshot.s3.enabled=true`
+  and supply endpoint / bucket / SecretRef:
+  ```yaml
+  snapshot:
+    enabled: true
+    schedule: "0 3 * * *"
+    s3:
+      enabled: true
+      endpoint: "https://minio.example.com"
+      bucket: "nkp-etcd-backups"
+      credentialsSecret:
+        name: "etcd-backup-s3-creds"   # operator-managed Secret
+  ```
+  Bucket credentials are NEVER passed through values; they come from a
+  Kubernetes Secret referenced by name. Restoration is intentionally a
+  manual operator runbook — see the chart README.

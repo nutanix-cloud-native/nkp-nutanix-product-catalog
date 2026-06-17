@@ -21,4 +21,4 @@ substitution_vars:
   releaseName: nkp-etcd-maintenance
   releaseNamespace: kommander
   workspaceNamespace: workspace
-  appVersion: 0.2.0
+  appVersion: 0.3.0

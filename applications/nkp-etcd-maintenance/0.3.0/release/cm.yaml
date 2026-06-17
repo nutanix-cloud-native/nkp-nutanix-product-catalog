@@ -39,6 +39,66 @@ data:
       # Kubeadm canonical PKI directory.
       etcdPkiHostPath: /etc/kubernetes/pki/etcd
 
+    # ----------------------------------------------------------------
+    # Snapshot CronJob (Phase 5). DISABLED by default — enabling it
+    # requires the operator to also supply:
+    #   - snapshot.s3.endpoint
+    #   - snapshot.s3.bucket
+    #   - snapshot.s3.credentialsSecret.name (SecretRef; chart never
+    #     receives the keys themselves)
+    # See README "Manual Restore Runbook" — restore is NOT automated.
+    # ----------------------------------------------------------------
+    snapshot:
+      enabled: false
+      schedule: "0 3 * * *"
+      clusterName: ""
+      endpoint: "https://127.0.0.1:2379"
+      etcdPkiHostPath: /etc/kubernetes/pki/etcd
+      etcdImage:
+        repository: registry.k8s.io/etcd
+        tag: "3.5.15-0"
+        pullPolicy: IfNotPresent
+      etcdResources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+          ephemeral-storage: 2Gi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+          ephemeral-storage: 10Gi
+      s3:
+        enabled: false
+        endpoint: ""
+        region: "us-east-1"
+        bucket: ""
+        prefix: "etcd-snapshots"
+        pathStyle: true
+        insecureSkipTLSVerify: false
+        credentialsSecret:
+          name: ""
+          accessKeyKey: "access-key-id"
+          secretKeyKey: "secret-access-key"
+        uploader:
+          image:
+            repository: minio/mc
+            tag: "RELEASE.2024-11-21T17-21-54Z"
+            pullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+      successfulJobsHistoryLimit: 7
+      failedJobsHistoryLimit: 7
+      startingDeadlineSeconds: 300
+      ttlSecondsAfterFinished: 86400
+
+    # ----------------------------------------------------------------
+    # Shared / defrag-specific.
+    # ----------------------------------------------------------------
     image:
       repository: ghcr.io/ahrtr/etcd-defrag
       tag: v0.40.0
