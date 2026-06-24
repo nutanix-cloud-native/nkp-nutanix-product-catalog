@@ -97,6 +97,23 @@ data:
       ttlSecondsAfterFinished: 86400
 
     # ----------------------------------------------------------------
+    # Job safety constraints (apply to BOTH defrag and snapshot Jobs).
+    #
+    # backoffLimit: 4         — survive ~4 transient retries (≈ 150 s
+    #                           total backoff) before marking the Job
+    #                           Failed. Replaces Kubernetes' default
+    #                           of 6 (≈ 10+ min silent backoff).
+    # activeDeadlineSeconds:  — hard wall-clock kill so a frozen Pod
+    #   600 (= 10 min)          is terminated with
+    #                           reason=DeadlineExceeded inside the
+    #                           5-min `for:` alert window. Set above
+    #                           the cluster's p99 Job runtime.
+    # ----------------------------------------------------------------
+    jobs:
+      backoffLimit: 4
+      activeDeadlineSeconds: 600
+
+    # ----------------------------------------------------------------
     # Shared / defrag-specific.
     # ----------------------------------------------------------------
     image:
