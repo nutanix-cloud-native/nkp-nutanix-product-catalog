@@ -99,18 +99,66 @@ data:
     # ----------------------------------------------------------------
     # Job safety constraints (apply to BOTH defrag and snapshot Jobs).
     #
-    # backoffLimit: 4         — survive ~4 transient retries (≈ 150 s
-    #                           total backoff) before marking the Job
-    #                           Failed. Replaces Kubernetes' default
-    #                           of 6 (≈ 10+ min silent backoff).
-    # activeDeadlineSeconds:  — hard wall-clock kill so a frozen Pod
-    #   600 (= 10 min)          is terminated with
-    #                           reason=DeadlineExceeded inside the
-    #                           5-min `for:` alert window. Set above
-    #                           the cluster's p99 Job runtime.
+    # These two settings give every maintenance Job a bounded,
+    # predictable failure window. Kubernetes defaults (backoffLimit=6,
+    # no activeDeadlineSeconds) would silently retry for 10+ minutes
+    # or hang forever, so the chart sets safer values below.
+    #
+    # ──────────────────────────────────────────────────────────────
+    # SIZING activeDeadlineSeconds  — READ THIS BEFORE OVERRIDING
+    # ──────────────────────────────────────────────────────────────
+    # The deadline is a HARD wall-clock kill. Setting it below the
+    # legitimate p99 runtime will produce false-positive failure
+    # pages every night. Setting it too high delays real alerts.
+    #
+    # Pick the value based on the LARGER of the two jobs on your
+    # cluster (they share this single knob):
+    #
+    #   defrag p99   ≈ 30s × N_cp × max(1, db_GB)
+    #                 + waitBetweenDefrags × (N_cp − 1)
+    #                 + ~10s leader-move overhead
+    #
+    #   snapshot p99 ≈ ( 30s save + 5s verify
+    #                  + 60s S3 upload [if s3.enabled=true] )
+    #                  × max(1, db_GB)
+    #
+    #   activeDeadlineSeconds ≈ 2 × max(defrag_p99, snapshot_p99),
+    #                            rounded up to the nearest 5 min.
+    #
+    # Cheat-sheet (assumes snapshot.s3.enabled=true unless noted):
+    #
+    #   | db size | CP nodes | activeDeadlineSeconds              |
+    #   |---------|----------|------------------------------------|
+    #   | ≤ 1 GB  |    3     | 600   (default; safe for s3 off too)|
+    #   | ≤ 1 GB  |    5     | 900                                |
+    #   |   2 GB  |    3     | 1200                               |
+    #   |   2 GB  |    5     | 1800                               |
+    #   |   4 GB  |    3     | 1800                               |
+    #   |   4 GB  |    5     | 3600                               |
+    #   |   8 GB  |    3     | 3600                               |
+    #   |   8 GB  |    5     | 7200                               |
+    #
+    # After install, validate against your real numbers:
+    #   kubectl get jobs -n kube-system \
+    #     -l app.kubernetes.io/name=nkp-etcd-maintenance \
+    #     --sort-by=.metadata.creationTimestamp
+    # and update activeDeadlineSeconds to 2× the observed p99 if it
+    # differs materially from the default.
+    #
+    # SIZING backoffLimit
+    #   4 (default) — survives transient kubelet / network blips
+    #                 (~150 s of in-Job backoff) while still letting
+    #                 the Failed alert fire within its 5-min window.
+    #   0           — Job is Failed on first non-zero exit. Pages
+    #                 fast, but flaky kubelet restarts cause noise.
+    #   ≥ 6         — re-introduces silent multi-minute backoff.
+    #                 Do NOT raise above 4 without a specific reason.
     # ----------------------------------------------------------------
     jobs:
       backoffLimit: 4
+      # Default sized for the NKP reference topology (3 CP nodes,
+      # ≤ 1 GB etcd db). Override on larger clusters per the table
+      # above.
       activeDeadlineSeconds: 600
 
     # ----------------------------------------------------------------

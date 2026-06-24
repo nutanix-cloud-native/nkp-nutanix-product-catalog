@@ -106,3 +106,71 @@ overview: |-
   Bucket credentials are NEVER passed through values; they come from a
   Kubernetes Secret referenced by name. Restoration is intentionally a
   manual operator runbook — see the chart README.
+
+  ## Job execution limits (read this before deploying)
+  Both CronJobs share two safety knobs that bound their failure window:
+
+  ```yaml
+  jobs:
+    backoffLimit: 4            # default
+    activeDeadlineSeconds: 600 # default — 10 minutes
+  ```
+
+  `activeDeadlineSeconds` is a **hard wall-clock kill**: any maintenance
+  Pod still running past it is terminated with `reason=DeadlineExceeded`,
+  which marks the Job `Failed` and trips the corresponding Prometheus
+  alert. The chart default (600 s = 10 min) is sized for the NKP
+  reference topology (3 control-plane nodes, etcd db ≤ 1 GB). On larger
+  clusters or larger databases the legitimate runtime can exceed this,
+  causing false-positive failure pages every night — set it **above**
+  your real p99 Job duration.
+
+  ### How to pick a value
+  The two jobs share this single setting, so size for the SLOWER of the
+  two on your cluster:
+  ```
+  defrag p99   ≈ 30s × N_cp × max(1, db_GB)
+                + waitBetweenDefrags × (N_cp − 1)
+                + ~10s leader-move overhead
+  snapshot p99 ≈ ( 30s save + 5s verify
+                 + 60s S3 upload [if s3.enabled=true] )
+                 × max(1, db_GB)
+  activeDeadlineSeconds ≈ 2 × max(defrag_p99, snapshot_p99)
+  ```
+  Then round up to the nearest 5 min.
+
+  ### Sizing cheat-sheet
+  (Assumes `snapshot.s3.enabled=true` unless noted.)
+
+  | etcd db size | Control-plane nodes | Recommended `activeDeadlineSeconds` |
+  |---|---|---|
+  | ≤ 1 GB | 3 | **600** (default; covers s3-off too) |
+  | ≤ 1 GB | 5 | 900 |
+  | 2 GB   | 3 | 1200 |
+  | 2 GB   | 5 | 1800 |
+  | 4 GB   | 3 | 1800 |
+  | 4 GB   | 5 | 3600 |
+  | 8 GB   | 3 | 3600 |
+  | 8 GB   | 5 | 7200 |
+
+  ### Validating against your real numbers
+  After at least one successful Job run, observe the p99 with:
+  ```bash
+  kubectl get jobs -n kube-system \
+    -l app.kubernetes.io/name=nkp-etcd-maintenance \
+    --sort-by=.metadata.creationTimestamp
+  ```
+  If your observed durations differ materially from the default, override
+  via the application's override ConfigMap:
+  ```yaml
+  jobs:
+    activeDeadlineSeconds: 1800   # example: 5-CP cluster, ~2 GB etcd
+  ```
+
+  ### `backoffLimit`
+  Default `4` (≈ 150 s of in-Job retry backoff) survives transient
+  kubelet/network blips while still letting the `EtcdDefragJobFailed`
+  and `EtcdSnapshotJobFailed` alerts fire within their 5-minute `for:`
+  window. Lower to `0` only if you specifically want zero retry
+  tolerance; do not raise above `4` — it just delays real-failure
+  paging without buying useful resilience.
