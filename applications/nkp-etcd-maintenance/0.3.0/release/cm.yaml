@@ -30,8 +30,10 @@ data:
       endpoint: "https://127.0.0.1:2379"
       # Single run defrags every member and turns on the cluster-health pre-check.
       cluster: true
-      # Maps to --move-leader: transfer leadership before defragging the leader.
-      leaderLast: true
+      # Leader-last ordering (--move-leader) is a MANDATORY safety invariant
+      # hardcoded in the chart's defrag CronJob template; do not surface a
+      # leaderLast key here — the chart does not consume one. See the chart
+      # README "Step 4 — Leader-safe ordering" for the full rationale.
       # Pause between members so the cluster stabilises.
       waitBetweenDefrags: "1m"
       # Do NOT auto-clear NOSPACE alarms — operators review them.

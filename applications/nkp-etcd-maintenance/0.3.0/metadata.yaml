@@ -32,10 +32,13 @@ overview: |-
   running a rule-gated defrag on a configurable schedule.
 
   ## Safety model
-  - **Leader-last ordering.** Maps to `--move-leader`; etcd leadership is
-    transferred away from the current leader before that member is defragged,
-    so the cluster always has a healthy active leader during the maintenance
-    window.
+  - **Leader-last ordering (mandatory, not configurable).** The defrag job is
+    hardcoded to invoke etcd-defrag with `--move-leader`, which transfers Raft
+    leadership away from the current leader before that member is defragged.
+    This is a non-negotiable safety invariant of the chart, not a user toggle:
+    a frozen leader during a bbolt rewrite would cause an apiserver-visible
+    election storm, so the flag is baked into the CronJob template and there
+    is no values key to disable it.
   - **Cluster health pre-check.** The job aborts before touching any member
     if the cluster is unhealthy.
   - **Threshold rule.** The defrag is a no-op when the database is already
@@ -82,9 +85,10 @@ overview: |-
     enabled: true
     schedule: "30 2 * * *"
     defragRule: "dbQuotaUsage > 0.5 || dbSize - dbSizeInUse > 200*1024*1024"
-    leaderLast: true        # → --move-leader
     waitBetweenDefrags: "1m"
     autoDisalarm: false
+  # NOTE: --move-leader (leader-last ordering) is mandatory and hardcoded in
+  # the chart template; it is intentionally NOT surfaced as an override key.
   ```
 
   ## Snapshot (optional, disabled by default)
