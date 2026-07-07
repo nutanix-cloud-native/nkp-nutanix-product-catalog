@@ -51,10 +51,7 @@ applications:
   - name: nkp-etcd-maintenance
     version: 0.3.0
     images:
-      # TODO(before stable bundling): move from the personal GHCR namespace
-      # (harshjha-nuta) to oci://ghcr.io/nutanix-cloud-native/charts and
-      # update this entry + the OCIRepository.url in the manifest accordingly.
-      - oci://ghcr.io/harshjha-nuta/charts/nkp-etcd-maintenance:0.3.0
+      - oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance:0.3.0
       - ghcr.io/ahrtr/etcd-defrag:v0.40.0
       # Phase 5 snapshot images. Pulled by the snapshot CronJob only when
       # snapshot.enabled=true.

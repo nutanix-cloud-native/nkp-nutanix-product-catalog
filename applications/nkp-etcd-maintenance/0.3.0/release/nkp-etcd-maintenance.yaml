@@ -5,18 +5,12 @@
 # The chart was published with:
 #   helm package .
 #   helm push nkp-etcd-maintenance-0.3.0.tgz \
-#     oci://ghcr.io/harshjha-nuta/charts
+#     oci://ghcr.io/nutanix-cloud-native/charts
 #
 # The package on GHCR is set to public visibility so airgap-mirror tooling
 # and out-of-VPN reviewers can pull it without authentication:
-#   helm pull oci://ghcr.io/harshjha-nuta/charts/nkp-etcd-maintenance \
+#   helm pull oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance \
 #     --version 0.3.0
-#
-# TODO(before stable bundling): move this from a personal GHCR namespace
-# (harshjha-nuta) to the Nutanix-owned org namespace
-# `oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance` (same
-# pattern as ndk / nai-core / kserve in this catalog) and update the
-# `url:` below + the `artifacts.yaml` entry accordingly.
 # ---------------------------------------------------------------------------
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
@@ -25,7 +19,7 @@ metadata:
   namespace: ${releaseNamespace}
 spec:
   interval: 1m
-  url: "oci://ghcr.io/harshjha-nuta/charts/nkp-etcd-maintenance"
+  url: "oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance"
   ref:
     tag: 0.3.0
 ---
