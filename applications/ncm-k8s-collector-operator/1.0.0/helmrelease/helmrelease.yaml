@@ -1,0 +1,36 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 6h0m0s
+  ref:
+    tag: 1.0.0
+  url: oci://<registry>/<org-name>/<repo-name>
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ncm-k8s-collector-operator
+  namespace: ${releaseNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-1.0.0-chart
+    namespace: ${releaseNamespace}
+  install:
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 30
+  interval: 15s
+  targetNamespace: ${releaseNamespace}
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-1.0.0-config-defaults
+---

@@ -1,0 +1,23 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: NCM K8s Collector
+description: >-
+  NKP OpenTelemetry collector stack (cluster-collector Deployment + node-collector
+  DaemonSet) deployed to workspace clusters and configured by the ncm-k8s-collector-operator.
+allowMultipleInstances: true
+type: internal
+category:
+- monitoring
+- observability
+licensing:
+- Pro
+- Ultimate
+scope:
+- project
+icon: ""
+overview: |-
+  # Telemetry Collector
+
+  The `nkp-otel` collector stack: a cluster-collector (Deployment) and a
+  node-collector (DaemonSet) that gather Kubernetes metrics, logs, and object
+  snapshots and export them to one or more backends.
+---

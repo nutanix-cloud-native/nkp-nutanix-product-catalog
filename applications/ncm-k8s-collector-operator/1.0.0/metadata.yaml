@@ -1,0 +1,29 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: NCM K8s Collector Operator
+description: Unified Multi-Cluster Telemetry Operator. Reconciles telemetry.platform/v1 TelemetryIntent custom resources into merged OpenTelemetry Collector configs and deploys a single collector per workspace across the management and all attached workload clusters.
+allowMultipleInstances: false
+category:
+- observability
+licensing:
+- Pro
+- Ultimate
+scope:
+- workspace
+icon: ""
+overview: |-
+  ## Overview
+  UMTO is a single collector operator that lets multiple products declare the
+  telemetry they want via a `telemetry.platform/v1` `TelemetryIntent` CR. It:
+
+  - Merges every intent in a workspace into two OpenTelemetry Collector configs
+    per cluster (a per-node DaemonSet config and a cluster-singleton Deployment
+    config) using an embedded, version-pinned catalog (the Planner).
+  - Deploys one collector App per workspace on the management cluster and every
+    attached workload cluster, plus any cluster attached in the future, with no
+    human action (the Distributor).
+  - Materializes per-tenant exporter credentials on each workload cluster via
+    External Secrets Operator `ExternalSecret` + `PushSecret` (the Auth path).
+
+  Deleting every intent triggers a clean tear-down of the collectors across all
+  clusters, driven by a finalizer on each `TelemetryIntent`.
+---
