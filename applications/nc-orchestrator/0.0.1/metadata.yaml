@@ -1,0 +1,15 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+allowMultipleInstances: true
+category:
+- general
+description: ""
+displayName: nc-orchestrator
+icon: ""
+licensing:
+- Pro
+- Ultimate
+overview: ""
+scope:
+- project
+supportLink: ""
+---
