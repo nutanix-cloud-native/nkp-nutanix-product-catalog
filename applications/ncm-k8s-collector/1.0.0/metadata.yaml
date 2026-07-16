@@ -1,18 +1,19 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
-displayName: NCM K8s Collector
+displayName: Nutanix K8s Collector
 description: >-
   NKP OpenTelemetry collector stack (cluster-collector Deployment + node-collector
   DaemonSet) deployed to workspace clusters and configured by the ncm-k8s-collector-operator.
-allowMultipleInstances: true
+allowMultipleInstances: false
 type: internal
 category:
 - monitoring
 - observability
 licensing:
+- Starter
 - Pro
 - Ultimate
 scope:
-- project
+- workspace
 icon: ""
 overview: |-
   # Telemetry Collector
