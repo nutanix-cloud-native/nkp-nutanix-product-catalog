@@ -5,7 +5,9 @@ type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.14.0"
 category:
-  - artificial-intelligence
+  - inferencing-and-serving
+appScreens:
+  - ai
 certifications:
   - nutanix-supported
   - airgapped
