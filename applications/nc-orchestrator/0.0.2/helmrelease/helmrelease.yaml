@@ -7,7 +7,7 @@ spec:
   interval: 6h0m0s
   ref:
     tag: 0.1.0
-  url: oci://harbor.eng.nutanix.com/nc-orchestrator
+  url: oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
