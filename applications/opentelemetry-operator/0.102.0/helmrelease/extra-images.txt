@@ -1,3 +1,0 @@
-docker.io/nutanix/nai-opentelemetry-collector-contrib:0.141.0
-docker.io/nutanix/nai-opentelemetry-operator:0.141.0
-docker.io/nutanix/nai-kube-rbac-proxy:v0.20.0

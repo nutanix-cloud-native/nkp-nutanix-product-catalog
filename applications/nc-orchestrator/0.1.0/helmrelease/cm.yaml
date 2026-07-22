@@ -1,0 +1,13 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    # Temporary workaround: chart 0.1.0 ikat subchart renders duplicate labels
+    # (app.kubernetes.io/instance and app.kubernetes.io/managed-by), which
+    # breaks nkp catalog validation YAML parsing.
+    nc-orchestrator-ikat:
+      enabled: false
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-config-defaults
+  namespace: ${releaseNamespace}
+---
