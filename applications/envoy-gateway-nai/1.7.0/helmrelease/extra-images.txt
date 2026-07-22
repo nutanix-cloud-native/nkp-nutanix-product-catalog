@@ -1,3 +1,0 @@
-docker.io/nutanix/nai-ratelimit:99d85510
-docker.io/nutanix/nai-gateway:v1.7.0
-docker.io/nutanix/nai-envoy:distroless-v1.37.0

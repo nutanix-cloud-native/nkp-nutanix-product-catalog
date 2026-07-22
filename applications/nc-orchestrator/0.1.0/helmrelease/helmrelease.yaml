@@ -4,7 +4,7 @@ metadata:
   name: ${releaseName}-chart
   namespace: ${releaseNamespace}
 spec:
-  interval: 6h0m0s
+  interval: 1m
   ref:
     tag: 0.1.0
   url: oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator
