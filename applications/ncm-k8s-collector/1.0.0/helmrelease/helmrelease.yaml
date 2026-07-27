@@ -7,7 +7,7 @@ spec:
   interval: 6h0m0s
   ref:
     tag: 1.0.0
-  url: oci://<registry>/<org-name>/<repo-name>
+  url: oci://harbor.eng.nutanix.com/ncm-k8s/nkp-otel
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
