@@ -1,5 +1,6 @@
+---
 schema: catalog.nkp.nutanix.com/v1/application-metadata
-displayName: Nutanix k8s Collector Operator
+displayName: NCM k8s Collector Operator
 description: Unified Multi-Cluster Telemetry Operator. Reconciles telemetry.platform/v1 TelemetryIntent custom resources into merged OpenTelemetry Collector configs and deploys a single set of collectors per managed k8s cluster.
 allowMultipleInstances: false
 type: internal
@@ -27,4 +28,3 @@ overview: |-
 
   Deleting every intent triggers a clean tear-down of the collectors across all
   clusters, driven by a finalizer on each `TelemetryIntent`.
----

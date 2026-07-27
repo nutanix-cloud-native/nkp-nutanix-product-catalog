@@ -1,3 +1,4 @@
+---
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
@@ -33,4 +34,3 @@ spec:
   valuesFrom:
   - kind: ConfigMap
     name: ${releaseName}-1.0.0-config-defaults
----
