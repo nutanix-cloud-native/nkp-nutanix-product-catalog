@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ${releaseName}-chart
+  name: ${releaseName}-1.0.0-chart
   namespace: ${releaseNamespace}
 spec:
   interval: 6h0m0s

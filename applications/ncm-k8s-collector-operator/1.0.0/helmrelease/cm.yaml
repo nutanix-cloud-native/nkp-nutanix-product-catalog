@@ -4,5 +4,5 @@ data:
   values.yaml: ""
 kind: ConfigMap
 metadata:
-  name: ${releaseName}-config-defaults
+  name: ${releaseName}-1.0.0-config-defaults
   namespace: ${releaseNamespace}
