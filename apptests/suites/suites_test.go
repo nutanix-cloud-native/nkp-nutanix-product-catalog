@@ -10,6 +10,7 @@ import (
 // applications/ gets a default install + upgrade test.
 var skipApps = []string{
 	// TODO: non-standard layout + deps
+
 	"ndk", "nutanix-ai",
 	// TODO: need dependencies
 	"opentelemetry-operator",
