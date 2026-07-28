@@ -19,3 +19,4 @@ additional_crds: []
 substitution_vars:
   releaseName: ncm-k8s-collector
   releaseNamespace: kommander
+  appVersion: 1.0.0

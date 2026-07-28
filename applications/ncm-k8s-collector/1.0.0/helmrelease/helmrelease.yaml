@@ -2,7 +2,7 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ${releaseName}-1.0.0-chart
+  name: ${releaseName}-${appVersion}-chart
   namespace: ${releaseNamespace}
 spec:
   interval: 6h0m0s
@@ -18,7 +18,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: ${releaseName}-1.0.0-chart
+    name: ${releaseName}-${appVersion}-chart
     namespace: ${releaseNamespace}
   install:
     crds: CreateReplace
@@ -33,4 +33,4 @@ spec:
       retries: 30
   valuesFrom:
   - kind: ConfigMap
-    name: ${releaseName}-1.0.0-config-defaults
+    name: ${releaseName}-${appVersion}-config-defaults
