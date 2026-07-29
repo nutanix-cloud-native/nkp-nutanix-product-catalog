@@ -2,7 +2,7 @@ name: E2E Tests
 
 on:
   pull_request:
-    branches: [main]
+    branches: ["release-*", main]
     types: [opened, synchronize, labeled]
   workflow_dispatch:
     inputs:
@@ -15,7 +15,7 @@ on:
         required: false
         type: string
   push:
-    branches: [main]
+    branches: ["release-*", main]
     paths: ["apptests/**"]
 
 concurrency:
