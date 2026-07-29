@@ -31,6 +31,3 @@ spec:
     crds: CreateReplace
     remediation:
       retries: 30
-  valuesFrom:
-  - kind: ConfigMap
-    name: ${releaseName}-${appVersion}-config-defaults

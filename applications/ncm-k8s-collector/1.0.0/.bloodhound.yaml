@@ -14,9 +14,3 @@ skip_types: []
 
 # load additional CRDs (URLs of CRD yaml files)
 additional_crds: []
-
-# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
-substitution_vars:
-  releaseName: ncm-k8s-collector
-  releaseNamespace: kommander
-  appVersion: 1.0.0

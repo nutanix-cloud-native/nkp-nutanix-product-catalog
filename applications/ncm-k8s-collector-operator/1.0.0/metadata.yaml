@@ -6,8 +6,10 @@ allowMultipleInstances: false
 type: internal
 category:
 - observability
+certifications:
+- nutanix-supported
+- airgapped
 licensing:
-- Starter
 - Pro
 - Ultimate
 scope:

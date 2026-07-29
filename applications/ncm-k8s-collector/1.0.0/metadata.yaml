@@ -9,8 +9,10 @@ type: internal
 category:
 - monitoring
 - observability
+certifications:
+- nutanix-supported
+- airgapped
 licensing:
-- Starter
 - Pro
 - Ultimate
 scope:
