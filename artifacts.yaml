@@ -6,6 +6,8 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.6.3
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.15.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:1.0.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.1.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.4.0
@@ -44,6 +46,17 @@ applications:
       - docker.io/nutanix/nai-kserve-controller:v0.15.0
       - docker.io/nutanix/nai-kube-rbac-proxy:v0.18.0
       - quay.io/brancz/kube-rbac-proxy:v0.18.0
+  - name: ncm-k8s-collector
+    version: 1.0.0
+    images:
+      - oci://harbor.eng.nutanix.com/ncm-k8s/nkp-otel:1.0.0
+      - harbor.eng.nutanix.com/ncm-k8s/opentelemetry-collector-contrib:0.153.0
+      - harbor.eng.nutanix.com/ncm/ncm-otel-collector:0.153.0-ncm.1
+  - name: ncm-k8s-collector-operator
+    version: 1.0.0
+    images:
+      - oci://harbor.eng.nutanix.com/ncm-k8s/ntnx-k8s-collector-operator:1.0.0
+      - harbor.eng.nutanix.com/ncm-k8s/telemetry-operator:1.0.0
   - name: ndk
     version: 2.0.0
     images:
