@@ -1,0 +1,27 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: LeaderWorkerSet
+description: Kubernetes LeaderWorkerSet (LWS) operator for multi-node leader/worker workloads.
+type: nkp-catalog
+allowMultipleInstances: false
+nkpVersionSupport: ">=2.18.0"
+category:
+  - inferencing-and-serving
+appScreens:
+  - ai
+certifications:
+  - nutanix-supported
+  - airgapped
+licensing:
+  - Pro
+  - Ultimate
+dependencies:
+  - cert-manager
+scope:
+  - workspace
+icon: PHN2Zy8+
+overview: |-
+  ## For Information on Features
+  - [LeaderWorkerSet (LWS)](https://lws.sigs.k8s.io/)
+
+  ## Prerequisites and Configuration Guide
+  ### Before you begin, ensure that you have a NKP cluster running Kubernetes version >= 1.35

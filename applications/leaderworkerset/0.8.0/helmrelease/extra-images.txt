@@ -1,0 +1,1 @@
+docker.io/nutanix/nai-lws:v0.8.0
