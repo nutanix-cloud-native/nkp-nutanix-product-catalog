@@ -6,9 +6,9 @@ metadata:
   namespace: ${workspaceNamespace}
 spec:
   interval: 1m
-  url: "oci://ghcr.io/mesosphere/charts/nai-operators"
+  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-operators"
   ref:
-    tag: 2.8.0
+    tag: 2.8.0-rc2
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy

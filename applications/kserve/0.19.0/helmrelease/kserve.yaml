@@ -5,7 +5,7 @@ metadata:
   name: ${releaseName}-0.19.0-chart
   namespace: ${workspaceNamespace}
 spec:
-  url: oci://ghcr.io/kserve/charts/kserve
+  url: oci://ghcr.io/kserve/charts/kserve-resources
   ref:
     tag: v0.19.0
   interval: 10m
