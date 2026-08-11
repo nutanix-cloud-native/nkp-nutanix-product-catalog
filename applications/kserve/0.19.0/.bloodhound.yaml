@@ -6,7 +6,32 @@ k8s_versions:
 # use strict validation (reject unknown fields in resources)
 strict: true
 
+# Types rendered by the KServe chart that are not in the default K8s schema
+skip_types:
+  # Cert Manager
+  - cert-manager.io/v1/Certificate
+  - cert-manager.io/v1/Issuer
+  # KServe
+  - serving.kserve.io/v1alpha1/ClusterServingRuntime
+  - serving.kserve.io/v1alpha1/ClusterStorageContainer
+  - serving.kserve.io/v1alpha1/InferenceGraph
+  - serving.kserve.io/v1beta1/InferenceService
+  - serving.kserve.io/v1alpha1/LLMInferenceServiceConfig
+  - serving.kserve.io/v1alpha1/LLMInferenceService
+  - serving.kserve.io/v1alpha2/LLMInferenceServiceConfig
+  - serving.kserve.io/v1alpha2/LLMInferenceService
+  - serving.kserve.io/v1alpha1/ServingRuntime
+  - serving.kserve.io/v1alpha1/TrainedModel
+
 # load additional CRDs (URLs of CRD yaml files)
 additional_crds:
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/serving.kserve.io_clusterservingruntimes.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/clusterstoragecontainer/serving.kserve.io_clusterstoragecontainers.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/serving.kserve.io_inferencegraphs.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/serving.kserve.io_inferenceservices.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/serving.kserve.io_servingruntimes.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/serving.kserve.io_trainedmodels.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/llmisvc/serving.kserve.io_llminferenceserviceconfigs.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/llmisvc/serving.kserve.io_llminferenceservices.yaml
