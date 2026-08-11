@@ -103,7 +103,6 @@ jobs:
         with:
           enable-cache: true
           skip-nix-installation: true
-
       - name: Run E2E tests
         env:
           SKIP_CLUSTER_TEARDOWN: "true"
