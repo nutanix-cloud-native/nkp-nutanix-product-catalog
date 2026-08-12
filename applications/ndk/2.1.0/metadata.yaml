@@ -3,7 +3,7 @@ displayName: Nutanix Data Services for Kubernetes
 description: Nutanix Data Services for Kubernetes
 type: nkp-catalog
 allowMultipleInstances: false
-nkpVersionSupport: ">=2.18.0 <2.19.0"
+nkpVersionSupport: ">=2.18.0 <2.20.0"
 category:
   - application-and-data-management
 certifications:

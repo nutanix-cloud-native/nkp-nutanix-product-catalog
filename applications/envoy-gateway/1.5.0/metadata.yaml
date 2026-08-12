@@ -7,7 +7,6 @@ nkpVersionSupport: ">=2.16.0 <2.18.0"
 category:
   - networking
 certifications:
-  - nutanix-supported
   - airgapped
 licensing:
   - Pro

@@ -3,7 +3,7 @@ displayName: Nutanix Enterprise AI
 description: Inference endpoint management platform.
 type: nkp-catalog
 allowMultipleInstances: false
-nkpVersionSupport: ">=2.17.1 <2.19.0"
+nkpVersionSupport: ">=2.17.1 <2.20.0"
 category:
   - inferencing-and-serving
 appScreens:

@@ -10,7 +10,6 @@ appScreens:
   - general
   - ai
 certifications:
-  - nutanix-supported
   - airgapped
 licensing:
   - Pro
