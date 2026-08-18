@@ -3,9 +3,12 @@ applications:
     version: ""
     images:
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway-nai:1.7.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway-nai:1.8.1
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.6.3
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.15.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.19.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/leaderworkerset:0.8.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
@@ -14,7 +17,9 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.6.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.7.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.8.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.102.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.114.1
       - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.93.0
   - name: envoy-gateway
     version: 1.5.0
@@ -37,6 +42,13 @@ applications:
       - docker.io/nutanix/nai-envoy:distroless-v1.37.0
       - docker.io/nutanix/nai-gateway:v1.7.0
       - docker.io/nutanix/nai-ratelimit:99d85510
+  - name: envoy-gateway-nai
+    version: 1.8.1
+    images:
+      - oci://docker.io/envoyproxy/gateway-helm:v1.8.1
+      - docker.io/envoyproxy/envoy:distroless-v1.38.0
+      - docker.io/envoyproxy/gateway:v1.8.1
+      - docker.io/nutanix/nai-ratelimit:1e50889b
   - name: kserve
     version: 0.15.0
     images:
@@ -46,6 +58,21 @@ applications:
       - docker.io/nutanix/nai-kserve-controller:v0.15.0
       - docker.io/nutanix/nai-kube-rbac-proxy:v0.18.0
       - quay.io/brancz/kube-rbac-proxy:v0.18.0
+  - name: kserve
+    version: 0.19.0
+    images:
+      - oci://ghcr.io/kserve/charts/kserve-crd:v0.15.0
+      - oci://ghcr.io/kserve/charts/kserve-llmisvc-crd:v0.19.0
+      - oci://ghcr.io/kserve/charts/kserve-llmisvc-resources:v0.19.0
+      - oci://ghcr.io/kserve/charts/kserve-resources:v0.19.0
+      - docker.io/kserve/kserve-controller:v0.19.0
+      - docker.io/kserve/llmisvc-controller:v0.19.0
+      - quay.io/brancz/kube-rbac-proxy:v0.18.0
+  - name: leaderworkerset
+    version: 0.8.0
+    images:
+      - oci://registry.k8s.io/lws/charts/lws:0.8.0
+      - registry.k8s.io/lws/lws:v0.8.0
   - name: ncm-k8s-collector
     version: 1.0.0
     images:
@@ -185,6 +212,44 @@ applications:
       - docker.io/nutanix/nai-vllm:v0.10.2-gpu
       - docker.io/nutanix/nai-vllm:v0.20.0
       - docker.io/nutanix/nai-vllm:v0.20.0-gpu
+  - name: nutanix-ai
+    version: 2.8.0
+    images:
+      - oci://repos.ntnxdpro.com/ai-nai-core/nai-core:2.8.0
+      - oci://repos.ntnxdpro.com/ai-nai-core/nai-operators:2.8.0
+      - docker.io/mesosphere/kubectl:v1.35.2-alpine
+      - docker.io/nutanix/nai-agent-app:v2.8.0
+      - docker.io/nutanix/nai-ai-gateway-controller:v1.0.0
+      - docker.io/nutanix/nai-ai-gateway-extproc:v1.0.0
+      - docker.io/nutanix/nai-api:v2.8.0
+      - docker.io/nutanix/nai-clickhouse-keeper:25.8.17.37
+      - docker.io/nutanix/nai-clickhouse-metrics-exporter:0.27.2
+      - docker.io/nutanix/nai-clickhouse-operator:0.27.2
+      - docker.io/nutanix/nai-clickhouse-schemas:2.1.4
+      - docker.io/nutanix/nai-clickhouse-server:25.8.17.37
+      - docker.io/nutanix/nai-clickhouse-udf:v2.8.0
+      - docker.io/nutanix/nai-epp-inference-scheduler:v1.2.1-98db134-982d862
+      - docker.io/nutanix/nai-finetuning:v2.8.0
+      - docker.io/nutanix/nai-go-processor:v2.8.0
+      - docker.io/nutanix/nai-iam-bootstrap:v2.8.0
+      - docker.io/nutanix/nai-iam-proxy-control-plane:v2.8.0
+      - docker.io/nutanix/nai-iam-proxy:v2.8.0
+      - docker.io/nutanix/nai-iam-themis:v2.8.0
+      - docker.io/nutanix/nai-iam-ui:v2.8.0
+      - docker.io/nutanix/nai-iam-user-authn:v2.8.0
+      - docker.io/nutanix/nai-iep-operator:v2.8.0
+      - docker.io/nutanix/nai-inference-ui:v2.8.0
+      - docker.io/nutanix/nai-jobs:v2.8.0
+      - docker.io/nutanix/nai-kserve-custom-model-server:v2.8.0
+      - docker.io/nutanix/nai-oauth2-proxy:v7.9.0
+      - docker.io/nutanix/nai-postgresql:17.10-standard-trixie
+      - docker.io/nutanix/nai-python-processor:v2.8.0
+      - docker.io/nutanix/nai-rag-app:v2.8.0
+      - docker.io/nutanix/nai-target-allocator:0.152.0
+      - docker.io/nutanix/nai-valkey:9.1.0
+      - docker.io/nutanix/nai-vllm:v0.10.2-gpu
+      - docker.io/nutanix/nai-vllm:v0.26.0
+      - docker.io/nutanix/nai-vllm:v0.26.0-gpu
   - name: opentelemetry-operator
     version: 0.102.0
     images:
@@ -194,6 +259,12 @@ applications:
       - docker.io/nutanix/nai-opentelemetry-operator:0.141.0
       - ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator:0.141.0
       - quay.io/brancz/kube-rbac-proxy:v0.20.0
+  - name: opentelemetry-operator
+    version: 0.114.1
+    images:
+      - oci://ghcr.io/open-telemetry/opentelemetry-helm-charts/opentelemetry-operator:0.114.1
+      - docker.io/nutanix/nai-opentelemetry-collector-contrib:0.152.0
+      - ghcr.io/open-telemetry/opentelemetry-operator/opentelemetry-operator:0.152.0
   - name: opentelemetry-operator
     version: 0.93.0
     images:

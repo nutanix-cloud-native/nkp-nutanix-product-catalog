@@ -1,1 +1,2 @@
 docker.io/nutanix/nai-ratelimit:1e50889b
+docker.io/envoyproxy/envoy:distroless-v1.38.0
