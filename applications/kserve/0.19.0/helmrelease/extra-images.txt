@@ -1,3 +1,0 @@
-docker.io/nutanix/nai-kube-rbac-proxy:v0.18.0
-docker.io/nutanix/nai-kserve-controller:v0.19.0
-docker.io/nutanix/nai-llmisvc-controller:v0.19.0
