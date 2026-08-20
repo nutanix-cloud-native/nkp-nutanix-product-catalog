@@ -61,7 +61,7 @@ applications:
   - name: kserve
     version: 0.19.0
     images:
-      - oci://ghcr.io/kserve/charts/kserve-crd:v0.15.0
+      - oci://ghcr.io/kserve/charts/kserve-crd:v0.19.0
       - oci://ghcr.io/kserve/charts/kserve-llmisvc-crd:v0.19.0
       - oci://ghcr.io/kserve/charts/kserve-llmisvc-resources:v0.19.0
       - oci://ghcr.io/kserve/charts/kserve-resources:v0.19.0
@@ -215,8 +215,8 @@ applications:
   - name: nutanix-ai
     version: 2.8.0
     images:
-      - oci://repos.ntnxdpro.com/ai-nai-core/nai-core:2.8.0
-      - oci://repos.ntnxdpro.com/ai-nai-core/nai-operators:2.8.0
+      - oci://ghcr.io/mesosphere/charts/nai-core:2.8.0
+      - oci://ghcr.io/mesosphere/charts/nai-operators:2.8.0
       - docker.io/mesosphere/kubectl:v1.35.2-alpine
       - docker.io/nutanix/nai-agent-app:v2.8.0
       - docker.io/nutanix/nai-ai-gateway-controller:v1.0.0
