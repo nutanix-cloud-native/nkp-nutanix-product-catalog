@@ -1,4 +1,8 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
+# NOTE:
+# - Keep <=2.19 entries on legacy "x-airgapped" tags and "airgapped-..." file names.
+# - For versions >2.19, add entries using "<major>.<minor>.x-full"
+#   and file names prefixed with "full-".
 releases:
   - tagName: "2.19.x-airgapped"
     fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
