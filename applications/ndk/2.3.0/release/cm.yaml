@@ -19,6 +19,9 @@ data:
     jobScheduler:
       repository: docker.io/nutanix/ndk-job-scheduler
       pullPolicy: IfNotPresent
+    ui:
+      repository: docker.io/nutanix/ndk-ui
+      pullPolicy: IfNotPresent
     kubectl:
       repository: docker.io/nutanix/kubectl
       tag: 1.36.3
