@@ -4,7 +4,7 @@ releases:
     fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
     applications:
       - name: ndk
-        version: "2.1.0"
+        version: "2.3.0"
   - tagName: 2.19
     fileName: stable-nkp-nutanix-product-catalog-2.19.tar
     applications:
@@ -19,12 +19,12 @@ releases:
       - name: leaderworkerset
         version: "0.8.0"
       - name: ndk
-        version: "2.1.0"
+        version: "2.3.0"
   - tagName: "2.18.x-airgapped"
     fileName: airgapped-nkp-nutanix-product-catalog-2.18.tar
     applications:
       - name: ndk
-        version: "2.1.0"
+        version: "2.3.0"
   - tagName: 2.18
     fileName: stable-nkp-nutanix-product-catalog-2.18.tar
     applications:
@@ -47,7 +47,7 @@ releases:
       - name: leaderworkerset
         version: "0.8.0"
       - name: ndk
-        version: "2.1.0"
+        version: "2.3.0"
   - tagName: 2.17
     fileName: stable-nkp-nutanix-product-catalog-2.17.tar
     applications:
