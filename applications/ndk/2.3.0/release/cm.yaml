@@ -6,7 +6,7 @@ metadata:
   namespace: ${releaseNamespace}
 data:
   values.yaml: |-
-    dryRun: true
+    dryRun: ${dryRun:=""} # This is set when running in CI/CD pipelines. Defaults to false in real clusters.
     manager:
       repository: docker.io/nutanix/ndk-manager
       pullPolicy: IfNotPresent
