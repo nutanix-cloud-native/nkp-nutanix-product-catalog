@@ -5,6 +5,8 @@ releases:
     applications:
       - name: ndk
         version: "2.1.0"
+      - name: ndk
+        version: "2.3.0"
 
   - tagName: "2.19.x-airgapped"
     fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
