@@ -11,3 +11,6 @@ strict: true
 additional_crds:
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
  - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
+
+substitution_vars:
+  dryRun: "nonEmptyIsTruthy"
