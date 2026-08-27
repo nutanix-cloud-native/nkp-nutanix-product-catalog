@@ -112,7 +112,6 @@ applications:
       - docker.io/nutanix/ndk-infra-manager:2.3.0
       - docker.io/nutanix/ndk-job-scheduler:2.3.0
       - docker.io/nutanix/ndk-manager:2.3.0
-      - docker.io/nutanix/ndk-ui:2.3.0
   - name: nutanix-ai
     version: 2.4.0
     images:
