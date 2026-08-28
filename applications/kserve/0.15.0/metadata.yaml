@@ -9,7 +9,6 @@ category:
 appScreens:
   - ai
 certifications:
-  - nutanix-supported
   - airgapped
 licensing:
   - Pro
