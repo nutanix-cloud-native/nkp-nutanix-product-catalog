@@ -5,7 +5,7 @@ metadata:
   name: ${releaseName}-nai-operators-2.8.0-chart
   namespace: ${workspaceNamespace}
 spec:
-  interval: 1m
+  interval: 24h
   url: "oci://ghcr.io/mesosphere/charts/nai-operators"
   ref:
     tag: 2.8.0

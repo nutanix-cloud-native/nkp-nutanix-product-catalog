@@ -8,7 +8,7 @@ spec:
   url: oci://ghcr.io/kserve/charts/kserve-llmisvc-resources
   ref:
     tag: v0.19.0
-  interval: 10m
+  interval: 24h
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
