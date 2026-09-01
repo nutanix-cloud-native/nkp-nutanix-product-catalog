@@ -1,10 +1,10 @@
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: OCIRepository
 metadata:
-  name: ${releaseName}-chart
+  name: ${releaseName}-${appVersion}-chart
   namespace: ${releaseNamespace}
 spec:
-  interval: 1m
+  interval: 24h
   ref:
     tag: 1.0.3
   url: oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator
@@ -17,7 +17,7 @@ metadata:
 spec:
   chartRef:
     kind: OCIRepository
-    name: ${releaseName}-chart
+    name: ${releaseName}-${appVersion}-chart
     namespace: ${releaseNamespace}
   install:
     crds: CreateReplace
