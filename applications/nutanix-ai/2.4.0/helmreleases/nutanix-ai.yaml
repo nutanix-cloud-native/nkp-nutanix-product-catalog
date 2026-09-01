@@ -4,7 +4,7 @@ metadata:
   name: ${releaseName}-2.4.0-chart
   namespace: ${workspaceNamespace}
 spec:
-  interval: 1m
+  interval: 24h
   url: "${ociRegistryURL:=oci://ghcr.io}/mesosphere/charts/nai-core"
   ref:
     tag: 2.4.0

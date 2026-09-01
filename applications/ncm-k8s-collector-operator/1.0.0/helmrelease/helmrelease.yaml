@@ -5,7 +5,7 @@ metadata:
   name: ${releaseName}-${appVersion}-chart
   namespace: ${releaseNamespace}
 spec:
-  interval: 6h0m0s
+  interval: 24h
   ref:
     tag: 1.0.0
   url: oci://harbor.eng.nutanix.com/ncm-k8s/ntnx-k8s-collector-operator
