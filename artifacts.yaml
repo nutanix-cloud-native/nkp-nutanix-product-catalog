@@ -9,6 +9,7 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.15.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.19.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/leaderworkerset:0.8.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/nc-orchestrator:1.0.3
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
@@ -73,6 +74,13 @@ applications:
     images:
       - oci://registry.k8s.io/lws/charts/lws:0.8.0
       - registry.k8s.io/lws/lws:v0.8.0
+  - name: nc-orchestrator
+    version: 1.0.3
+    images:
+      - oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator:1.0.3
+      - harbor.eng.nutanix.com/nc-orchestrator/ikat-control-plane:1.0.0
+      - harbor.eng.nutanix.com/nc-orchestrator/ikat-proxy:1.0.0
+      - harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-6cd958a
   - name: ncm-k8s-collector
     version: 1.0.0
     images:

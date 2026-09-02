@@ -1,0 +1,39 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    nc-orchestrator-ikat:
+      enabled: true
+      ikatProxy:
+        command:
+          - /usr/local/bin/envoy
+          - -c
+          - /etc/config/ikat_proxy/envoy-hub.yaml
+          - -l
+          - "$(ENVOY_LOG_LEVEL)"
+          - --concurrency
+          - "$(ENVOY_CONCURRENCY)"
+          - --base-id
+          - "100"
+    nc-celine:
+      podManager:
+        celine:
+          image:
+            repository: harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator
+            tag: precommit-nutanix-central-orchestrator-6cd958a
+            pullPolicy: IfNotPresent
+          config:
+            deploymentPlatform: NKP
+            host: "0.0.0.0"
+            port: "8091"
+            configClient: k8s
+            ikatClient: service
+            ncClient: service
+            ikatHost: nc-orchestrator-ikat.ntnx-ikat.svc
+            ikatTransportServicePort: 9462
+            openapiStorePath: "/opt/celine/config"
+            circuitBreakerConfigPath: "/opt/celine/config/circuit_breaker_config.yaml"
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-config-defaults
+  namespace: ${releaseNamespace}
+---

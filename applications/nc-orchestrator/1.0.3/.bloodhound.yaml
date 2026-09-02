@@ -1,0 +1,8 @@
+k8s_versions:
+  - 1.35.0
+  - 1.36.0
+
+strict: true
+
+additional_crds:
+  - https://raw.githubusercontent.com/traefik/traefik/v3.7/docs/content/reference/dynamic-configuration/kubernetes-crd-definition-v1.yml
