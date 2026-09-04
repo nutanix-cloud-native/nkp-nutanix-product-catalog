@@ -1,7 +1,15 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
+  - tagName: "2.20.x-airgapped"
+    fileName: airgapped-nkp-nutanix-product-catalog-2.20.tar
+    constraints:
+      nkpVersion: "2.20"
+  - tagName: "2.20"
+    fileName: stable-nkp-nutanix-product-catalog-2.19.tar
+    constraints:
+      nkpVersion: "2.20"
   - tagName: "2.19.x-airgapped"
-    fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
+    fileName: airgapped-nkp-nutanix-product-catalog-2.20.tar
     applications:
       - name: ndk
         version: "2.1.0"
