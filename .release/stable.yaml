@@ -5,11 +5,11 @@ releases:
     constraints:
       nkpVersion: "2.20"
   - tagName: "2.20"
-    fileName: stable-nkp-nutanix-product-catalog-2.19.tar
+    fileName: stable-nkp-nutanix-product-catalog-2.20.tar
     constraints:
       nkpVersion: "2.20"
   - tagName: "2.19.x-airgapped"
-    fileName: airgapped-nkp-nutanix-product-catalog-2.20.tar
+    fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
     applications:
       - name: ndk
         version: "2.1.0"
