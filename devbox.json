@@ -5,9 +5,19 @@
     "awscli2@latest",
     "gettext@latest",
     "git@latest",
+    "go@latest",
+    "golangci-lint@latest",
+    "jq@latest",
     "just@latest",
+    "kind@latest",
+    "kubernetes-helm@latest",
     "pre-commit@latest",
     "shfmt@latest",
     "yq@latest"
-  ]
+  ],
+  "shell": {
+    "init_hook": [
+      "export PATH=$(pwd)/.local/bin:$PATH"
+    ]
+  }
 }
