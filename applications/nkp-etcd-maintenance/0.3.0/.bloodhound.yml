@@ -1,0 +1,24 @@
+# Kubernetes versions this app is validated against by `nkp validate
+# catalog-repository`. The version numbers must match the directory names
+# under https://github.com/yannh/kubernetes-json-schema.
+#
+# We claim 1.33–1.35 because:
+#   - 1.33 is the oldest supported by NKP 2.18.
+#   - 1.35 is what the Phase 2 end-to-end validation actually ran on
+#     (`nkp-harsh-test`, NKP v2.18.0-dev.41, K8s v1.35.2).
+k8s_versions:
+  - 1.33.0
+  - 1.34.0
+  - 1.35.0
+
+# Reject unknown fields. We use only stable, well-known APIs
+# (source.toolkit.fluxcd.io/v1, helm.toolkit.fluxcd.io/v2, core/v1).
+strict: true
+
+# Substitution variables used when bloodhound renders the templates before
+# validation. Match the values that Kommander injects at install time.
+substitution_vars:
+  releaseName: nkp-etcd-maintenance
+  releaseNamespace: kommander
+  workspaceNamespace: workspace
+  appVersion: 0.3.0
