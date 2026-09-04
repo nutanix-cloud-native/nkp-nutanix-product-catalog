@@ -14,6 +14,7 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.1.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.3.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.4.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.6.0
@@ -110,6 +111,15 @@ applications:
       - docker.io/nutanix/ndk-infra-manager:2.1.0
       - docker.io/nutanix/ndk-job-scheduler:2.1.0
       - docker.io/nutanix/ndk-manager:2.1.0
+  - name: ndk
+    version: 2.3.0
+    images:
+      - oci://ghcr.io/mesosphere/charts/ndk:2.3.0
+      - docker.io/nutanix/kube-rbac-proxy:v0.22.1
+      - docker.io/nutanix/kubectl:1.36.3
+      - docker.io/nutanix/ndk-infra-manager:2.3.0
+      - docker.io/nutanix/ndk-job-scheduler:2.3.0
+      - docker.io/nutanix/ndk-manager:2.3.0
   - name: nutanix-ai
     version: 2.4.0
     images:
