@@ -1,0 +1,66 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: Nutanix Data Hub (NDH)
+description: Nutanix Data Hub is a comprehensive data platform for Kubernetes.
+type: nkp-catalog # TODO: Should it be custom or nkp-catalog?
+allowMultipleInstances: false
+nkpVersionSupport: ">=2.16.0"
+category:
+- data-platform
+- data-services
+dependencies:
+  - kube-prometheus-stack
+  - loki
+icon: "" # TODO: Sanath, please provide the icon here.
+licensing:
+- Pro
+- Ultimate
+overview: |
+  # Nutanix Data Hub (NDH)
+
+  Nutanix Data Hub (NDH) is a comprehensive data platform for Kubernetes.
+
+  ## Prerequisites (REQUIRED)
+
+  Before enabling NDH, create the namespaces and the following secrets on the target cluster.
+  **Namespaces must exist before enabling;** NDH is installed with createNamespace: false so that
+  your namespaces and secrets are not deleted when NDH is disabled or uninstalled.
+
+  ### Container Image Registry Secrets (Artifactory)
+
+  Create in both application namespaces:
+
+  ```bash
+  # For NDH core components (create namespace first)
+  kubectl create namespace ndh-core
+
+  kubectl create secret docker-registry ndh-iep-secret \
+    --namespace=ndh-core \
+    --docker-server=<your-artifactory-server> \
+    --docker-username=<your-username> \
+    --docker-password=<your-api-key> \
+    --namespace=ndh-core
+
+  kubectl create secret dl-collector-certs \
+    --from-file=.crypto.priv=<your-dl-key> \
+    --from-file=dl_collector.crt=<your-dl-crt> \
+    --from-file=dl_collector.pem=<your-dl-pem> \
+    --namespace=ndh-core
+
+  # For NDH operators (create namespace first)
+  kubectl create namespace ndh-operators
+
+  kubectl create secret docker-registry ndh-iep-secret \
+    --namespace=ndh-core \
+    --docker-server=<your-artifactory-server> \
+    --docker-username=<your-username> \
+    --docker-password=<your-api-key> \
+    --namespace=ndh-operators
+  ```
+
+  ## Resource Requirements
+
+  NDH requires approximately 8 worker nodes with 4 CPU / 8GB RAM each.
+scope:
+- workspace
+supportLink: "https://google.com" # TODO: Sanath, please provide the support link here
+---

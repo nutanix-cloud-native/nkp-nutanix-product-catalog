@@ -1,0 +1,99 @@
+# OCI Repository for the NDH operators
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-operators-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 6h0m0s
+  ref:
+    tag: 0.1.0
+  url: "oci://repos.ntnxdpro.com/ndh/ndh-operators"
+---
+# OCI Repository for the NDH core
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-core-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 6h0m0s
+  ref:
+    tag: 0.1.0
+  url: "oci://repos.ntnxdpro.com/ndh/ndh-core"
+---
+# Helm Release for the NDH operators
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${releaseName}-operators
+  namespace: ${releaseNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-operators-chart
+    namespace: ${releaseNamespace}
+  install:
+    crds: CreateReplace
+    # false = do not create/manage namespace; user must pre-create ndh-operators and secrets (avoids deleting namespace on uninstall)
+    createNamespace: false
+    remediation:
+      retries: 30
+  uninstall:
+    timeout: 5m
+  interval: 15s
+  targetNamespace: ndh-operators
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-operators-config
+  - kind: ConfigMap
+    name: ${releaseName}-config-overrides
+    optional: true
+  - kind: ConfigMap
+    name: ${releaseName}-cluster-overrides
+    optional: true
+---
+# Helm Release for the NDH core
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ${releaseName}-core
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+    - name: ${releaseName}-operators
+      namespace: ${releaseNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-core-chart
+    namespace: ${releaseNamespace}
+  install:
+    crds: CreateReplace
+    # false = do not create/manage namespace; user must pre-create ndh-core and secrets (avoids deleting namespace on uninstall)
+    createNamespace: false
+    remediation:
+      retries: 30
+    timeout: 20m
+  uninstall:
+    timeout: 10m
+  interval: 15s
+  targetNamespace: ndh-core
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+    timeout: 20m
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-core-config
+  - kind: ConfigMap
+    name: ${releaseName}-config-overrides
+    optional: true
+  - kind: ConfigMap
+    name: ${releaseName}-cluster-overrides
+    optional: true
+---
