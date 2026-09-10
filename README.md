@@ -77,7 +77,8 @@ images added. Reach out to `#nkp-catalog` on Slack with any questions.
 
 Full-bundle recipes use releases that set `includeApplicationImages: true` in
 `.release/dev.yaml` or `.release/stable.yaml`, so the tarball includes container
-images and OCI artifacts. See
+images and OCI artifacts. See the [.release/README.md](.release/README.md) for a
+list of all release spec files and their purposes. Also see
 [Continuous Delivery](https://nutanix-cloud-native.github.io/nkp-partner-catalog/docs/workflows/release)
 and the [catalog release specification](https://nutanix-cloud-native.github.io/nkp-partner-catalog/docs/api/release).
 

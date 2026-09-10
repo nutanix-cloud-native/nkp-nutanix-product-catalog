@@ -1,7 +1,7 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
   - tagName: "2.19"
-    fileName: nkp-nutanix-product-catalog-2.19-full.tar
+    fileName: nkp-nutanix-product-catalog-2.19.tar
     collectionAnnotations:
       org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     includeApplicationImages: true
@@ -10,7 +10,7 @@ releases:
       - name: ndk
         version: "2.1.0"
   - tagName: "2.18"
-    fileName: nkp-nutanix-product-catalog-2.18-full.tar
+    fileName: nkp-nutanix-product-catalog-2.18.tar
     collectionAnnotations:
       org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     includeApplicationImages: true
