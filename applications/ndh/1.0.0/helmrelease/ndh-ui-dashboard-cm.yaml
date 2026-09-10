@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ndh-ui
+  namespace: ${workspaceNamespace}
+  labels:
+    "kommander.d2iq.io/application": "ndh"
+  annotations:
+    "kustomize.toolkit.fluxcd.io/ssa": "Merge"
+data:
+  name: "NDH (Nutanix Data Hub)"
+  docsLink: "" # TODO: Add docs link
+  version: "1.0.0"

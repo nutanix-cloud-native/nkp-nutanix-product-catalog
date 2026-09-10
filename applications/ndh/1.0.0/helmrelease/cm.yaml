@@ -1,0 +1,28 @@
+# ConfigMap for NDH Operators default values
+# Users MUST pre-create the image pull secret before enabling NDH
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-operators-config
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |
+    # Reference to pre-created image pull secret (REQUIRED)
+    # Secret must be created in the target namespace before enabling NDH
+    imagePullSecret:
+      name: ndh-iep-secret
+---
+# ConfigMap for NDH Core default values
+# Users MUST pre-create the image pull secret before enabling NDH
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-core-config
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |
+    # Reference to pre-created image pull secret (REQUIRED)
+    # Secret must be created in the target namespace before enabling NDH
+    imagePullSecret:
+      name: ndh-iep-secret
+---
