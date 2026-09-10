@@ -8,7 +8,7 @@ releases:
     baseRegistry: ghcr.io/nutanix-cloud-native
     applications:
       - name: ndk
-        version: "2.1.0"
+        version: "2.3.0"
   - tagName: "2.18"
     fileName: nkp-nutanix-product-catalog-image-bundle-2.18.tar
     collectionAnnotations:
@@ -16,5 +16,7 @@ releases:
     includeApplicationImages: true
     baseRegistry: ghcr.io/nutanix-cloud-native
     applications:
+      - name: ndk
+        version: "2.3.0"
       - name: ndk
         version: "2.1.0"
