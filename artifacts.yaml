@@ -14,6 +14,7 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.1.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/nkp-etcd-maintenance:0.3.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.4.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.6.0
@@ -110,6 +111,15 @@ applications:
       - docker.io/nutanix/ndk-infra-manager:2.1.0
       - docker.io/nutanix/ndk-job-scheduler:2.1.0
       - docker.io/nutanix/ndk-manager:2.1.0
+  - name: nkp-etcd-maintenance
+    version: 0.3.0
+    images:
+      - oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance:0.3.0
+      - ghcr.io/ahrtr/etcd-defrag:v0.40.0
+      # Phase 5 snapshot images. Pulled by the snapshot CronJob only when
+      # snapshot.enabled=true.
+      - registry.k8s.io/etcd:3.5.15-0
+      - docker.io/minio/mc:RELEASE.2024-11-21T17-21-54Z
   - name: nutanix-ai
     version: 2.4.0
     images:

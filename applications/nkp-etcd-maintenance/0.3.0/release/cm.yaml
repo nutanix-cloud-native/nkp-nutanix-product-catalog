@@ -1,0 +1,186 @@
+---
+# ---------------------------------------------------------------------------
+# Catalog defaults ConfigMap.
+#
+# Sits at the second layer of the values-merge stack:
+#   1. Helm chart's bundled values.yaml      (inside the OCI chart)
+#   2. THIS ConfigMap                         (catalog default override)
+#   3. ${releaseName}-config-overrides        (user-supplied)
+#   4. ${releaseName}-cluster-overrides       (cluster/workspace policy)
+#
+# Keeping these defaults in the catalog (rather than only in the chart) lets
+# platform engineering tune a default without cutting a new chart release —
+# useful for, e.g., bumping the pinned `image.tag` after a CVE without
+# changing chart code.
+# ---------------------------------------------------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-${appVersion}-defaults
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |-
+    defragmentation:
+      enabled: true
+      # Daily at 02:30 cluster-local time.
+      schedule: "30 2 * * *"
+      # Defrag when DB is over 50% of quota OR there are >200 MiB of free pages.
+      defragRule: "dbQuotaUsage > 0.5 || dbSize - dbSizeInUse > 200*1024*1024"
+      # Etcd is reached on host loopback because the pod uses hostNetwork.
+      endpoint: "https://127.0.0.1:2379"
+      # Single run defrags every member and turns on the cluster-health pre-check.
+      cluster: true
+      # Leader-last ordering (--move-leader) is a MANDATORY safety invariant
+      # hardcoded in the chart's defrag CronJob template; do not surface a
+      # leaderLast key here — the chart does not consume one. See the chart
+      # README "Step 4 — Leader-safe ordering" for the full rationale.
+      # Pause between members so the cluster stabilises.
+      waitBetweenDefrags: "1m"
+      # Do NOT auto-clear NOSPACE alarms — operators review them.
+      autoDisalarm: false
+      # Kubeadm canonical PKI directory.
+      etcdPkiHostPath: /etc/kubernetes/pki/etcd
+
+    # ----------------------------------------------------------------
+    # Snapshot CronJob (Phase 5). DISABLED by default — enabling it
+    # requires the operator to also supply:
+    #   - snapshot.s3.endpoint
+    #   - snapshot.s3.bucket
+    #   - snapshot.s3.credentialsSecret.name (SecretRef; chart never
+    #     receives the keys themselves)
+    # See README "Manual Restore Runbook" — restore is NOT automated.
+    # ----------------------------------------------------------------
+    snapshot:
+      enabled: false
+      schedule: "0 3 * * *"
+      clusterName: ""
+      endpoint: "https://127.0.0.1:2379"
+      etcdPkiHostPath: /etc/kubernetes/pki/etcd
+      etcdImage:
+        repository: registry.k8s.io/etcd
+        tag: "3.5.15-0"
+        pullPolicy: IfNotPresent
+      etcdResources:
+        requests:
+          cpu: 100m
+          memory: 256Mi
+          ephemeral-storage: 2Gi
+        limits:
+          cpu: 500m
+          memory: 1Gi
+          ephemeral-storage: 10Gi
+      s3:
+        enabled: false
+        endpoint: ""
+        region: "us-east-1"
+        bucket: ""
+        prefix: "etcd-snapshots"
+        pathStyle: true
+        insecureSkipTLSVerify: false
+        credentialsSecret:
+          name: ""
+          accessKeyKey: "access-key-id"
+          secretKeyKey: "secret-access-key"
+        uploader:
+          image:
+            repository: minio/mc
+            tag: "RELEASE.2024-11-21T17-21-54Z"
+            pullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            cpu: 200m
+            memory: 256Mi
+      successfulJobsHistoryLimit: 7
+      failedJobsHistoryLimit: 7
+      startingDeadlineSeconds: 300
+      ttlSecondsAfterFinished: 86400
+
+    # ----------------------------------------------------------------
+    # Job safety constraints (apply to BOTH defrag and snapshot Jobs).
+    #
+    # These two settings give every maintenance Job a bounded,
+    # predictable failure window. Kubernetes defaults (backoffLimit=6,
+    # no activeDeadlineSeconds) would silently retry for 10+ minutes
+    # or hang forever, so the chart sets safer values below.
+    #
+    # ──────────────────────────────────────────────────────────────
+    # SIZING activeDeadlineSeconds  — READ THIS BEFORE OVERRIDING
+    # ──────────────────────────────────────────────────────────────
+    # The deadline is a HARD wall-clock kill. Setting it below the
+    # legitimate p99 runtime will produce false-positive failure
+    # pages every night. Setting it too high delays real alerts.
+    #
+    # Pick the value based on the LARGER of the two jobs on your
+    # cluster (they share this single knob):
+    #
+    #   defrag p99   ≈ 30s × N_cp × max(1, db_GB)
+    #                 + waitBetweenDefrags × (N_cp − 1)
+    #                 + ~10s leader-move overhead
+    #
+    #   snapshot p99 ≈ ( 30s save + 5s verify
+    #                  + 60s S3 upload [if s3.enabled=true] )
+    #                  × max(1, db_GB)
+    #
+    #   activeDeadlineSeconds ≈ 2 × max(defrag_p99, snapshot_p99),
+    #                            rounded up to the nearest 5 min.
+    #
+    # Cheat-sheet (assumes snapshot.s3.enabled=true unless noted):
+    #
+    #   | db size | CP nodes | activeDeadlineSeconds              |
+    #   |---------|----------|------------------------------------|
+    #   | ≤ 1 GB  |    3     | 600   (default; safe for s3 off too)|
+    #   | ≤ 1 GB  |    5     | 900                                |
+    #   |   2 GB  |    3     | 1200                               |
+    #   |   2 GB  |    5     | 1800                               |
+    #   |   4 GB  |    3     | 1800                               |
+    #   |   4 GB  |    5     | 3600                               |
+    #   |   8 GB  |    3     | 3600                               |
+    #   |   8 GB  |    5     | 7200                               |
+    #
+    # After install, validate against your real numbers:
+    #   kubectl get jobs -n kube-system \
+    #     -l app.kubernetes.io/name=nkp-etcd-maintenance \
+    #     --sort-by=.metadata.creationTimestamp
+    # and update activeDeadlineSeconds to 2× the observed p99 if it
+    # differs materially from the default.
+    #
+    # SIZING backoffLimit
+    #   4 (default) — survives transient kubelet / network blips
+    #                 (~150 s of in-Job backoff) while still letting
+    #                 the Failed alert fire within its 5-min window.
+    #   0           — Job is Failed on first non-zero exit. Pages
+    #                 fast, but flaky kubelet restarts cause noise.
+    #   ≥ 6         — re-introduces silent multi-minute backoff.
+    #                 Do NOT raise above 4 without a specific reason.
+    # ----------------------------------------------------------------
+    jobs:
+      backoffLimit: 4
+      # Default sized for the NKP reference topology (3 CP nodes,
+      # ≤ 1 GB etcd db). Override on larger clusters per the table
+      # above.
+      activeDeadlineSeconds: 600
+
+    # ----------------------------------------------------------------
+    # Shared / defrag-specific.
+    # ----------------------------------------------------------------
+    image:
+      repository: ghcr.io/ahrtr/etcd-defrag
+      tag: v0.40.0
+      pullPolicy: IfNotPresent
+
+    resources:
+      requests:
+        cpu: 50m
+        memory: 64Mi
+      limits:
+        cpu: 200m
+        memory: 256Mi
+
+    successfulJobsHistoryLimit: 3
+    failedJobsHistoryLimit: 3
+
+    commonLabels: {}
+    cronJobAnnotations: {}

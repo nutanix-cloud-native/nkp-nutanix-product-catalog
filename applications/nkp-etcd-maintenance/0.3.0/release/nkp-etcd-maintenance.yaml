@@ -1,0 +1,66 @@
+---
+# ---------------------------------------------------------------------------
+# OCIRepository: where the Helm chart is hosted.
+#
+# The chart was published with:
+#   helm package .
+#   helm push nkp-etcd-maintenance-0.3.0.tgz \
+#     oci://ghcr.io/nutanix-cloud-native/charts
+#
+# The package on GHCR is set to public visibility so airgap-mirror tooling
+# and out-of-VPN reviewers can pull it without authentication:
+#   helm pull oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance \
+#     --version 0.3.0
+# ---------------------------------------------------------------------------
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-${appVersion}-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 1m
+  url: "oci://ghcr.io/nutanix-cloud-native/charts/nkp-etcd-maintenance"
+  ref:
+    tag: 0.3.0
+---
+# ---------------------------------------------------------------------------
+# HelmRelease: instructs Flux to install the chart from the OCIRepository
+# above, with values composed from the catalog defaults ConfigMap and any
+# optional user/cluster override ConfigMaps.
+#
+# Target namespace is `kube-system` because the chart's CronJob mounts
+# /etc/kubernetes/pki/etcd from the host and lands on control-plane nodes;
+# kube-system is the canonical home for control-plane add-ons.
+# ---------------------------------------------------------------------------
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nkp-etcd-maintenance
+  namespace: ${releaseNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-${appVersion}-chart
+    namespace: ${releaseNamespace}
+  interval: 15s
+  install:
+    remediation:
+      retries: 30
+    createNamespace: false  # kube-system always exists
+  upgrade:
+    remediation:
+      retries: 30
+  releaseName: nkp-etcd-maintenance
+  targetNamespace: kube-system
+  valuesFrom:
+    # Catalog defaults — shipped with this app version.
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-defaults
+    # User-supplied overrides (Kommander UI / AppDeployment).
+    - kind: ConfigMap
+      name: ${releaseName}-config-overrides
+      optional: true
+    # Cluster-level overrides (Kommander Workspace policy).
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
+      optional: true

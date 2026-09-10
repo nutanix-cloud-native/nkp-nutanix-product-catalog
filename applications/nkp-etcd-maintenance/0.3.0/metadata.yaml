@@ -1,0 +1,180 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: NKP etcd Maintenance
+description: >-
+  Scheduled etcd maintenance for kubeadm-managed NKP clusters. Includes
+  leader-safe defragmentation (always on, threshold-gated) and an optional
+  snapshot CronJob with verified output and optional S3-compatible upload.
+  Restore from a snapshot is intentionally a manual operator workflow.
+type: nkp-catalog
+allowMultipleInstances: false
+nkpVersionSupport: ">=2.18.0"
+category:
+  - application-and-data-management
+certifications:
+  - nutanix-supported
+licensing:
+  - Pro
+  - Ultimate
+scope:
+  - workspace
+icon: PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA0OCA0OCIgd2lkdGg9IjQ4IiBoZWlnaHQ9IjQ4Ij4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9IiM3ODU1RkEiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj4KICAgIDxlbGxpcHNlIGN4PSIyNCIgY3k9IjExIiByeD0iMTQiIHJ5PSI0Ii8+CiAgICA8cGF0aCBkPSJNMTAgMTF2OWMwIDIuMiA2LjI3IDQgMTQgNHMxNC0xLjggMTQtNHYtOSIvPgogICAgPHBhdGggZD0iTTEwIDIwdjljMCAyLjIgNi4yNyA0IDE0IDRzMTQtMS44IDE0LTR2LTkiLz4KICAgIDxwYXRoIGQ9Ik0xMCAyOXY5YzAgMi4yIDYuMjcgNCAxNCA0czE0LTEuOCAxNC00di05Ii8+CiAgPC9nPgo8L3N2Zz4K
+overview: |-
+  # Overview
+  NKP etcd Maintenance keeps the on-disk size of the cluster's etcd database
+  bounded over time by running the open-source
+  [ahrtr/etcd-defrag](https://github.com/ahrtr/etcd-defrag) tool on a CronJob.
+
+  ## Why this exists
+  etcd's storage engine (bbolt) does not reclaim free pages after key deletion.
+  Without periodic defragmentation the database file grows monotonically until
+  it hits `--quota-backend-bytes`, triggers a `NOSPACE` alarm, and halts the
+  Kubernetes control plane. This application avoids that failure mode by
+  running a rule-gated defrag on a configurable schedule.
+
+  ## Safety model
+  - **Leader-last ordering (mandatory, not configurable).** The defrag job is
+    hardcoded to invoke etcd-defrag with `--move-leader`, which transfers Raft
+    leadership away from the current leader before that member is defragged.
+    This is a non-negotiable safety invariant of the chart, not a user toggle:
+    a frozen leader during a bbolt rewrite would cause an apiserver-visible
+    election storm, so the flag is baked into the CronJob template and there
+    is no values key to disable it.
+  - **Cluster health pre-check.** The job aborts before touching any member
+    if the cluster is unhealthy.
+  - **Threshold rule.** The defrag is a no-op when the database is already
+    compact, avoiding unnecessary disruption.
+  - **Configurable wait between members.** A pause between each member's
+    defrag lets the cluster stabilise.
+
+  ## Default behaviour
+  - Schedule: `30 2 * * *` (daily 02:30, cluster-local).
+  - Rule: defrag when `dbQuotaUsage > 0.5` OR more than 200 MiB of free pages
+    have accumulated.
+  - `waitBetweenDefrags: 1m`.
+  - `autoDisalarm: false` (NOSPACE alarms are NOT auto-cleared; operators
+    review them).
+
+  ## Supported topologies
+  - kubeadm-managed NKP clusters whose etcd runs as a static pod on
+    control-plane nodes (the standard NKP topology).
+
+  ## Unsupported topologies
+  - External etcd clusters (no `/etc/kubernetes/pki/etcd` on control-plane
+    nodes).
+  - Hosted control planes (AKS / EKS / GKE) where etcd is invisible to the
+    user.
+  - Operator-managed etcd (e.g., etcd-druid).
+  - Clusters whose admission policy denies `hostPath`.
+
+  A preflight Job that detects each of these is shipped with the chart at
+  `kommander/preflight/topology-check-job.yaml`. Run it on a candidate cluster
+  before enabling the addon and confirm the resulting ConfigMap
+  `kube-system/nkp-etcd-maintenance-topology` reports `result: PASS`.
+
+  ## Validation
+  End-to-end validated 2026-06-01 on a 3-control-plane NKP cluster
+  (`nkp-harsh-test`, NKP v2.18.0-dev.41, Kubernetes v1.35.2). The job
+  reclaimed ~229 MiB across three members in ~3 minutes with zero
+  control-plane downtime; the leader-transfer step was observed in the logs.
+
+  ## Overrides
+  Configuration is supplied through Helm values. The most common overrides
+  are exposed under the `defragmentation.*` tree:
+  ```yaml
+  defragmentation:
+    enabled: true
+    schedule: "30 2 * * *"
+    defragRule: "dbQuotaUsage > 0.5 || dbSize - dbSizeInUse > 200*1024*1024"
+    waitBetweenDefrags: "1m"
+    autoDisalarm: false
+  # NOTE: --move-leader (leader-last ordering) is mandatory and hardcoded in
+  # the chart template; it is intentionally NOT surfaced as an override key.
+  ```
+
+  ## Snapshot (optional, disabled by default)
+  A second CronJob can take a verified etcd snapshot on a schedule and
+  optionally upload it to an S3-compatible bucket. To enable, set
+  `snapshot.enabled=true`; to also upload, set `snapshot.s3.enabled=true`
+  and supply endpoint / bucket / SecretRef:
+  ```yaml
+  snapshot:
+    enabled: true
+    schedule: "0 3 * * *"
+    s3:
+      enabled: true
+      endpoint: "https://minio.example.com"
+      bucket: "nkp-etcd-backups"
+      credentialsSecret:
+        name: "etcd-backup-s3-creds"   # operator-managed Secret
+  ```
+  Bucket credentials are NEVER passed through values; they come from a
+  Kubernetes Secret referenced by name. Restoration is intentionally a
+  manual operator runbook — see the chart README.
+
+  ## Job execution limits (read this before deploying)
+  Both CronJobs share two safety knobs that bound their failure window:
+
+  ```yaml
+  jobs:
+    backoffLimit: 4            # default
+    activeDeadlineSeconds: 600 # default — 10 minutes
+  ```
+
+  `activeDeadlineSeconds` is a **hard wall-clock kill**: any maintenance
+  Pod still running past it is terminated with `reason=DeadlineExceeded`,
+  which marks the Job `Failed` and trips the corresponding Prometheus
+  alert. The chart default (600 s = 10 min) is sized for the NKP
+  reference topology (3 control-plane nodes, etcd db ≤ 1 GB). On larger
+  clusters or larger databases the legitimate runtime can exceed this,
+  causing false-positive failure pages every night — set it **above**
+  your real p99 Job duration.
+
+  ### How to pick a value
+  The two jobs share this single setting, so size for the SLOWER of the
+  two on your cluster:
+  ```
+  defrag p99   ≈ 30s × N_cp × max(1, db_GB)
+                + waitBetweenDefrags × (N_cp − 1)
+                + ~10s leader-move overhead
+  snapshot p99 ≈ ( 30s save + 5s verify
+                 + 60s S3 upload [if s3.enabled=true] )
+                 × max(1, db_GB)
+  activeDeadlineSeconds ≈ 2 × max(defrag_p99, snapshot_p99)
+  ```
+  Then round up to the nearest 5 min.
+
+  ### Sizing cheat-sheet
+  (Assumes `snapshot.s3.enabled=true` unless noted.)
+
+  | etcd db size | Control-plane nodes | Recommended `activeDeadlineSeconds` |
+  |---|---|---|
+  | ≤ 1 GB | 3 | **600** (default; covers s3-off too) |
+  | ≤ 1 GB | 5 | 900 |
+  | 2 GB   | 3 | 1200 |
+  | 2 GB   | 5 | 1800 |
+  | 4 GB   | 3 | 1800 |
+  | 4 GB   | 5 | 3600 |
+  | 8 GB   | 3 | 3600 |
+  | 8 GB   | 5 | 7200 |
+
+  ### Validating against your real numbers
+  After at least one successful Job run, observe the p99 with:
+  ```bash
+  kubectl get jobs -n kube-system \
+    -l app.kubernetes.io/name=nkp-etcd-maintenance \
+    --sort-by=.metadata.creationTimestamp
+  ```
+  If your observed durations differ materially from the default, override
+  via the application's override ConfigMap:
+  ```yaml
+  jobs:
+    activeDeadlineSeconds: 1800   # example: 5-CP cluster, ~2 GB etcd
+  ```
+
+  ### `backoffLimit`
+  Default `4` (≈ 150 s of in-Job retry backoff) survives transient
+  kubelet/network blips while still letting the `EtcdDefragJobFailed`
+  and `EtcdSnapshotJobFailed` alerts fire within their 5-minute `for:`
+  window. Lower to `0` only if you specifically want zero retry
+  tolerance; do not raise above `4` — it just delays real-failure
+  paging without buying useful resilience.
