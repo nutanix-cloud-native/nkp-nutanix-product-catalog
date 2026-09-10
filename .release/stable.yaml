@@ -1,20 +1,9 @@
 schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
 releases:
-  - tagName: "2.20.x-airgapped"
-    fileName: airgapped-nkp-nutanix-product-catalog-2.20.tar
-    constraints:
-      nkpVersion: "2.20"
-  - tagName: "2.20"
-    fileName: stable-nkp-nutanix-product-catalog-2.20.tar
-    constraints:
-      nkpVersion: "2.20"
-  - tagName: "2.19.x-airgapped"
-    fileName: airgapped-nkp-nutanix-product-catalog-2.19.tar
-    applications:
-      - name: ndk
-        version: "2.1.0"
   - tagName: 2.19
     fileName: stable-nkp-nutanix-product-catalog-2.19.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     applications:
       - name: nutanix-ai
         version: "2.8.0"
@@ -28,13 +17,10 @@ releases:
         version: "0.8.0"
       - name: ndk
         version: "2.1.0"
-  - tagName: "2.18.x-airgapped"
-    fileName: airgapped-nkp-nutanix-product-catalog-2.18.tar
-    applications:
-      - name: ndk
-        version: "2.1.0"
   - tagName: 2.18
     fileName: stable-nkp-nutanix-product-catalog-2.18.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     applications:
       - name: nutanix-ai
         version: "2.8.0"
@@ -58,6 +44,8 @@ releases:
         version: "2.1.0"
   - tagName: 2.17
     fileName: stable-nkp-nutanix-product-catalog-2.17.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     applications:
       - name: nutanix-ai
         version: "2.6.0"
@@ -83,6 +71,8 @@ releases:
         version: "2.1.0"
   - tagName: 2.16
     fileName: stable-nkp-nutanix-product-catalog-2.16.tar
+    collectionAnnotations:
+      org.opencontainers.image.source: https://github.com/nutanix-cloud-native/nkp-nutanix-product-catalog
     applications:
       - name: nutanix-ai
         version: "2.6.0"

@@ -1,0 +1,185 @@
+# Copyright 2025 Nutanix. All rights reserved.
+# SPDX-License-Identifier: Apache-2.0
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_spec:
+        description: "dev uses .release/dev.yaml; stable uses .release/stable.yaml"
+        required: true
+        type: choice
+        options:
+          - dev
+          - stable
+  push:
+    branches:
+      - release-2.x
+    paths:
+      - ".release/**"
+      - "applications/**"
+
+permissions:
+  contents: read
+
+jobs:
+  publish-oci-artifacts:
+    name: Publish OCI Artifacts
+    runs-on:
+      - self-hosted-nutanix-medium
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install NIX
+        uses: cachix/install-nix-action@v31
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.15.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
+
+      - name: Login to GHCR
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build Dev Release
+        if: github.event_name == 'push' || github.event.inputs.release_spec == 'dev'
+        run: devbox run -- just publish-artifacts ./.release/dev.yaml ghcr.io/nutanix-cloud-native
+
+      - name: Build Stable Release
+        # Production artifacts can be published only on the release-2.x branch.
+        if: github.ref_name == 'release-2.x' && (github.event_name == 'push' || github.event.inputs.release_spec == 'stable')
+        run: devbox run -- just publish-artifacts ./.release/stable.yaml ghcr.io/nutanix-cloud-native
+
+  publish-bundles:
+    name: Publish Bundles
+    runs-on:
+      - self-hosted-nutanix-medium
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install NIX
+        uses: cachix/install-nix-action@v31
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.15.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v4
+        with:
+          registry: docker.io
+          username: ${{ secrets.NUTANIX_DOCKERHUB_USERNAME }}
+          password: ${{ secrets.NUTANIX_DOCKERHUB_PASSWORD }}
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: arn:aws:iam::139475575661:role/nkp-nutanix-product-catalog
+          aws-region: us-west-2
+
+      # Outputs: steps.spec.outputs.name (dev|stable), steps.spec.outputs.release-spec-file (./.release/<name>.yaml)
+      - name: Determine release spec
+        id: spec
+        run: |
+          if [[ "${{ github.event_name }}" == "push" ]]; then
+            echo "name=dev" >> "$GITHUB_OUTPUT"
+            echo "release-spec-file=./.release/dev-bundles.yaml" >> "$GITHUB_OUTPUT"
+          else
+            echo "name=${{ github.event.inputs.release_spec }}" >> "$GITHUB_OUTPUT"
+            echo "release-spec-file=./.release/${{ github.event.inputs.release_spec }}-bundles.yaml" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Build Bundles
+        run: devbox run -- just build-full-bundles "${{ steps.spec.outputs.release-spec-file }}" ./bundles
+
+      - name: Upload Bundles to S3 and Generate Summary
+        env:
+          # S3 destination defined in nutanix-ncn/artifacts-store/infra/terraform/terraform.tfvars
+          S3_DEST: s3://ncn-artifacts.infra.nkp.sh/nkp-nutanix-product-catalog/bundles/${{ steps.spec.outputs.name }}
+          DOWNLOAD_BASE: https://artifacts.infra.nkp.sh/nkp-nutanix-product-catalog/bundles/${{ steps.spec.outputs.name }}
+          SPEC_NAME: ${{ steps.spec.outputs.name }}
+        run: |
+          artifacts=()
+          for bundle in ./bundles/*.tar; do
+            [ -f "$bundle" ] || continue
+            filename=$(basename "$bundle")
+            echo "Uploading $bundle -> ${S3_DEST}/${filename}"
+            aws s3 cp "$bundle" "${S3_DEST}/${filename}"
+            artifacts+=("$filename")
+          done
+
+          # GitHub Step Summary
+          {
+            echo "## Bundle Artifacts (${SPEC_NAME})"
+            echo ""
+            echo "| Bundle | Download URL |"
+            echo "|--------|-------------|"
+            for f in "${artifacts[@]}"; do
+              echo "| \`${f}\` | ${DOWNLOAD_BASE}/${f} |"
+            done
+            echo ""
+            echo "> **Commit:** \`${{ github.sha }}\` | **Spec:** \`${SPEC_NAME}\` | **Run:** [#${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          # HTML summary
+          html_file="./bundles/summary.html"
+          cat > "$html_file" <<EOF
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+          <meta charset="utf-8">
+          <title>NKP Product Catalog - Bundle Artifacts (${SPEC_NAME})</title>
+          <style>
+            body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 960px; margin: 2rem auto; padding: 0 1rem; color: #24292f; }
+            h1 { border-bottom: 2px solid #0969da; padding-bottom: .5rem; }
+            table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+            th, td { padding: .75rem 1rem; text-align: left; border-bottom: 1px solid #d0d7de; }
+            th { background: #f6f8fa; font-weight: 600; }
+            a { color: #0969da; text-decoration: none; }
+            a:hover { text-decoration: underline; }
+            .meta { color: #656d76; font-size: .875rem; margin-bottom: 1.5rem; }
+            code { background: #f6f8fa; padding: .15em .4em; border-radius: 3px; font-size: .9em; }
+          </style>
+          </head>
+          <body>
+          <h1>Bundle Artifacts (${SPEC_NAME})</h1>
+          <p class="meta">Commit: <code>${{ github.sha }}</code> &middot; Spec: <code>${SPEC_NAME}</code> &middot; Generated: $(date -u +%Y-%m-%dT%H:%M:%SZ)</p>
+          <table>
+          <thead><tr><th>Bundle</th><th>Download URL</th></tr></thead>
+          <tbody>
+          EOF
+
+          for f in "${artifacts[@]}"; do
+            url="${DOWNLOAD_BASE}/${f}"
+            echo "<tr><td><code>${f}</code></td><td><a href=\"${url}\">${url}</a></td></tr>" >> "$html_file"
+          done
+
+          cat >> "$html_file" <<'EOF'
+          </tbody>
+          </table>
+          </body>
+          </html>
+          EOF
+
+      - name: Upload Summary
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: bundle-summary
+          path: ./bundles/summary.html
