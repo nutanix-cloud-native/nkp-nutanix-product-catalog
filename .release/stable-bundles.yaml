@@ -18,4 +18,3 @@ releases:
     applications:
       - name: ndk
         version: "2.1.0"
-  
