@@ -99,7 +99,7 @@ jobs:
         run: |
           if [[ "${{ github.event_name }}" == "push" ]]; then
             echo "name=dev" >> "$GITHUB_OUTPUT"
-            echo "release-spec-file=./.release/dev.yaml" >> "$GITHUB_OUTPUT"
+            echo "release-spec-file=./.release/dev-bundles.yaml" >> "$GITHUB_OUTPUT"
           else
             echo "name=${{ github.event.inputs.release_spec }}" >> "$GITHUB_OUTPUT"
             echo "release-spec-file=./.release/${{ github.event.inputs.release_spec }}-bundles.yaml" >> "$GITHUB_OUTPUT"
