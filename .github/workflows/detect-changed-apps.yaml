@@ -41,15 +41,23 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Changed app names under applications/ between release-2.x and PR head
-          changed="$(
+          # Unique app -> [changed versions] from applications/<app>/<version>/...
+          versions="{}"
+          while IFS= read -r path; do
+            [[ -z "${path}" ]] && continue
+            app="$(cut -d/ -f2 <<< "${path}")"
+            ver="$(cut -d/ -f3 <<< "${path}")"
+            if [[ -z "${ver}" || ! -d "applications/${app}/${ver}" ]]; then
+              continue
+            fi
+            versions="$(jq -c --arg app "${app}" --arg ver "${ver}" \
+              '.[$app] = ((.[$app] // []) + [$ver] | unique)' <<< "${versions}")"
+          done < <(
             git diff --name-only origin/release-2.x HEAD \
-              | grep '^applications/' \
-              | cut -d/ -f2 \
-              | sort -u || true
-          )"
+              | grep '^applications/' || true
+          )
 
-          if [[ -z "${changed}" ]]; then
+          if [[ "${versions}" == "{}" ]]; then
             {
               echo "apps="
               echo "apps_count=0"
@@ -57,15 +65,9 @@ jobs:
               echo "app_versions="
             } >> "$GITHUB_OUTPUT"
           else
-            # Single JSON object: {"app":"version",...}
-            versions="{}"
-            for app in ${changed}; do
-              ver="$(find "applications/${app}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort -V | tail -1)"
-              versions="$(jq -c --arg app "${app}" --arg ver "${ver}" '.[$app] = $ver' <<< "${versions}")"
-            done
             {
-              echo "apps=$(printf '%s\n' "${changed}" | jq -R . | jq -sc .)"
-              echo "apps_count=$(echo "${changed}" | wc -l | xargs)"
+              echo "apps=$(jq -c 'keys' <<< "${versions}")"
+              echo "apps_count=$(jq '[.[]] | flatten | length' <<< "${versions}")"
               echo "app_versions=${versions}"
             } >> "$GITHUB_OUTPUT"
           fi
@@ -82,6 +84,15 @@ jobs:
             echo "  (none)"
           fi
 
+      - name: Print changed versions
+        if: ${{ steps.detect.outputs.app_versions != '' }}
+        env:
+          app_versions: ${{ steps.detect.outputs.app_versions }}
+        shell: bash
+        run: |
+          echo "Changed application versions:"
+          jq -r 'to_entries[] | "\(.key) \(.value[])"' <<< "${app_versions}"
+
       - name: Build matrix
         if: ${{ steps.detect.outputs.apps != '' }}
         env:
@@ -90,5 +101,5 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          matrix="$(jq -rc 'to_entries | map({app: .key, version: .value})' <<< "${app_versions}")"
+          matrix="$(jq -rc 'to_entries | map(.key as $app | .value[] | {app: $app, version: .})' <<< "${app_versions}")"
           echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"

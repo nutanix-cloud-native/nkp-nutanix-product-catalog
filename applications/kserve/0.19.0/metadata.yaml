@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Kserve
-description: Highly scalable and standards based Model Inference Platform on Kubernetes for Trusted AI.
+description: Highly scalable and standards based Model Inference Platform on Kubernetes for Trusted AI. # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.18.0"
