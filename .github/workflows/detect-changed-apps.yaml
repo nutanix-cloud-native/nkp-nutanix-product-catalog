@@ -57,17 +57,16 @@ jobs:
               echo "app_versions="
             } >> "$GITHUB_OUTPUT"
           else
-            # Build app->version map: app=version pairs, joined as JSON
-            versions=""
+            # Single JSON object: {"app":"version",...}
+            versions="{}"
             for app in ${changed}; do
               ver="$(find "applications/${app}" -mindepth 1 -maxdepth 1 -type d -exec basename {} \; | sort -V | tail -1)"
-              versions+="{\"${app}\":\"${ver}\"},"
+              versions="$(jq -c --arg app "${app}" --arg ver "${ver}" '.[$app] = $ver' <<< "${versions}")"
             done
-            versions="${versions%,}"
             {
               echo "apps=$(printf '%s\n' "${changed}" | jq -R . | jq -sc .)"
               echo "apps_count=$(echo "${changed}" | wc -l | xargs)"
-              echo "app_versions=$versions"
+              echo "app_versions=${versions}"
             } >> "$GITHUB_OUTPUT"
           fi
 
@@ -90,7 +89,6 @@ jobs:
         id: matrix
         shell: bash
         run: |
-          echo "matrix=$(
-            echo "${app_versions}" \
-              | jq -rc 'to_entries | map({app: .key, version: .value})'
-          )" >> "$GITHUB_OUTPUT"
+          set -euo pipefail
+          matrix="$(jq -rc 'to_entries | map({app: .key, version: .value})' <<< "${app_versions}")"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
