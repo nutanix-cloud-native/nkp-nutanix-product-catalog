@@ -63,10 +63,15 @@ devbox shell
 ```
 
 Without a shell, prefix recipes with `devbox run --` (for example
-`devbox run -- just validate-manifests`). Running `just validate-manifests`
-also regenerates `artifacts.yaml` (located at the repository root) automatically
-when new applications are added. This validation runs automatically in
+`devbox run -- just validate-manifests`).
+
+## Updating `artifacts.yaml`
+
+Running `just validate-manifests` also regenerates `artifacts.yaml` (located at the repository root)
+automatically when new applications are added. This validation runs automatically in
 [CI](.github/workflows/manifest.yml) on every pull request.
+
+## Container Image Access
 
 New container images listed in `artifacts.yaml` must be accessible to the
 `svcnkpcatalogci` service account used by CI. Create a DPRO ticket and ask the
