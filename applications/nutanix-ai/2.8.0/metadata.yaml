@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Enterprise AI
-description: Inference endpoint management platform.
+description: Inference endpoint management platform. # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.18 <2.20"

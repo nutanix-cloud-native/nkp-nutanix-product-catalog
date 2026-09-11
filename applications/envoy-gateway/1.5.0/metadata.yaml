@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Envoy Gateway
-description: Envoy Gateway is a Kubernetes-native API Gateway and reverse proxy control plane.
+description: Envoy Gateway is a Kubernetes-native API Gateway and reverse proxy control plane. # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.16.0 <2.18.0"

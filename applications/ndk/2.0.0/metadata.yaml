@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Data Services for Kubernetes
-description: Nutanix Data Services for Kubernetes
+description: Nutanix Data Services for Kubernetes # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.17.0 <2.18.0"

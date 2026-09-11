@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: LeaderWorkerSet
-description: Kubernetes LeaderWorkerSet (LWS) operator for multi-node leader/worker workloads.
+description: Kubernetes LeaderWorkerSet (LWS) operator for multi-node leader/worker workloads. # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.18.0"
