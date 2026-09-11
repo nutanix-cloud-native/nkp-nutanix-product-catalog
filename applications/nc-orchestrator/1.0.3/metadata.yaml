@@ -1,6 +1,6 @@
 schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: Nutanix Central Connection
-description: An application that allows users to connect with the Nutanix Central platform
+description: An application that allows users to connect with the Nutanix Central platform # TODO: revert after testing
 type: nkp-catalog
 allowMultipleInstances: false
 nkpVersionSupport: ">=2.19.0"
