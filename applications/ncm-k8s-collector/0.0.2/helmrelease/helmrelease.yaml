@@ -1,0 +1,36 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-${appVersion}-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 6h0m0s
+  ref:
+    tag: 0.0.2
+  url: oci://harbor.eng.nutanix.com/ncm-k8s/charts/nkp-otel
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ncm-k8s-collector
+  namespace: ${releaseNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-${appVersion}-chart
+    namespace: ${releaseNamespace}
+  install:
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 30
+  interval: 15s
+  targetNamespace: ${releaseNamespace}
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-nkp-defaults
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
