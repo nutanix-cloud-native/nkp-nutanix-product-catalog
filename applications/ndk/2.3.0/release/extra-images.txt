@@ -1,0 +1,1 @@
+docker.io/nutanix/ndk-ui:2.3.0
