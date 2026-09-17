@@ -1,0 +1,105 @@
+name: Detect Changed Apps
+
+on:
+  workflow_call:
+    outputs:
+      apps:
+        value: ${{ jobs.detect-changed-apps.outputs.apps }}
+      apps_count:
+        value: ${{ jobs.detect-changed-apps.outputs.apps_count }}
+      matrix:
+        value: ${{ jobs.detect-changed-apps.outputs.matrix }}
+      app_versions:
+        value: ${{ jobs.detect-changed-apps.outputs.app_versions }}
+  pull_request:
+    types: [opened, reopened, synchronize, labeled, unlabeled]
+    branches:
+      - 'release-2.x'
+
+permissions:
+  contents: read
+
+jobs:
+  detect-changed-apps:
+    name: Detect Changed Apps
+    runs-on: self-hosted-nutanix-medium
+    outputs:
+      apps: ${{ steps.detect.outputs.apps }}
+      apps_count: ${{ steps.detect.outputs.apps_count }}
+      matrix: ${{ steps.matrix.outputs.matrix }}
+      app_versions: ${{ steps.detect.outputs.app_versions }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+
+      - name: Detect changed applications
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Unique app -> [changed versions] from applications/<app>/<version>/...
+          versions="{}"
+          while IFS= read -r path; do
+            [[ -z "${path}" ]] && continue
+            app="$(cut -d/ -f2 <<< "${path}")"
+            ver="$(cut -d/ -f3 <<< "${path}")"
+            if [[ -z "${ver}" || ! -d "applications/${app}/${ver}" ]]; then
+              continue
+            fi
+            versions="$(jq -c --arg app "${app}" --arg ver "${ver}" \
+              '.[$app] = ((.[$app] // []) + [$ver] | unique)' <<< "${versions}")"
+          done < <(
+            git diff --name-only origin/release-2.x HEAD \
+              | grep '^applications/' || true
+          )
+
+          if [[ "${versions}" == "{}" ]]; then
+            {
+              echo "apps="
+              echo "apps_count=0"
+              echo "matrix="
+              echo "app_versions="
+            } >> "$GITHUB_OUTPUT"
+          else
+            {
+              echo "apps=$(jq -c 'keys' <<< "${versions}")"
+              echo "apps_count=$(jq '[.[]] | flatten | length' <<< "${versions}")"
+              echo "app_versions=${versions}"
+            } >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Print changed apps
+        env:
+          apps: ${{ steps.detect.outputs.apps }}
+        shell: bash
+        run: |
+          echo "Changed applications:"
+          if [[ -n "${apps}" ]]; then
+            echo "${apps}" | jq -r '.[]'
+          else
+            echo "  (none)"
+          fi
+
+      - name: Print changed versions
+        if: ${{ steps.detect.outputs.app_versions != '' }}
+        env:
+          app_versions: ${{ steps.detect.outputs.app_versions }}
+        shell: bash
+        run: |
+          echo "Changed application versions:"
+          jq -r 'to_entries[] | "\(.key) \(.value[])"' <<< "${app_versions}"
+
+      - name: Build matrix
+        if: ${{ steps.detect.outputs.apps != '' }}
+        env:
+          app_versions: ${{ steps.detect.outputs.app_versions }}
+        id: matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          matrix="$(jq -rc 'to_entries | map(.key as $app | .value[] | {app: $app, version: .})' <<< "${app_versions}")"
+          echo "matrix=${matrix}" >> "$GITHUB_OUTPUT"
