@@ -17,6 +17,4 @@ releases:
     baseRegistry: ghcr.io/nutanix-cloud-native
     applications:
       - name: ndk
-        version: "2.3.0"
-      - name: ndk
         version: "2.1.0"
