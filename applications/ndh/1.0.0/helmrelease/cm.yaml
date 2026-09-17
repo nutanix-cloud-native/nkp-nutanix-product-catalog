@@ -25,4 +25,9 @@ data:
     # Secret must be created in the target namespace before enabling NDH
     imagePullSecret:
       name: ndh-iep-secret
+    milvus:
+      enabled: false
+    clickhouseServer:
+      clickhouse:
+        clusterSize: small
 ---
