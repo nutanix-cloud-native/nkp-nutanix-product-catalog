@@ -11,6 +11,10 @@ certifications:
 licensing:
   - Pro
   - Ultimate
+dependencies:
+  - cert-manager
+requiredDependencies:
+  - kube-prometheus-stack
 dependsOn:
   - type: Application
     name: kube-prometheus-stack

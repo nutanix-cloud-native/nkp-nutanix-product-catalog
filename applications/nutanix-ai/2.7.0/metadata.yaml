@@ -15,6 +15,14 @@ certifications:
 licensing:
   - Pro
   - Ultimate
+dependencies:
+  - cert-manager
+requiredDependencies:
+  - kube-prometheus-stack
+  - nvidia-gpu-operator
+  - opentelemetry-operator
+  - kserve
+  - envoy-gateway-nai
 dependsOn:
   - type: Application
     name: kube-prometheus-stack

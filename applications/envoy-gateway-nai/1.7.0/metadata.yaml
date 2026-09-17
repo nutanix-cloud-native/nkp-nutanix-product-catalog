@@ -14,6 +14,9 @@ certifications:
 licensing:
   - Pro
   - Ultimate
+dependencies:
+  - cert-manager
+requiredDependencies: []
 dependsOn:
   - type: Application
     name: cert-manager
