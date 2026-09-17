@@ -21,10 +21,12 @@ spec:
     namespace: ${releaseNamespace}
   interval: 15s
   install:
+    crds: CreateReplace
     remediation:
       retries: 30
     createNamespace: false # Since "ntnx-system" namespace is already created during csi installation.
   upgrade:
+    crds: CreateReplace
     remediation:
       retries: 30
   releaseName: ndk
