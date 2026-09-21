@@ -16,14 +16,14 @@ licensing:
   - Pro
   - Ultimate
 dependencies:
-  - cert-manager
   - kube-prometheus-stack
   - nvidia-gpu-operator
-requiredDependencies: []
+requiredDependencies:
+  - cert-manager
 dependsOn:
   - type: Application
     name: cert-manager
-    optional: true
+    optional: false
   - type: Application
     name: kube-prometheus-stack
     optional: true

@@ -17,7 +17,6 @@ requiredDependencies: []
 dependsOn:
   - type: Application
     name: cert-manager
-    version: ""
     optional: true
 scope:
   - workspace
