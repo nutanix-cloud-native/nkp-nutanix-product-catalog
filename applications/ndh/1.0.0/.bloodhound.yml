@@ -1,0 +1,22 @@
+# Kubernetes versions
+k8s_versions:
+  - 1.34.0
+
+# use strict validation (reject unknown fields in resources)
+strict: true
+
+# types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
+skip_types:
+  - gateway.networking.k8s.io/v1/GatewayClass
+  - gateway.networking.k8s.io/v1/HTTPRoute
+  - gateway.networking.k8s.io/v1/Gateway
+
+# load additional CRDs (URLs of CRD yaml files)
+additional_crds: []
+
+# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
+substitution_vars:
+  releaseNamespace: kommander
+  releaseName: ndh-1
+  workspaceNamespace: workspace
+  appVersion: "1.0.0"
