@@ -41,3 +41,80 @@ spec:
   - server auth
   - client auth
 ---
+# cert_service_name "datalens": dl-api-gateway, dl-react-ui, dl-gojobd, dl-pyjobd,
+# dl-ransomware-protection and dl-job-framework (mounted by data-lens.yaml post-renderers).
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-datalens
+  namespace: data-lens
+spec:
+  secretName: dl-datalens-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: datalens
+  dnsNames:
+  - datalens
+  - dl-api-gateway
+  - dl-api-gateway.data-lens
+  - dl-api-gateway.data-lens.svc
+  - dl-api-gateway.data-lens.svc.cluster.local
+  - data-lens-dl-react-ui
+  - data-lens-dl-react-ui.data-lens
+  - data-lens-dl-react-ui.data-lens.svc
+  - data-lens-dl-react-ui.data-lens.svc.cluster.local
+  - dl-gojobd
+  - dl-gojobd.data-lens
+  - dl-gojobd.data-lens.svc
+  - dl-gojobd.data-lens.svc.cluster.local
+  - dl-pyjobd
+  - dl-pyjobd.data-lens
+  - dl-pyjobd.data-lens.svc
+  - dl-pyjobd.data-lens.svc.cluster.local
+  - dl-ransomware-protection
+  - dl-ransomware-protection.data-lens
+  - dl-ransomware-protection.data-lens.svc
+  - dl-ransomware-protection.data-lens.svc.cluster.local
+  - dl-job-framework
+  - dl-job-framework.data-lens
+  - dl-job-framework.data-lens.svc
+  - dl-job-framework.data-lens.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-fp-leader
+  namespace: data-lens
+spec:
+  secretName: dl-fp-leader-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dl-fp-leader
+  dnsNames:
+  - dl-fp-leader
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-fp-worker
+  namespace: data-lens
+spec:
+  secretName: dl-fp-worker-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dl-fp-worker
+  dnsNames:
+  - dl-fp-worker
+  usages:
+  - server auth
+  - client auth
+---

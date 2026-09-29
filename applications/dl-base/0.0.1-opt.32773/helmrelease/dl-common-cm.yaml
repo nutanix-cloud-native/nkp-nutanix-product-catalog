@@ -38,8 +38,13 @@ data:
         enabled: false
       nats:
         jetstream:
+          # JetStream reserves every stream's max_bytes up front; the "largecluster" streams
+          # need ~603G, more than the 610G default leaves. Same as SMSP.
           fileStorage:
             storageClassName: nutanix-volume
+            size:
+              small: 650Gi
+            maxFile: 650G
         qos:
           custom:
             resources:
@@ -52,7 +57,8 @@ data:
       streamConsumer:
         qos:
           cluster:
-            size: large
+            # Single-replica copy of this profile is prepared in dl-common.yaml.
+            size: largecluster
     ikat:
       enabled: false
     msp-prometheus-collector:

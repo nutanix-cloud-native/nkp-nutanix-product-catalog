@@ -36,6 +36,46 @@ spec:
     remediation:
       retries: 30
   interval: 15s
+  # Only the "largecluster"/"mediumcluster" NATS profiles define the ndh_transformation_* and
+  # dl_dc_result streams, but they ask for 3 replicas and this cluster runs a single NATS node.
+  # The Job therefore reads a copy of "largecluster" with every replica count rewritten to 1.
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Job
+          name: stream-consumer-deployment-job-.*
+        patch: |
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: stream-consumer-deployment-job
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: nats-entities
+                  emptyDir: {}
+                initContainers:
+                - name: single-replica-profile
+                  # Must match the stream-consumer-creation image.
+                  image: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-nats-catalog:0.59.0
+                  command:
+                  - sh
+                  - -ec
+                  - |
+                    cp -r /nats/datalens/largecluster/. /work/
+                    sed -i -E 's/"num_replicas"( *): *3/"num_replicas"\1: 1/' /work/streams/*.json
+                    sed -i 's/--replicas=3/--replicas=1/' /work/kv-buckets/commands.txt
+                  resources:
+                    requests: {cpu: 10m, memory: 16Mi}
+                    limits: {memory: 64Mi}
+                  volumeMounts:
+                  - {name: nats-entities, mountPath: /work}
+                containers:
+                - name: stream-consumer-creation
+                  volumeMounts:
+                  - {name: nats-entities, mountPath: /nats/datalens/largecluster}
   releaseName: dl-common
   targetNamespace: ${releaseNamespace}
   timeout: 20m

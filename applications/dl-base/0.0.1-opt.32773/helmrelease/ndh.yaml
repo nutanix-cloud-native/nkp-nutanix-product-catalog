@@ -45,12 +45,25 @@ spec:
                   path: cert
                 - key: tls.key
                   path: key
+            - name: kubectl-wrapper
+              configMap:
+                name: ndh-ingress-cert-patch-kubectl
+                defaultMode: 0755
           - op: add
             path: /spec/template/spec/containers/0/volumeMounts
             value:
             - name: ndh-ingress-certs
               mountPath: /home/certs
               readOnly: true
+            - name: kubectl-wrapper
+              mountPath: /opt/kubectl-wrapper
+              readOnly: true
+          # Puts the kubectl wrapper from ndh-envoy.yaml first on PATH.
+          - op: add
+            path: /spec/template/spec/containers/0/env/-
+            value:
+              name: PATH
+              value: /opt/kubectl-wrapper:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       - target:
           kind: Deployment
           name: ndh-ndh-api-pc
@@ -68,6 +81,7 @@ spec:
                     secretName: msp-cert-ndh-api-pc
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -91,6 +105,7 @@ spec:
                     secretName: msp-cert-datalens
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -117,6 +132,7 @@ spec:
                     secretName: msp-cert-datalens
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -140,6 +156,7 @@ spec:
                     secretName: msp-cert-dion-service
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 initContainers:
@@ -173,6 +190,7 @@ spec:
                     secretName: msp-cert-dion-valkey
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -196,6 +214,7 @@ spec:
                     secretName: msp-cert-iam-proxy-control-plane
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 initContainers:
@@ -223,6 +242,7 @@ spec:
                     secretName: msp-cert-iam-proxy
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -246,6 +266,7 @@ spec:
                     secretName: msp-cert-iam-themis
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 initContainers:
@@ -273,6 +294,7 @@ spec:
                     secretName: msp-cert-iam-ui
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -296,6 +318,7 @@ spec:
                     secretName: msp-cert-iam-user-authn
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 initContainers:
@@ -323,6 +346,7 @@ spec:
                     secretName: msp-cert-ndh-permission-management
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -346,6 +370,7 @@ spec:
                     secretName: msp-cert-iam-database-bootstrap
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 containers:
@@ -369,6 +394,7 @@ spec:
                     secretName: msp-cert-iam-themis-bootstrap
                     items:
                     - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
                     - {key: tls.crt, path: cert}
                     - {key: tls.key, path: key}
                 initContainers:

@@ -41,6 +41,8 @@ spec:
                 items:
                 - key: ca.crt
                   path: ca.pem
+                - key: ca.crt
+                  path: chain
                 - key: tls.crt
                   path: cert
                 - key: tls.key
@@ -51,6 +53,198 @@ spec:
               name: dp-receiver-certs
               mountPath: /home/certs/NutanixInfraDataReceiver
               readOnly: true
+      - target:
+          kind: Deployment
+          name: data-lens
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-api-gateway
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: data-lens-dl-react-ui
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-react-ui
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-react-ui
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-gojobd
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-gojobd
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: gojobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-pyjobd
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-pyjobd
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: pyjobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-ransomware-protection
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-ransomware-protection
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-ransomware-protection
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: StatefulSet
+          name: dl-job-framework
+        patch: |
+          apiVersion: apps/v1
+          kind: StatefulSet
+          metadata:
+            name: dl-job-framework
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: jobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: data-lens-dl-files-processing-svc-leader
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-files-processing-svc-leader
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-fp-leader-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: leader
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs/dl-fp-leader, readOnly: true}
+      - target:
+          kind: Deployment
+          name: data-lens-dl-files-processing-svc-worker
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-files-processing-svc-worker
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-fp-worker-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: worker
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs/dl-fp-worker, readOnly: true}
       # The receiver's probes dial it through this Service, so it must route before the pod is Ready.
       - target:
           kind: Service

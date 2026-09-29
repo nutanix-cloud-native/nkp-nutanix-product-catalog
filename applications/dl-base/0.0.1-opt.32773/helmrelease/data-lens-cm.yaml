@@ -20,6 +20,8 @@ data:
           items:
           - key: ca.crt
             path: ca.pem
+          - key: ca.crt
+            path: chain
           - key: tls.crt
             path: cert
           - key: tls.key
