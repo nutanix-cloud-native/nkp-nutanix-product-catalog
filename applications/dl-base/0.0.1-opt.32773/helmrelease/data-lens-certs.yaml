@@ -1,0 +1,43 @@
+# On Nutanix MSP these certs are injected by the MSP cert service
+# (service.msp.ntnx.io/cert_* annotations); on NKP cert-manager issues them.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-dp-receiver
+  namespace: data-lens
+spec:
+  secretName: dl-dp-receiver-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dl-dp-receiver
+  dnsNames:
+  - dl-dp-receiver
+  - dl-dp-receiver.data-lens
+  - dl-dp-receiver.data-lens.svc
+  - dl-dp-receiver.data-lens.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-sync-service
+  namespace: data-lens
+spec:
+  secretName: dl-sync-service-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: datalens-dl-sync-service
+  # dl-pc-proxy also serves this cert as iam-proxy.ntnx-base: the sync job trusts only its own cert file.
+  dnsNames:
+  - datalens-dl-sync-service
+  - iam-proxy.ntnx-base
+  - iam-proxy.ntnx-base.svc
+  - iam-proxy.ntnx-base.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---

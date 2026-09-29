@@ -1,0 +1,73 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: data-lens
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: data-lens
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-dl-common-repo
+        namespace: ${releaseNamespace}
+      version: 3.0.0-release.19
+  dependsOn:
+  - name: dl-common
+  # dl-sync-service's Job syncs from Prism Central (iam-proxy.ntnx-base, ntnx-ikat), which this
+  # cluster does not have, so it never completes and must not gate the release.
+  install:
+    createNamespace: true
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  interval: 15s
+  # On Nutanix MSP the cert service injects these files; here they come from cert-manager.
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Deployment
+          name: dl-dp-receiver
+        patch: |
+          - op: add
+            path: /spec/template/spec/volumes/-
+            value:
+              name: dp-receiver-certs
+              secret:
+                secretName: dl-dp-receiver-tls
+                items:
+                - key: ca.crt
+                  path: ca.pem
+                - key: tls.crt
+                  path: cert
+                - key: tls.key
+                  path: key
+          - op: add
+            path: /spec/template/spec/containers/0/volumeMounts/-
+            value:
+              name: dp-receiver-certs
+              mountPath: /home/certs/NutanixInfraDataReceiver
+              readOnly: true
+      # The receiver's probes dial it through this Service, so it must route before the pod is Ready.
+      - target:
+          kind: Service
+          name: dl-dp-receiver
+        patch: |
+          - op: add
+            path: /spec/publishNotReadyAddresses
+            value: true
+  releaseName: data-lens
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-data-lens-config-defaults
+---

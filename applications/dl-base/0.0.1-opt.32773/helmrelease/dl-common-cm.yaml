@@ -19,16 +19,16 @@ data:
         storage:
           storageClass: nutanix-volume
           pvcStorage: 2000Gi
-        # Requested sizing is 32Gi, which exceeds the ~30.9Gi allocatable on this cluster's workers.
+        # Reduced from the requested 4 CPU / 32Gi to fit this cluster's 8 CPU / ~30.9Gi workers.
         qos:
           custom:
             resources:
               limits:
-                cpu: "4"
-                memory: 24Gi
+                cpu: "2"
+                memory: 8Gi
               requests:
-                cpu: "4"
-                memory: 24Gi
+                cpu: "2"
+                memory: 8Gi
     cpaas-nats-helm:
       auth:
         resolver:
