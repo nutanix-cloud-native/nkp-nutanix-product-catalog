@@ -1,0 +1,268 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ndh-ingress
+  namespace: ndh-core
+spec:
+  secretName: ndh-ingress-msp-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: ndh-ingress-gateway
+  dnsNames:
+  - ndh-ingress-gateway
+  - ndh-ingress-gateway.ndh-core.svc
+  usages:
+  - server auth
+---
+# One cert per MSP cert_service_name (service.msp.ntnx.io/cert_* pod annotations), all from the
+# same CA so the services trust each other; ndh.yaml post-renderers mount them as cert/key/ca.pem.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-ndh-api-pc
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-ndh-api-pc
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: ndh-api-pc
+  dnsNames:
+  - ndh-api-pc
+  - ndh-ndh-api-pc
+  - ndh-ndh-api-pc.ndh-core
+  - ndh-ndh-api-pc.ndh-core.svc
+  - ndh-ndh-api-pc.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-datalens
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-datalens
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: datalens
+  dnsNames:
+  - datalens
+  - ndh-ndh-api
+  - ndh-ndh-api.ndh-core
+  - ndh-ndh-api.ndh-core.svc
+  - ndh-ndh-api.ndh-core.svc.cluster.local
+  - ndh-ui
+  - ndh-ui.ndh-core
+  - ndh-ui.ndh-core.svc
+  - ndh-ui.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-dion-service
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-dion-service
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dion-service
+  dnsNames:
+  - dion-service
+  - dion-service.ndh-core
+  - dion-service.ndh-core.svc
+  - dion-service.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-dion-valkey
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-dion-valkey
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dion-valkey
+  dnsNames:
+  - dion-valkey
+  - dion-valkey.ndh-core
+  - dion-valkey.ndh-core.svc
+  - dion-valkey.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-proxy-control-plane
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-proxy-control-plane
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-proxy-control-plane
+  dnsNames:
+  - iam-proxy-control-plane
+  - iam-proxy-control-plane.ndh-core
+  - iam-proxy-control-plane.ndh-core.svc
+  - iam-proxy-control-plane.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-proxy
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-proxy
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-proxy
+  dnsNames:
+  - iam-proxy
+  - iam-proxy.ndh-core
+  - iam-proxy.ndh-core.svc
+  - iam-proxy.ndh-core.svc.cluster.local
+  - iam-proxy-admin
+  - iam-proxy-admin.ndh-core
+  - iam-proxy-admin.ndh-core.svc
+  - iam-proxy-admin.ndh-core.svc.cluster.local
+  - iam-proxy-cac
+  - iam-proxy-cac.ndh-core
+  - iam-proxy-cac.ndh-core.svc
+  - iam-proxy-cac.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-themis
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-themis
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-themis
+  dnsNames:
+  - iam-themis
+  - iam-themis.ndh-core
+  - iam-themis.ndh-core.svc
+  - iam-themis.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-ui
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-ui
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-ui
+  dnsNames:
+  - iam-ui
+  - iam-ui.ndh-core
+  - iam-ui.ndh-core.svc
+  - iam-ui.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-user-authn
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-user-authn
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-user-authn
+  dnsNames:
+  - iam-user-authn
+  - iam-user-authn.ndh-core
+  - iam-user-authn.ndh-core.svc
+  - iam-user-authn.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-ndh-permission-management
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-ndh-permission-management
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: ndh-permission-management
+  dnsNames:
+  - ndh-permission-management
+  - ndh-ndh-permission-management
+  - ndh-ndh-permission-management.ndh-core
+  - ndh-ndh-permission-management.ndh-core.svc
+  - ndh-ndh-permission-management.ndh-core.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-database-bootstrap
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-database-bootstrap
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-database-bootstrap
+  dnsNames:
+  - iam-database-bootstrap
+  usages:
+  - server auth
+  - client auth
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: msp-iam-themis-bootstrap
+  namespace: ndh-core
+spec:
+  secretName: msp-cert-iam-themis-bootstrap
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: iam-themis-bootstrap
+  dnsNames:
+  - iam-themis-bootstrap
+  usages:
+  - server auth
+  - client auth
+---

@@ -10,6 +10,9 @@ resources:
 - helmrelease.yaml
 - image-pull.yaml
 - mspdeployedparams.yaml
+- ndh-certs.yaml
+- ndh-cm.yaml
+- ndh.yaml
 - pc-proxy.yaml
 - priorityclasses.yaml
 ---

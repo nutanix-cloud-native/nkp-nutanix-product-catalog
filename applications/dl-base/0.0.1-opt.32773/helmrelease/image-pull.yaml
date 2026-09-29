@@ -6,3 +6,11 @@ metadata:
 imagePullSecrets:
 - name: ${releaseName}-artifactory-pull
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: ndh-core
+imagePullSecrets:
+- name: ndh-iep-secret
+---

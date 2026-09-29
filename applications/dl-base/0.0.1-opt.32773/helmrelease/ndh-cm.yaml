@@ -1,0 +1,90 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    tags:
+      kLargeCluster: true
+    ndh-api-pc:
+      env:
+        smsp_lb_ip: ""
+    cloudnative-pg:
+      image:
+        repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/cloudnative-pg
+    cloudnative-pg-cluster:
+      # The template emits priorityClassName twice when set, which Flux's strict YAML parser rejects.
+      priorityClassName: ""
+      image:
+        repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/postgresql
+      database:
+        storageClass: nutanix-volume
+    envoy-gateway:
+      global:
+        images:
+          envoyGateway:
+            image: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/envoy-proxy-gateway:v1.5.0
+    ndh-gateway:
+      dataPlane:
+        image:
+          registry: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker
+      tls:
+        postInstallJob:
+          # Both MetalLB addresses on this cluster are already taken.
+          serviceType: NodePort
+          # The default 64Mi limit OOM-kills `kubectl apply` once the EnvoyProxy already exists.
+          resources:
+            requests:
+              cpu: 25m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+    # Reduced from 2 x 5 CPU / 40Gi / 600Gi to fit this cluster's 8 CPU / ~30.9Gi workers.
+    qdrant:
+      sizingProfiles:
+        kLargeCluster:
+          replicas: 1
+          resources:
+            limits:
+              cpu: "1"
+              memory: 4Gi
+            requests:
+              cpu: "1"
+              memory: 4Gi
+      storage:
+        size: 50Gi
+        storageClassName: nutanix-volume
+    # Reduced from a 3 CPU / 8Gi head plus 3 x 7 CPU / 16Gi workers. Below 2 CPU the head's
+    # `ray health-check` liveness probe exceeds its 10s timeout and the head is restarted.
+    ndh-ray-etl:
+      image:
+        localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/nutanix-core/data-lens-onprem-dev/ndh-ray-etl
+      volume:
+        storage_class: nutanix-volume
+      metrics:
+        podMonitor:
+          enabled: false
+      head:
+        sizingProfiles:
+          kLargeCluster:
+            resources:
+              limits:
+                cpu: "2"
+                memory: 4Gi
+              requests:
+                cpu: "2"
+                memory: 4Gi
+      worker:
+        sizingProfiles:
+          kLargeCluster:
+            replicas: 1
+            resources:
+              limits:
+                cpu: "2"
+                memory: 6Gi
+              requests:
+                cpu: "2"
+                memory: 6Gi
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-ndh-config-defaults
+  namespace: ${releaseNamespace}
+---

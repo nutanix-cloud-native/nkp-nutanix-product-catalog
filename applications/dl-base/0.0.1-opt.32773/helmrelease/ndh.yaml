@@ -1,0 +1,393 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ndh
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: ndh
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-dl-common-repo
+        namespace: ${releaseNamespace}
+      version: 3.0.0-release.19
+  dependsOn:
+  - name: data-lens
+  # envoy-gateway-certgen (ttl 30s) and ndh-ingress-cert-patch (ttl 600s) delete themselves after
+  # finishing, and Helm's wait then fails with "jobs.batch ... not found".
+  install:
+    createNamespace: true
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  interval: 15s
+  # On Nutanix MSP the cert service injects /home/certs; here the files come from cert-manager.
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Job
+          name: ndh-ingress-cert-patch
+        patch: |
+          - op: add
+            path: /spec/template/spec/volumes
+            value:
+            - name: ndh-ingress-certs
+              secret:
+                secretName: ndh-ingress-msp-cert
+                items:
+                - key: ca.crt
+                  path: ca.pem
+                - key: tls.crt
+                  path: cert
+                - key: tls.key
+                  path: key
+          - op: add
+            path: /spec/template/spec/containers/0/volumeMounts
+            value:
+            - name: ndh-ingress-certs
+              mountPath: /home/certs
+              readOnly: true
+      - target:
+          kind: Deployment
+          name: ndh-ndh-api-pc
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ndh-ndh-api-pc
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-ndh-api-pc
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: ndh-api-pc
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: ndh-ndh-api
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ndh-ndh-api
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-datalens
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: ndh-api
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                - name: ndh-retrieval-service
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: ndh-ui
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ndh-ui
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-datalens
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: ndh-ui
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dion-service
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dion-service
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-dion-service
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                initContainers:
+                - name: wait-for-iam-proxy
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                - name: wait-for-valkey
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                - name: wait-for-postgres
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                containers:
+                - name: dion-service
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dion-valkey
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dion-valkey
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-dion-valkey
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: valkey
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: iam-proxy-control-plane
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: iam-proxy-control-plane
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-proxy-control-plane
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                initContainers:
+                - name: iam-proxy-control-plane-precheck
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                containers:
+                - name: iam-proxy-control-plane
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: iam-proxy
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: iam-proxy
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-proxy
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: iam-proxy
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: iam-themis
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: iam-themis
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-themis
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                initContainers:
+                - name: iam-themis-precheck
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                containers:
+                - name: iam-themis
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: iam-ui
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: iam-ui
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-ui
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: iam-ui
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: iam-user-authn
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: iam-user-authn
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-user-authn
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                initContainers:
+                - name: iam-user-authn-precheck
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                containers:
+                - name: iam-user-authn
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: ndh-ndh-permission-management
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: ndh-ndh-permission-management
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-ndh-permission-management
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: ndh-permission-management
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs/ndh-permission-management, readOnly: true}
+      - target:
+          kind: Job
+          name: iam-database-bootstrap-.*
+        patch: |
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: iam-database-bootstrap
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-database-bootstrap
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: iam-database-bootstrap
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Job
+          name: iam-themis-bootstrap-.*
+        patch: |
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: iam-themis-bootstrap
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: msp-cert-iam-themis-bootstrap
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                initContainers:
+                - name: arrange-bootstrap-data
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+                containers:
+                - name: iam-themis-bootstrap
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+  releaseName: ndh
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-ndh-config-defaults
+---

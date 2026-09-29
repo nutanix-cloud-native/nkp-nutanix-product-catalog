@@ -5,6 +5,8 @@ metadata:
   namespace: ndh-core
 data:
   domain-name: cluster.local
+  cluster-name: mirko-nkp
+  cluster-uuid: eea9e75e-78fe-41c0-a008-d9c76d5c10b2
 ---
 # pc-uuid must match the Service name in pc-proxy.yaml (pc-<pc-uuid>.ntnx-ikat).
 apiVersion: v1
