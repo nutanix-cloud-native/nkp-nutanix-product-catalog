@@ -1,0 +1,49 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-dl-common-repo
+  namespace: ${releaseNamespace}
+spec:
+  interval: 10m
+  secretRef:
+    name: ${releaseName}-artifactory-auth
+  certSecretRef:
+    name: ${releaseName}-artifactory-ca
+  passCredentials: true
+  type: default
+  url: https://artifactory.canaveral-corp.us-west-2.aws/artifactory/local-canaveral-helm
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dl-common
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: dl-common
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-dl-common-repo
+        namespace: ${releaseNamespace}
+      version: 3.0.0-release.19
+  dependsOn:
+  - name: dl-base
+  install:
+    createNamespace: true
+    crds: Skip
+    remediation:
+      retries: 30
+  interval: 15s
+  releaseName: dl-common
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-dl-common-config-defaults
+---

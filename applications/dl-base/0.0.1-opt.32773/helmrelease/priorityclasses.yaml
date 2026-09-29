@@ -1,0 +1,24 @@
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-high-priority
+value: 1000000
+globalDefault: false
+description: Priority class for high-priority Data Lens workloads.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-medium-priority
+value: 100000
+globalDefault: false
+description: Priority class for medium-priority Data Lens workloads.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-low-priority
+value: 10000
+globalDefault: false
+description: Priority class for low-priority Data Lens workloads.
+---

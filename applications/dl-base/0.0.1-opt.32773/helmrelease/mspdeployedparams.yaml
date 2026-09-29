@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mspdeployedparams
+  namespace: ndh-core
+data:
+  domain-name: cluster.local
+---

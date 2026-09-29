@@ -1,0 +1,16 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+type: nkp-catalog
+allowMultipleInstances: true
+category:
+- general
+description: Nutanix Data Lens base services
+displayName: dl-base
+icon: ""
+licensing:
+- Pro
+- Ultimate
+overview: Deploys the dl-base Helm chart.
+scope:
+- project
+supportLink: ""
+---

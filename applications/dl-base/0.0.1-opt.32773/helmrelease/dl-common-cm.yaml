@@ -1,0 +1,64 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    zookeeper:
+      zk:
+        storageClassName: nutanix-volume
+    clickhouse-keeper:
+      clickhouseKeeper:
+        image:
+          localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-clickhouse-keeper
+        storage:
+          storageClassName: nutanix-volume
+      serviceMonitor:
+        enabled: false
+    clickhouse-server:
+      clickhouse:
+        image:
+          localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-clickhouse-server
+        storage:
+          storageClass: nutanix-volume
+          pvcStorage: 2000Gi
+        # Requested sizing is 32Gi, which exceeds the ~30.9Gi allocatable on this cluster's workers.
+        qos:
+          custom:
+            resources:
+              limits:
+                cpu: "4"
+                memory: 24Gi
+              requests:
+                cpu: "4"
+                memory: 24Gi
+    cpaas-nats-helm:
+      auth:
+        resolver:
+          store:
+            storageClassName: nutanix-volume
+      exporter:
+        enabled: false
+      nats:
+        jetstream:
+          fileStorage:
+            storageClassName: nutanix-volume
+        qos:
+          custom:
+            resources:
+              requests:
+                cpu: 1000m
+                memory: 2Gi
+              limits:
+                memory: 2Gi
+    cpaas-nats-entities:
+      streamConsumer:
+        qos:
+          cluster:
+            size: large
+    ikat:
+      enabled: false
+    msp-prometheus-collector:
+      enabled: false
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-dl-common-config-defaults
+  namespace: ${releaseNamespace}
+---
