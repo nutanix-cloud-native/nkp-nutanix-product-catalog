@@ -6,6 +6,7 @@
     "gettext@latest",
     "git@latest",
     "just@latest",
+    "kubernetes-helm@latest",
     "pre-commit@latest",
     "shfmt@latest",
     "yq-go@latest"

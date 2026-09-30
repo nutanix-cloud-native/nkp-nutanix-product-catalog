@@ -1,6 +1,7 @@
 import 'just/tools.just'
 import 'just/validate.just'
 import 'just/release.just'
+import 'just/charts.just'
 
 # Runs pre-commit hooks and gitlint
 pre-commit:

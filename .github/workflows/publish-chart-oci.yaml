@@ -21,8 +21,6 @@ jobs:
     name: Publish Chart to GHCR
     runs-on:
       - self-hosted-nutanix-medium
-    env:
-      TARGET_OCI_REGISTRY: oci://ghcr.io/mesosphere/charts
     permissions:
       contents: read
       packages: write
@@ -30,9 +28,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v5
 
-      - name: Install Helm
-        run: |
-          curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+      - name: Install NIX
+        uses: cachix/install-nix-action@v31
+
+      - name: Install devbox
+        uses: jetify-com/devbox-install-action@v0.15.0
+        with:
+          enable-cache: true
+          skip-nix-installation: true
 
       - name: Log in to GHCR
         uses: docker/login-action@v3
@@ -41,13 +44,9 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull Helm chart
-        run: |
-          set -euo pipefail
-          helm repo add "${{ github.event.inputs.chart_name }}" "${{ github.event.inputs.chart_repo }}"
-          helm repo update
-          helm pull ${{ github.event.inputs.chart_name }}/${{ github.event.inputs.chart_name }} --version ${{ github.event.inputs.chart_version }}
-
-      - name: Push chart to GHCR
-        run: |
-          helm push ${{ github.event.inputs.chart_name }}-${{ github.event.inputs.chart_version }}.tgz ${{ env.TARGET_OCI_REGISTRY }}
+      - name: Publish chart to OCI
+        run: >
+          devbox run -- just publish-chart-oci
+          "${{ github.event.inputs.chart_repo }}"
+          "${{ github.event.inputs.chart_name }}"
+          "${{ github.event.inputs.chart_version }}"

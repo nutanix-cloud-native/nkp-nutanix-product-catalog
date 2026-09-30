@@ -96,6 +96,22 @@ just create-collection-full-bundle 2.19.x-full "" .release/stable.yaml
 just build-full-bundles .release/stable.yaml ./bundles
 ```
 
+## Publish Helm chart to OCI
+
+Pull a chart from an HTTP Helm repository and push it to GHCR. Defaults to
+`oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts`. The same
+recipe is used by [Publish Chart to GHCR](.github/workflows/publish-chart-oci.yaml).
+
+```bash
+# From a devbox shell (log in to GHCR first if needed):
+#   echo "$GITHUB_TOKEN" | helm registry login ghcr.io --username <user> --password-stdin
+
+just publish-chart-oci https://mesosphere.github.io/charts/staging ndk 2.3.0
+
+# Override the destination registry (4th argument)
+just publish-chart-oci https://mesosphere.github.io/charts/staging ndk 2.3.0 oci://ghcr.io/you/charts
+```
+
 ## How to list all the catalog applications and collections on management cluster?
 
 ```
