@@ -3,13 +3,13 @@ type: nkp-catalog
 allowMultipleInstances: true
 category:
 - general
-description: Nutanix Data Lens base services
-displayName: dl-base
+description: Nutanix Data Hub services
+displayName: ndh
 icon: ""
 licensing:
 - Pro
 - Ultimate
-overview: Deploys the dl-base Helm chart.
+overview: Deploys the NDH Helm charts.
 scope:
 - project
 supportLink: ""

@@ -1,0 +1,26 @@
+# Most images are hosted on private registry (artifactory.dyn.ntnxdpro.com), which needs credentials.
+# Many charts don't set 'imagePullSecrets' in their values.yaml.
+# This file sets 'imagePullSecrets' on the default service account of each namespace and Kubernetes
+# automatically adds a service account's pull secrets to every pod that runs under it and does not set
+# a pull secret of its own. 
+# Both secrets are created manually!
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: data-lens
+imagePullSecrets:
+- name: ${releaseName}-artifactory-pull
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: default
+  namespace: ndh-core
+# Reused the name 'ndh-iep-secret' as it is the name that is present in the ndh chart.
+# It holds the same credentials as the other one, but for TWO registries:
+# - artifactory.dyn.ntnxdpro.com
+# - artifactory-edge-01.corp.p10y.ntnxdpro.com
+imagePullSecrets:
+- name: ndh-iep-secret
+---

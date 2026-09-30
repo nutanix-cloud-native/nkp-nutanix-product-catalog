@@ -4,15 +4,23 @@ data:
     dl-db-access:
       size: kLarge
       dlDBAccessService:
+        # dl-db-access sets its own imagePullSecrets, so the trick with the default 
+        # service account does not reach it, so we set it here explicitly.
         imagePullSecrets:
         - name: ${releaseName}-artifactory-pull
     dl-sync-service:
       size: kLarge
       env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smspUuid: ""
+        # Data Lens app version.
         dl_app_version: "3.0.0"
+        # Makes it run its first-time setup and create its PC user and access key.
         is_bootstrap_run: true
+      # Mounts the dl-sync-service-tls secret at /opt/nutanix/sync_service/certs and
+      # uses the renaming to address the differences between MSP and NKP.
       volumes:
       - name: sync-service-certs
         secret:
@@ -39,14 +47,20 @@ data:
       fullnameOverride: dl-dp-receiver
       size: kLarge
       env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         pcFqdn: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         cluster_instance_name: ""
     dl-api-gateway:
       size: kLarge
       env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         pcFqdn: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         cluster_instance_name: ""
     dl-react-ui:
       size: kLarge
@@ -55,8 +69,10 @@ data:
     dl-job-framework:
       size: kLarge
       env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
       volume:
+        # Set the storage class to nutanix-volume, because NKP uses Nutanix CSI StorageClass
         storage_class: nutanix-volume
     dl-ransomware-protection:
       size: kLarge

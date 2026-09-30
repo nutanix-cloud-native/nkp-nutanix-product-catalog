@@ -10,7 +10,7 @@ spec:
       interval: 10m
       sourceRef:
         kind: HelmRepository
-        name: ${releaseName}-dl-common-repo
+        name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
       version: 3.0.0-release.19
   dependsOn:
@@ -58,7 +58,7 @@ spec:
             - name: kubectl-wrapper
               mountPath: /opt/kubectl-wrapper
               readOnly: true
-          # Puts the kubectl wrapper from ndh-envoy.yaml first on PATH.
+          # Puts the kubectl wrapper from envoy.yaml first on PATH.
           - op: add
             path: /spec/template/spec/containers/0/env/-
             value:

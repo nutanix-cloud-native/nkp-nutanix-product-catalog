@@ -8,6 +8,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
+    # [TODO] Should this value be #{releaseName}?
     meta.helm.sh/release-name: dl-base
     meta.helm.sh/release-namespace: ${releaseNamespace}
 ---
@@ -18,6 +19,7 @@ metadata:
   labels:
     app.kubernetes.io/managed-by: Helm
   annotations:
+    # [TODO] Should this value be #{releaseName}?
     meta.helm.sh/release-name: dl-base
     meta.helm.sh/release-namespace: ${releaseNamespace}
 ---

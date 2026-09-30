@@ -1,14 +1,25 @@
-# On Nutanix MSP these certs are injected by the MSP cert service
-# (service.msp.ntnx.io/cert_* annotations); on NKP cert-manager issues them.
+# dnsNames are the hostnames a client may dial; TLS verification fails for any name not listed.
+# In Kubernetes, a service <svc> in namespace <ns> can be reached as:
+#   <svc>                          from pods in the same namespace
+#   <svc>.<ns>                     from other namespaces
+#   <svc>.<ns>.svc                 same, more explicit
+#   <svc>.<ns>.svc.cluster.local   fully qualified name
+# so every service a certificate is served on gets all four. The MSP cert_service_name is always
+# listed as well, because that is the name MSP would issue the certificate under.
+
+# Certificate 1 (dl-dp-receiver certificate used for dl-dp-receiver-tls secret)
+# Used by the dl-dp-receiver deployment.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: dl-dp-receiver
   namespace: data-lens
 spec:
+  # The secret name is used to mount the certificate and key into the container.
   secretName: dl-dp-receiver-tls
   issuerRef:
     kind: ClusterIssuer
+    # kommander-ca is the certificate authority that will issue the certificate.
     name: kommander-ca
   commonName: dl-dp-receiver
   dnsNames:
@@ -20,18 +31,24 @@ spec:
   - server auth
   - client auth
 ---
+# Certificate 2 (dl-sync-service certificate used for dl-sync-service-tls secret)
+# Used by the sync job and the nginx in pc-proxy.yaml.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
   name: dl-sync-service
   namespace: data-lens
 spec:
+  # The secret name is used to mount the certificate and key into the container.
   secretName: dl-sync-service-tls
   issuerRef:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: datalens-dl-sync-service
-  # dl-pc-proxy also serves this cert as iam-proxy.ntnx-base: the sync job trusts only its own cert file.
+  # 'datalens-dl-sync-service' is the sync job's cert_service_name; the job has no service of its own.
+  # The iam-proxy.ntnx-base names are there because dl-pc-proxy serves this same certificate as
+  # iam-proxy.ntnx-base:8445: the sync job trusts only its own certificate file, so the proxy must
+  # present exactly this certificate, under the hostname the job dials.
   dnsNames:
   - datalens-dl-sync-service
   - iam-proxy.ntnx-base
@@ -41,8 +58,8 @@ spec:
   - server auth
   - client auth
 ---
-# cert_service_name "datalens": dl-api-gateway, dl-react-ui, dl-gojobd, dl-pyjobd,
-# dl-ransomware-protection and dl-job-framework (mounted by data-lens.yaml post-renderers).
+# Certificate 3 (dl-datalens certificate used for dl-datalens-tls secret)
+# Used by the dl-api-gateway, dl-react-ui, dl-gojobd, dl-pyjobd, dl-ransomware-protection and dl-job-framework deployments.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -54,6 +71,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: datalens
+  # All combinations for all deployments that share the same cert_service_name.
   dnsNames:
   - datalens
   - dl-api-gateway
@@ -84,6 +102,8 @@ spec:
   - server auth
   - client auth
 ---
+# Certificate 4 (dl-fp-leader certificate used for dl-fp-leader-tls secret)
+# Used by the files-processing leader.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -95,12 +115,16 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: dl-fp-leader
+  # Only the cert_service_name: the files-processing leader has no service, so nothing dials it by
+  # hostname. The certificate only identifies it when it connects to other services.
   dnsNames:
   - dl-fp-leader
   usages:
   - server auth
   - client auth
 ---
+# Certificate 5 (dl-fp-worker certificate used for dl-fp-worker-tls secret)
+# Used by the files-processing worker.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -112,6 +136,8 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: dl-fp-worker
+  # Only the cert_service_name: the files-processing worker has no service, so nothing dials it by
+  # hostname. The certificate only identifies it when it connects to other services.
   dnsNames:
   - dl-fp-worker
   usages:
