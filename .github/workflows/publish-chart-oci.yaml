@@ -18,7 +18,7 @@ on:
 
 jobs:
   push-chart:
-    name: Publish Chart to GHCR
+    name: Publish ${{ github.event.inputs.chart_name }}@${{ github.event.inputs.chart_version }} to GHCR
     runs-on:
       - self-hosted-nutanix-medium
     permissions:
@@ -44,7 +44,7 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish chart to OCI
+      - name: Publish ${{ github.event.inputs.chart_name }}@${{ github.event.inputs.chart_version }} to OCI
         run: >
           devbox run -- just publish-chart-oci
           "${{ github.event.inputs.chart_repo }}"
