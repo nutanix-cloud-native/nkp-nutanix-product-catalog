@@ -1,5 +1,3 @@
-set unstable
-
 DEFAULT_CHART_OCI_REGISTRY := "oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts"
 
 # Pull a Helm chart from an HTTP repo and push it to an OCI registry.

@@ -1,5 +1,3 @@
-set unstable
-
 BUNDLE_NAME := "nkp-nutanix-product-catalog"
 
 # Release oci artifacts for catalog applications
