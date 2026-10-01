@@ -1,0 +1,280 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: data-lens
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: data-lens
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-canaveral-helm
+        namespace: ${releaseNamespace}
+      version: 3.0.0-release.19
+  # The data-lens chart depends on the dl-common chart.
+  dependsOn:
+  - name: dl-common
+  install:
+    createNamespace: true
+    crds: Skip
+    # Disable waiting for the sync job to complete, because it lasts for a long time and it
+    # should not block the release.
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  interval: 15s
+  # On Nutanix MSP the cert service injects these files; here they come from cert-manager.
+  postRenderers:
+  - kustomize:
+      patches:
+      # dl-dp-receiver uses a JSON6902 patch that appends a volume from dl-dp-receiver-tls.
+      # It mounts at /home/certs/NutanixInfraDataReceiver, the subfolder this service reads from.
+      # JSON6902 is used here because the Deployment already has volumes and volumeMounts lists to append to.
+      - target:
+          kind: Deployment
+          name: dl-dp-receiver
+        patch: |
+          - op: add
+            path: /spec/template/spec/volumes/-
+            value:
+              name: dp-receiver-certs
+              secret:
+                secretName: dl-dp-receiver-tls
+                items:
+                - key: ca.crt
+                  path: ca.pem
+                - key: ca.crt
+                  path: chain
+                - key: tls.crt
+                  path: cert
+                - key: tls.key
+                  path: key
+          - op: add
+            path: /spec/template/spec/containers/0/volumeMounts/-
+            value:
+              name: dp-receiver-certs
+              mountPath: /home/certs/NutanixInfraDataReceiver
+              readOnly: true
+      # data-lens, data-lens-dl-react-ui, dl-gojobd, dl-pyjobd, dl-ransomware-protection, and the StatefulSet dl-job-framework
+      # use strategic merge patches. Each adds an msp-certs volume from the shared dl-datalens-tls secret and mounts it at
+      # /home/certs in the named container. Because lists merge by name, only the mount is added.
+      - target:
+          kind: Deployment
+          name: data-lens
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-api-gateway
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: data-lens-dl-react-ui
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-react-ui
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-react-ui
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-gojobd
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-gojobd
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: gojobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-pyjobd
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-pyjobd
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: pyjobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: Deployment
+          name: dl-ransomware-protection
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: dl-ransomware-protection
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: dl-ransomware-protection
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      - target:
+          kind: StatefulSet
+          name: dl-job-framework
+        patch: |
+          apiVersion: apps/v1
+          kind: StatefulSet
+          metadata:
+            name: dl-job-framework
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-datalens-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: jobd
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs, readOnly: true}
+      # Files-processing leader and worker get their own secrets. They mount at /home/certs/dl-fp-leader
+      # and /home/certs/dl-fp-worker, the per-service subfolders those applications read.
+      - target:
+          kind: Deployment
+          name: data-lens-dl-files-processing-svc-leader
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-files-processing-svc-leader
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-fp-leader-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: leader
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs/dl-fp-leader, readOnly: true}
+      - target:
+          kind: Deployment
+          name: data-lens-dl-files-processing-svc-worker
+        patch: |
+          apiVersion: apps/v1
+          kind: Deployment
+          metadata:
+            name: data-lens-dl-files-processing-svc-worker
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: msp-certs
+                  secret:
+                    secretName: dl-fp-worker-tls
+                    items:
+                    - {key: ca.crt, path: ca.pem}
+                    - {key: ca.crt, path: chain}
+                    - {key: tls.crt, path: cert}
+                    - {key: tls.key, path: key}
+                containers:
+                - name: worker
+                  volumeMounts:
+                  - {name: msp-certs, mountPath: /home/certs/dl-fp-worker, readOnly: true}
+      # Service dl-dp-receiver gets publishNotReadyAddresses: true. This fixes a startup deadlock.
+      # The receiver's readiness probe connects to itself through its own service.
+      # Normally a service only routes to pods that are already Ready, so the probe could never
+      # succeed and the pod would never become Ready. This setting makes the service route
+      # to the pod before it's Ready, which breaks the loop.
+      - target:
+          kind: Service
+          name: dl-dp-receiver
+        patch: |
+          - op: add
+            path: /spec/publishNotReadyAddresses
+            value: true
+  releaseName: data-lens
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-data-lens-config-defaults
+---

@@ -1,0 +1,44 @@
+# Both Artifactory Helm repositories use the same credentials and CA (created before install).
+# dl-base is only published to local-canaveral-helm-backup.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-canaveral-helm-backup
+  namespace: ${releaseNamespace}
+spec:
+  # How often Flux downloads index.yaml again.
+  interval: 10m
+  # The secret that contains the credentials to access the Artifactory repository.
+  # It is created before the install (manually).
+  secretRef:
+    name: ${releaseName}-artifactory-auth
+  # The secret that contains the CA certificate to access the Artifactory repository.
+  # If it did not exist, Flux would refuse the TLS connection.
+  # It is created before the install (manually).
+  certSecretRef:
+    name: ${releaseName}-artifactory-ca
+  # Flux normally sends credentials to the host that serves index.yaml. This makes it
+  # send them when downloading the chart too, in case the index.yaml points the
+  # download to a different host.
+  passCredentials: true
+  # Type is set to default because it is a classic HELM repository that contains an index.yaml
+  # file and a .tgz chart archives.
+  type: default
+  url: https://artifactory.canaveral-corp.us-west-2.aws/artifactory/local-canaveral-helm-backup
+---
+# dl-common, data-lens and ndh are published to local-canaveral-helm.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-canaveral-helm
+  namespace: ${releaseNamespace}
+spec:
+  interval: 10m
+  secretRef:
+    name: ${releaseName}-artifactory-auth
+  certSecretRef:
+    name: ${releaseName}-artifactory-ca
+  passCredentials: true
+  type: default
+  url: https://artifactory.canaveral-corp.us-west-2.aws/artifactory/local-canaveral-helm
+---

@@ -1,0 +1,161 @@
+# The sync service expects two MSP services:
+# - ikat at pc-<pc-uuid>.ntnx-ikat:9444, over plain HTTP. It forwards to Prism Central's v3 API and adds authentication.
+# - iam-proxy at iam-proxy.ntnx-base:8445, over HTTPS. It forwards IAM calls to Prism Central.
+#
+# On NKP these services don't exist, so this file creates one nginx that acts as both, plus DNS names that point to it.
+# It is basically used to make Data Lens sync job believes it's running on Nutanix MSP. If we don't create them and
+# dl-sync-service job still tries to use them, we will get a 'host not found' error.
+
+# [TODO] Hardcoded values!!!
+
+# [TODO] Handle the proxy_ssl_verify off which is a shortcut. nginx sends the Prism Central password without checking
+# that the other side really is Prism Central. That's fine in developemnt. For production, give nginx Prism Central's
+# CA certificate and turn verification on.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dl-pc-proxy
+  namespace: data-lens
+data:
+  # nginx is used to take each request, add the PC login, send it to PC and pass back the response.
+  default.conf: |
+    # This block pretends to be ikat.
+    server {
+      # The job connects to pc-<uuid>.ntnx-ikat:9444 through plain HTTP, no encryption.
+      listen 9444;
+      # If the request path starts with /v3/, forward it to PC, but rewrite the path. For example:
+      # job asks:     /v3/clusters/list
+      # nginx sends:  https://10.48.61.3:9440/api/nutanix/v3/clusters/list
+      #
+      # and proxy_ssl_verify off is used to disable SSL verification (do not check PC's certificate,
+      # but rather just connect).
+      #
+      # and it attaches the PC login to every forwarded request by loading the auth.conf file from
+      # the dl-pc-proxy-auth secret.
+      location /v3/ {
+        proxy_pass https://10.48.61.3:9440/api/nutanix/v3/;
+        proxy_ssl_verify off;
+        include /etc/nginx/pc-auth/auth.conf;
+      }
+      # Every other path (anything not starting with /v3/) goes to Prism Central unchanged, with
+      # the same certificate shortcut and login. This covers the v4 APIs for Files, Objects and licensing.
+      location / {
+        proxy_pass https://10.48.61.3:9440;
+        proxy_ssl_verify off;
+        include /etc/nginx/pc-auth/auth.conf;
+      }
+    }
+    # This block pretends to be iam-proxy.
+    server {
+      # The job connects to iam-proxy.ntnx-base:8445 through HTTPS, so nginx needs a certificate.
+      listen 8445 ssl;
+      # The job only trusts one certificate - its own, so the certificate and key are mounted
+      # from the dl-sync-service-tls secret.
+      ssl_certificate     /etc/nginx/tls/tls.crt;
+      ssl_certificate_key /etc/nginx/tls/tls.key;
+      # Every path goes to Prism Central unchanged, with the same certificate shortcut and login.
+      location / {
+        proxy_pass https://10.48.61.3:9440;
+        proxy_ssl_verify off;
+        include /etc/nginx/pc-auth/auth.conf;
+      }
+    }
+---
+# Deployment dl-pc-proxy runs one nginx pod that serves as both ikat and iam-proxy.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dl-pc-proxy
+  namespace: data-lens
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dl-pc-proxy
+  template:
+    metadata:
+      labels:
+        app: dl-pc-proxy
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.27-alpine
+        ports:
+        - name: ikat
+          containerPort: 9444
+        - name: iam
+          containerPort: 8445
+        readinessProbe:
+          tcpSocket:
+            port: 9444
+        resources:
+          requests:
+            cpu: 50m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        volumeMounts:
+        - name: conf
+          mountPath: /etc/nginx/conf.d
+        - name: auth
+          mountPath: /etc/nginx/pc-auth
+          readOnly: true
+        - name: tls
+          mountPath: /etc/nginx/tls
+          readOnly: true
+      volumes:
+      - name: conf
+        configMap:
+          name: dl-pc-proxy
+      - name: auth
+        secret:
+          secretName: dl-pc-proxy-auth
+      - name: tls
+        secret:
+          secretName: dl-sync-service-tls
+---
+# ClusterIP service that exposes ports 9444 and 8445 inside the cluster.
+apiVersion: v1
+kind: Service
+metadata:
+  name: dl-pc-proxy
+  namespace: data-lens
+spec:
+  selector:
+    app: dl-pc-proxy
+  ports:
+  - name: ikat
+    port: 9444
+    targetPort: ikat
+  - name: iam
+    port: 8445
+    targetPort: iam
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ntnx-ikat
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: pc-fcab3de9-fabf-48b9-abe3-b298fd19c511
+  namespace: ntnx-ikat
+spec:
+  type: ExternalName
+  externalName: dl-pc-proxy.data-lens.svc.cluster.local
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ntnx-base
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: iam-proxy
+  namespace: ntnx-base
+spec:
+  type: ExternalName
+  externalName: dl-pc-proxy.data-lens.svc.cluster.local
+---
