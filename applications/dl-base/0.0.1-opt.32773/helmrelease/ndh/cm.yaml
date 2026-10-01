@@ -5,31 +5,40 @@ data:
       kLargeCluster: true
     ndh-api-pc:
       env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
     cloudnative-pg:
       image:
+        # Redirecting the image to Artifactory.
         repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/cloudnative-pg
     cloudnative-pg-cluster:
-      # The template emits priorityClassName twice when set, which Flux's strict YAML parser rejects.
+      # When the field is set, the template writes the 'priorityClassName' key twice,
+      # which Flux's strict YAML parser rejects. Setting it to empty avoids that.
       priorityClassName: ""
+      # Redirecting the image to Artifactory.
       image:
         repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/postgresql
       database:
+        # Setting the storage class to Nutanix Volume.
         storageClass: nutanix-volume
     envoy-gateway:
       global:
         images:
           envoyGateway:
+            # Redirecting the image to Artifactory.
             image: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/envoy-proxy-gateway:v1.5.0
     ndh-gateway:
       dataPlane:
         image:
+          # Redirecting the image to Artifactory.
           registry: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker
       tls:
         postInstallJob:
-          # Both MetalLB addresses on this cluster are already taken.
+          # Both MetalLB addresses on this cluster are already taken, so this is
+          # not set to be a LoadBalancer, but rather a NodePort.
           serviceType: NodePort
-          # The default 64Mi limit OOM-kills `kubectl apply` once the EnvoyProxy already exists.
+          # Resources raised to 256Mi memory to avoid OOM kills, which happened
+          # when the default 64Mi limit was used.
           resources:
             requests:
               cpu: 25m
@@ -37,14 +46,16 @@ data:
             limits:
               cpu: 200m
               memory: 256Mi
-    # Reduced from 2 x 5 CPU / 40Gi / 600Gi to fit this cluster's 8 CPU / ~30.9Gi workers.
     qdrant:
       sizingProfiles:
         kLargeCluster:
+          # Setting the number of replicas to 1 (reduced from 2) to fit the cluster's resources.
           replicas: 1
           resources:
             limits:
+              # Setting the CPU limit to 1 (reduced from 5) to fit the cluster's resources.
               cpu: "1"
+              # Setting the memory limit to 4Gi (reduced from 40Gi) to fit the cluster's resources.
               memory: 4Gi
             requests:
               cpu: "1"
@@ -52,16 +63,19 @@ data:
       storage:
         size: 50Gi
         storageClassName: nutanix-volume
-    # Reduced from a 3 CPU / 8Gi head plus 3 x 7 CPU / 16Gi workers. Below 2 CPU the head's
-    # `ray health-check` liveness probe exceeds its 10s timeout and the head is restarted.
     ndh-ray-etl:
+      # Redirecting the image to Artifactory.
       image:
         localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/nutanix-core/data-lens-onprem-dev/ndh-ray-etl
+      # Setting the storage class to Nutanix Volume.
       volume:
         storage_class: nutanix-volume
+      # Disabling the metrics collection, as Prometheus is not installed on this cluster.
       metrics:
         podMonitor:
           enabled: false
+      # Setting the head resources to 2 CPU and 4Gi because with less resources, the head's
+      # `ray health-check` liveness probe exceeds its 10s timeout and the head is restarted.
       head:
         sizingProfiles:
           kLargeCluster:
@@ -75,10 +89,13 @@ data:
       worker:
         sizingProfiles:
           kLargeCluster:
+            # Setting the number of replicas to 1 (reduced from 3) to fit the cluster's resources.
             replicas: 1
             resources:
               limits:
+                # Setting the CPU limit to 2 (reduced from 7) to fit the cluster's resources.
                 cpu: "2"
+                # Setting the memory limit to 6Gi (reduced from 16Gi) to fit the cluster's resources.
                 memory: 6Gi
               requests:
                 cpu: "2"

@@ -15,16 +15,17 @@ spec:
       version: 3.0.0-release.19
   dependsOn:
   - name: data-lens
-  # envoy-gateway-certgen (ttl 30s) and ndh-ingress-cert-patch (ttl 600s) delete themselves after
-  # finishing, and Helm's wait then fails with "jobs.batch ... not found".
   install:
     createNamespace: true
     crds: Skip
+    # envoy-gateway-certgen (which deletes itself after 30 seconds) and
+    # ndh-ingress-cert-patch (after 600 seconds) delete themselves when
+    # they finish. If Helm is still waiting on them, it reports
+    # "jobs.batch ... not found" and treats the release as failed.
     disableWaitForJobs: true
     remediation:
       retries: 30
   interval: 15s
-  # On Nutanix MSP the cert service injects /home/certs; here the files come from cert-manager.
   postRenderers:
   - kustomize:
       patches:
@@ -32,6 +33,9 @@ spec:
           kind: Job
           name: ndh-ingress-cert-patch
         patch: |
+          # Add two volumes:
+          # - ndh-ingress-certs with only the ca.pem, cert and key (that's all the Job reads)
+          # - kubectl-wrapper which makes the script (from configmap in envoy.yaml) executable
           - op: add
             path: /spec/template/spec/volumes
             value:
@@ -49,6 +53,9 @@ spec:
               configMap:
                 name: ndh-ingress-cert-patch-kubectl
                 defaultMode: 0755
+          # Mount the volumes in container 0:
+          # - ndh-ingress-certs at /home/certs
+          # - script at /opt/kubectl-wrapper
           - op: add
             path: /spec/template/spec/containers/0/volumeMounts
             value:
@@ -58,12 +65,15 @@ spec:
             - name: kubectl-wrapper
               mountPath: /opt/kubectl-wrapper
               readOnly: true
-          # Puts the kubectl wrapper from envoy.yaml first on PATH.
+          # Add a PATH variable that puts /opt/kubectl-wrapper first on PATH.
+          # When the job runs kubectl, the shell finds the wrapper before the real
+          # /usr/bin/kubectl.
           - op: add
             path: /spec/template/spec/containers/0/env/-
             value:
               name: PATH
               value: /opt/kubectl-wrapper:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+      # Each of the following patches mounts the matching secret from ndh/certs.yaml at /home/certs.
       - target:
           kind: Deployment
           name: ndh-ndh-api-pc

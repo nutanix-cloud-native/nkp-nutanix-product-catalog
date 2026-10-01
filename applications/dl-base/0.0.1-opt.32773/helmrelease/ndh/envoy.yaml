@@ -1,3 +1,8 @@
+# PROBABLY NOT NEEDED ON A CLUSTER WHERE THERE ARE ENOUGH FREE IP ADDRESSES!
+# 
+# LoadBalancer would be (stay) the serviceType for the Envoy service and this
+# workaround would not be needed.
+
 # With tls.postInstallJob.serviceType NodePort, ndh-ingress-cert-patch points the Gateway at
 # envoy-service-config. That EnvoyProxy replaces (does not merge with) the GatewayClass's
 # ndh-envoy-proxy, so it must repeat its image and pull secret, or Envoy falls back to docker.io.

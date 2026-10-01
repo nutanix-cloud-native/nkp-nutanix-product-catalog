@@ -1,10 +1,10 @@
 # dnsNames are the hostnames a client may dial; TLS verification fails for any name not listed.
-# A Service <svc> in namespace <ns> can be reached as:
+# A service <svc> in namespace <ns> can be reached as:
 #   <svc>                          from pods in the same namespace
 #   <svc>.<ns>                     from other namespaces
 #   <svc>.<ns>.svc                 same, more explicit
 #   <svc>.<ns>.svc.cluster.local   fully qualified name
-# so every Service a certificate is served on gets all four. The MSP cert_service_name is always
+# so every service a certificate is served on gets all four. The MSP cert_service_name is always
 # listed as well, because that is the name MSP would issue the certificate under.
 apiVersion: cert-manager.io/v1
 kind: Certificate
@@ -17,7 +17,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: ndh-ingress-gateway
-  # Named after the Gateway 'ndh-ingress-gateway'; Envoy creates its Service under a generated name
+  # Named after the Gateway 'ndh-ingress-gateway'; Envoy creates its service under a generated name
   # (envoy-ndh-core-ndh-ingress-gateway-<hash>). Browsers reach it through a node IP and NodePort,
   # which no certificate name covers, so the browser warning is expected either way.
   dnsNames:
@@ -27,7 +27,7 @@ spec:
   - server auth
 ---
 # One cert per MSP cert_service_name (service.msp.ntnx.io/cert_* pod annotations), all from the
-# same CA so the services trust each other; helmrelease.yaml post-renderers mount them as cert/key/ca.pem.
+# same CA, so the services trust each other; helmrelease.yaml post-renderers mount them as cert/key/ca.pem.
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
@@ -39,7 +39,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: ndh-api-pc
-  # cert_service_name 'ndh-api-pc'; Helm prefixes the release name, so the Service is 'ndh-ndh-api-pc'.
+  # cert_service_name 'ndh-api-pc'; Helm prefixes the release name, so the service is 'ndh-ndh-api-pc'.
   dnsNames:
   - ndh-api-pc
   - ndh-ndh-api-pc
@@ -61,8 +61,8 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: datalens
-  # ndh-ndh-api and ndh-ui share cert_service_name 'datalens' (there is no Service by that name), so
-  # this one certificate is served on both of their Services.
+  # ndh-ndh-api and ndh-ui share cert_service_name 'datalens' (there is no service by that name), so
+  # this one certificate is served on both of their services.
   dnsNames:
   - datalens
   - ndh-ndh-api
@@ -88,7 +88,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: dion-service
-  # cert_service_name and Service name are both 'dion-service'.
+  # cert_service_name and service name are both 'dion-service'.
   dnsNames:
   - dion-service
   - dion-service.ndh-core
@@ -109,7 +109,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: dion-valkey
-  # cert_service_name and Service name are both 'dion-valkey'; dion-service connects to it over TLS.
+  # cert_service_name and service name are both 'dion-valkey'; dion-service connects to it over TLS.
   dnsNames:
   - dion-valkey
   - dion-valkey.ndh-core
@@ -130,7 +130,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-proxy-control-plane
-  # cert_service_name and Service name are both 'iam-proxy-control-plane'.
+  # cert_service_name and service name are both 'iam-proxy-control-plane'.
   dnsNames:
   - iam-proxy-control-plane
   - iam-proxy-control-plane.ndh-core
@@ -151,7 +151,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-proxy
-  # The iam-proxy pods sit behind three Services: iam-proxy, iam-proxy-admin and iam-proxy-cac.
+  # The iam-proxy pods sit behind three services: iam-proxy, iam-proxy-admin and iam-proxy-cac.
   # This is NDH's own IAM proxy in ndh-core, unrelated to the iam-proxy.ntnx-base alias in data-lens.
   dnsNames:
   - iam-proxy
@@ -181,7 +181,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-themis
-  # cert_service_name and Service name are both 'iam-themis'.
+  # cert_service_name and service name are both 'iam-themis'.
   dnsNames:
   - iam-themis
   - iam-themis.ndh-core
@@ -202,7 +202,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-ui
-  # cert_service_name and Service name are both 'iam-ui'.
+  # cert_service_name and service name are both 'iam-ui'.
   dnsNames:
   - iam-ui
   - iam-ui.ndh-core
@@ -223,7 +223,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-user-authn
-  # cert_service_name and Service name are both 'iam-user-authn'.
+  # cert_service_name and service name are both 'iam-user-authn'.
   dnsNames:
   - iam-user-authn
   - iam-user-authn.ndh-core
@@ -244,7 +244,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: ndh-permission-management
-  # cert_service_name 'ndh-permission-management'; Helm prefixes the release name, so the Service is
+  # cert_service_name 'ndh-permission-management'; Helm prefixes the release name, so the service is
   # 'ndh-ndh-permission-management'.
   dnsNames:
   - ndh-permission-management
@@ -267,7 +267,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-database-bootstrap
-  # Only the cert_service_name: this is a Job with no Service, so nothing dials it by hostname.
+  # Only the cert_service_name: this is a Job with no service, so nothing dials it by hostname.
   # The certificate only identifies it when it connects to Postgres and the IAM services.
   dnsNames:
   - iam-database-bootstrap
@@ -286,7 +286,7 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: iam-themis-bootstrap
-  # Only the cert_service_name: this is a Job with no Service, so nothing dials it by hostname.
+  # Only the cert_service_name: this is a Job with no service, so nothing dials it by hostname.
   # The certificate only identifies it when it connects to the IAM services.
   dnsNames:
   - iam-themis-bootstrap

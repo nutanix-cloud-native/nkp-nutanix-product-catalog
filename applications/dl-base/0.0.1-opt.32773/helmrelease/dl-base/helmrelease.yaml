@@ -24,7 +24,7 @@ spec:
     createNamespace: true
     # Does not install the CRDs shipped in the chart; they are applied as a prerequisite before the install.
     crds: Skip
-    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries' 
+    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries'
     # number of times.
     remediation:
       retries: 30

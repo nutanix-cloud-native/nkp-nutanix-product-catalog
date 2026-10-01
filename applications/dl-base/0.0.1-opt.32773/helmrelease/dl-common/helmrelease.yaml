@@ -13,7 +13,7 @@ spec:
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
       version: 3.0.0-release.19
-  # dl-base is a dependency of dl-common, so it must be installed first. Flux 
+  # dl-base is a dependency of dl-common, so it must be installed first. Flux
   # does not start this release, until dl-base is Ready.
   dependsOn:
   - name: dl-base
@@ -22,24 +22,23 @@ spec:
     createNamespace: true
     # Does not install the CRDs shipped in the chart; they are applied as a prerequisite before the install.
     crds: Skip
-    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries' 
+    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries'
     # number of times.
     remediation:
       retries: 30
   # How often Flux checks that the installed release still matches this HelmRelease.
   interval: 10m
   # Only the "largecluster"/"mediumcluster" NATS profiles define the ndh_transformation_* and
-  # dl_dc_result streams, but they ask for 3 replicas and this cluster runs a single NATS node.
-  # The Job therefore reads a copy of "largecluster" with every replica count rewritten to 1.
-  postRenderers:
-  # The largecluster stream definitions, which are built into the image, ask for 3 replicas. The luster runs one NATS server. 
-  # NATS rejects a 3-replica stream on a 1-node cluster, so the setup Job fails. Therefore, we rewrite the replica count to 1, by:
+  # dl_dc_result streams. Their definitions, built into the image, ask for 3 replicas, but the cluster
+  # runs one NATS server. NATS rejects a 3-replica stream on a 1-node cluster, so the setup Job fails.
+  # Therefore, we rewrite the replica count to 1, by:
   # - adding an emptyDir volume called 'nats-entities', which is an empty scratch directory.
   # - adding an init container (single-replica-profile) that uses the same image as the main container and it:
   #   - copies the largecluster profile to the emptyDir volume
   #   - changes the number of replicas to 1 (using sed command) in every stream file
   #   - changes the number of replicas to 1 (using sed command) in the commands.txt file
-  # - mounting the 'nats-entities' container over /nats/datalens/largecluster in the main stream-consumer-creation container
+  # - mounting the 'nats-entities' volume over /nats/datalens/largecluster in the main stream-consumer-creation container
+  postRenderers:
   - kustomize:
       patches:
       - target:
@@ -85,7 +84,7 @@ spec:
   upgrade:
     # Does not touch the CRDs on upgrade either; they are managed as a prerequisite.
     crds: Skip
-    # If the upgrade fails, Flux rolls back to the last working release and tries again up to 'retries' 
+    # If the upgrade fails, Flux rolls back to the last working release and tries again up to 'retries'
     # number of times.
     remediation:
       retries: 30

@@ -2,7 +2,7 @@
 # Many charts don't set 'imagePullSecrets' in their values.yaml.
 # This file sets 'imagePullSecrets' on the default service account of each namespace and Kubernetes
 # automatically adds a service account's pull secrets to every pod that runs under it and does not set
-# a pull secret of its own. 
+# a pull secret of its own.
 # Both secrets are created manually!
 apiVersion: v1
 kind: ServiceAccount

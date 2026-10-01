@@ -13,15 +13,13 @@ spec:
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
       version: 3.0.0-release.19
-  # The data-lens chart depends on the dl-common chart. 
+  # The data-lens chart depends on the dl-common chart.
   dependsOn:
   - name: dl-common
-  # dl-sync-service's Job syncs from Prism Central (iam-proxy.ntnx-base, ntnx-ikat), which this
-  # cluster does not have, so it never completes and must not gate the release.
   install:
     createNamespace: true
     crds: Skip
-    # Disable waiting for the sync job to complete, because it lasts for a long time and it 
+    # Disable waiting for the sync job to complete, because it lasts for a long time and it
     # should not block the release.
     disableWaitForJobs: true
     remediation:
@@ -31,8 +29,8 @@ spec:
   postRenderers:
   - kustomize:
       patches:
-      # dl-dp-receiver uses a JSON6902 patch that appends a volume from dl-dp-receiver-tls. 
-      # It mounts at /home/certs/NutanixInfraDataReceiver, the subfolder this service reads from. 
+      # dl-dp-receiver uses a JSON6902 patch that appends a volume from dl-dp-receiver-tls.
+      # It mounts at /home/certs/NutanixInfraDataReceiver, the subfolder this service reads from.
       # JSON6902 is used here because the Deployment already has volumes and volumeMounts lists to append to.
       - target:
           kind: Deployment
@@ -59,8 +57,8 @@ spec:
               name: dp-receiver-certs
               mountPath: /home/certs/NutanixInfraDataReceiver
               readOnly: true
-      # data-lens, data-lens-dl-react-ui, dl-gojobd, dl-pyjobd, dl-ransomware-protection, and the StatefulSet dl-job-framework 
-      # use strategic merge patches. Each adds an msp-certs volume from the shared dl-datalens-tls secret and mounts it at 
+      # data-lens, data-lens-dl-react-ui, dl-gojobd, dl-pyjobd, dl-ransomware-protection, and the StatefulSet dl-job-framework
+      # use strategic merge patches. Each adds an msp-certs volume from the shared dl-datalens-tls secret and mounts it at
       # /home/certs in the named container. Because lists merge by name, only the mount is added.
       - target:
           kind: Deployment
@@ -206,7 +204,7 @@ spec:
                 - name: jobd
                   volumeMounts:
                   - {name: msp-certs, mountPath: /home/certs, readOnly: true}
-      # Files-processing leader and worker get their own secrets. They mount at /home/certs/dl-fp-leader 
+      # Files-processing leader and worker get their own secrets. They mount at /home/certs/dl-fp-leader
       # and /home/certs/dl-fp-worker, the per-service subfolders those applications read.
       - target:
           kind: Deployment
@@ -256,8 +254,8 @@ spec:
                 - name: worker
                   volumeMounts:
                   - {name: msp-certs, mountPath: /home/certs/dl-fp-worker, readOnly: true}
-      # Service dl-dp-receiver gets publishNotReadyAddresses: true. This fixes a startup deadlock. 
-      # The receiver's readiness probe connects to itself through its own service. 
+      # Service dl-dp-receiver gets publishNotReadyAddresses: true. This fixes a startup deadlock.
+      # The receiver's readiness probe connects to itself through its own service.
       # Normally a service only routes to pods that are already Ready, so the probe could never
       # succeed and the pod would never become Ready. This setting makes the service route
       # to the pod before it's Ready, which breaks the loop.

@@ -1,7 +1,7 @@
 # The sync service expects two MSP services:
 # - ikat at pc-<pc-uuid>.ntnx-ikat:9444, over plain HTTP. It forwards to Prism Central's v3 API and adds authentication.
 # - iam-proxy at iam-proxy.ntnx-base:8445, over HTTPS. It forwards IAM calls to Prism Central.
-# 
+#
 # On NKP these services don't exist, so this file creates one nginx that acts as both, plus DNS names that point to it.
 # It is basically used to make Data Lens sync job believes it's running on Nutanix MSP. If we don't create them and
 # dl-sync-service job still tries to use them, we will get a 'host not found' error.
@@ -37,7 +37,7 @@ data:
         proxy_ssl_verify off;
         include /etc/nginx/pc-auth/auth.conf;
       }
-      # Every other path (anything not starting with /v3/) goes to Prism Central unchanged, with 
+      # Every other path (anything not starting with /v3/) goes to Prism Central unchanged, with
       # the same certificate shortcut and login. This covers the v4 APIs for Files, Objects and licensing.
       location / {
         proxy_pass https://10.48.61.3:9440;
@@ -49,7 +49,7 @@ data:
     server {
       # The job connects to iam-proxy.ntnx-base:8445 through HTTPS, so nginx needs a certificate.
       listen 8445 ssl;
-      # The job only trusts one certificate - its own, so the certificate and key are mounted 
+      # The job only trusts one certificate - its own, so the certificate and key are mounted
       # from the dl-sync-service-tls secret.
       ssl_certificate     /etc/nginx/tls/tls.crt;
       ssl_certificate_key /etc/nginx/tls/tls.key;

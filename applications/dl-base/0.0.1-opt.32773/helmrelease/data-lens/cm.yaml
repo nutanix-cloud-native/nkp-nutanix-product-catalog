@@ -4,7 +4,7 @@ data:
     dl-db-access:
       size: kLarge
       dlDBAccessService:
-        # dl-db-access sets its own imagePullSecrets, so the trick with the default 
+        # dl-db-access sets its own imagePullSecrets, so the trick with the default
         # service account does not reach it, so we set it here explicitly.
         imagePullSecrets:
         - name: ${releaseName}-artifactory-pull

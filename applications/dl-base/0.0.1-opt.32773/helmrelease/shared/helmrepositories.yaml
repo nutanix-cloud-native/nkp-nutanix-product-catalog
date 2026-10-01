@@ -18,7 +18,7 @@ spec:
   certSecretRef:
     name: ${releaseName}-artifactory-ca
   # Flux normally sends credentials to the host that serves index.yaml. This makes it
-  # send them when downloading the chart too, in case the index.yaml points the 
+  # send them when downloading the chart too, in case the index.yaml points the
   # download to a different host.
   passCredentials: true
   # Type is set to default because it is a classic HELM repository that contains an index.yaml

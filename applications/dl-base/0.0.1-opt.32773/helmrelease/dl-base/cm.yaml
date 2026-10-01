@@ -1,9 +1,9 @@
 apiVersion: v1
 data:
-  # dl-priorityclasses is disabled because dl-base chart has them with different
-  # values and, as they are immutable, HELM can not change them in place and an
-  # error is thrown.
   values.yaml: |
+    # dl-priorityclasses is disabled because dl-base chart has them with different
+    # values and, as they are immutable, HELM can not change them in place and an
+    # error is thrown.
     dl-priorityclasses:
       enabled: false
     altinity-clickhouse-operator:
@@ -17,7 +17,7 @@ data:
     ndh-kuberay-operator:
       enabled: true
 kind: ConfigMap
-# Gives the name '${releaseName}-config-defaults' to the ConfigMap and stores 
+# Gives the name '${releaseName}-config-defaults' to the ConfigMap and stores
 # it in the namespace ${releaseNamespace}. It is later used to set the values
 # that the chart is expecting.
 metadata:
