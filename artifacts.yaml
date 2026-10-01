@@ -20,6 +20,7 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.6.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.7.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.8.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/nutanix-ai:2.8.1
       - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.102.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.114.1
       - oci://<registry-url>/nkp-nutanix-product-catalog/opentelemetry-operator:0.93.0
@@ -264,6 +265,44 @@ applications:
       - docker.io/nutanix/nai-postgresql:17.10-standard-trixie
       - docker.io/nutanix/nai-python-processor:v2.8.0
       - docker.io/nutanix/nai-rag-app:v2.8.0
+      - docker.io/nutanix/nai-target-allocator:0.152.0
+      - docker.io/nutanix/nai-valkey:9.1.0
+      - docker.io/nutanix/nai-vllm:v0.10.2-gpu
+      - docker.io/nutanix/nai-vllm:v0.26.0
+      - docker.io/nutanix/nai-vllm:v0.26.0-gpu
+  - name: nutanix-ai
+    version: 2.8.1
+    images:
+      - oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts/nai-core:2.8.1
+      - oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts/nai-operators:2.8.1
+      - docker.io/mesosphere/kubectl:v1.35.2-alpine
+      - docker.io/nutanix/nai-agent-app:v2.8.1
+      - docker.io/nutanix/nai-ai-gateway-controller:v1.0.0
+      - docker.io/nutanix/nai-ai-gateway-extproc:v1.0.0
+      - docker.io/nutanix/nai-api:v2.8.1
+      - docker.io/nutanix/nai-clickhouse-keeper:25.8.17.37
+      - docker.io/nutanix/nai-clickhouse-metrics-exporter:0.27.2
+      - docker.io/nutanix/nai-clickhouse-operator:0.27.2
+      - docker.io/nutanix/nai-clickhouse-schemas:2.1.4
+      - docker.io/nutanix/nai-clickhouse-server:25.8.17.37
+      - docker.io/nutanix/nai-clickhouse-udf:v2.8.1
+      - docker.io/nutanix/nai-epp-inference-scheduler:v1.2.1-98db134-982d862
+      - docker.io/nutanix/nai-finetuning:v2.8.1
+      - docker.io/nutanix/nai-go-processor:v2.8.1
+      - docker.io/nutanix/nai-iam-bootstrap:v2.8.1
+      - docker.io/nutanix/nai-iam-proxy-control-plane:v2.8.1
+      - docker.io/nutanix/nai-iam-proxy:v2.8.1
+      - docker.io/nutanix/nai-iam-themis:v2.8.1
+      - docker.io/nutanix/nai-iam-ui:v2.8.1
+      - docker.io/nutanix/nai-iam-user-authn:v2.8.1
+      - docker.io/nutanix/nai-iep-operator:v2.8.1
+      - docker.io/nutanix/nai-inference-ui:v2.8.1
+      - docker.io/nutanix/nai-jobs:v2.8.1
+      - docker.io/nutanix/nai-kserve-custom-model-server:v2.8.1
+      - docker.io/nutanix/nai-oauth2-proxy:v7.9.0
+      - docker.io/nutanix/nai-postgresql:17.10-standard-trixie
+      - docker.io/nutanix/nai-python-processor:v2.8.1
+      - docker.io/nutanix/nai-rag-app:v2.8.1
       - docker.io/nutanix/nai-target-allocator:0.152.0
       - docker.io/nutanix/nai-valkey:9.1.0
       - docker.io/nutanix/nai-vllm:v0.10.2-gpu
