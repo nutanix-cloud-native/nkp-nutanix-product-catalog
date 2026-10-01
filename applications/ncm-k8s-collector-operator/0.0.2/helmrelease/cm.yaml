@@ -1,0 +1,21 @@
+---
+# Chart defaults for this app version. Two jobs:
+#   1. a place to pin values every install of ncm-k8s-collector-operator 0.0.1 should get;
+#   2. structural — Kommander wires an AppDeployment's configOverrides in with a
+#      JSON-6902 "add /spec/valuesFrom/-", which requires the list to already
+#      exist. Without an entry here that patch fails and the HelmRelease is
+#      never applied.
+# Later entries win, so configOverrides always overrides anything set here.
+# Namespace is ${releaseNamespace} because Flux resolves valuesFrom refs in the
+# HelmRelease's own namespace. The name is per-INSTANCE, not per-app-version: the
+# operator writes one AppDeployment per cluster into one workspace namespace, and
+# each instance's Kustomization prunes. A shared name would let one instance's
+# teardown delete the ConfigMap the surviving instances still reference.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-${appVersion}-nkp-defaults
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |-
+    {}

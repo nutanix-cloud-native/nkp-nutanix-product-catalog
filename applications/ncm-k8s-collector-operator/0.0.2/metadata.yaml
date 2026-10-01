@@ -1,0 +1,32 @@
+---
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+displayName: NCM k8s Collector Operator
+description: Unified Multi-Cluster Telemetry Operator. Reconciles telemetry.platform/v1 TelemetryIntent custom resources into merged OpenTelemetry Collector configs and deploys a single set of collectors per managed k8s cluster.
+allowMultipleInstances: false
+type: internal
+category:
+- observability
+certifications:
+- nutanix-supported
+- airgapped
+licensing:
+- Pro
+- Ultimate
+scope:
+- workspace
+icon: ""
+overview: |-
+  ## Overview
+  Unified Multi-Cluster Telemetry Operator is a single collector operator that
+  lets multiple clients declare the telemetry they want via a
+  `telemetryintents.telemetry.nutanix.com` `TelemetryIntent` CR. It:
+
+  - Merges every intent in a workspace into two OpenTelemetry Collector configs
+    per cluster (a per-node DaemonSet config and a cluster-singleton Deployment
+    config) using an embedded, version-pinned catalog.
+  - Deploys one collector App per workspace on the management cluster and every
+    attached workload cluster, plus any cluster attached in the future, with no
+    human action.
+
+  Deleting every intent triggers a clean tear-down of the collectors across all
+  clusters, driven by a finalizer on each `TelemetryIntent`.
