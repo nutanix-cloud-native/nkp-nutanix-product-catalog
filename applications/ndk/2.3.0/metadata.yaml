@@ -21,7 +21,7 @@ overview: |-
   # Overview
   Nutanix Data Services for Kubernetes (NDK) simplifies and unifies the life cycle management of business-critical applications by extending enterprise data services to containerized applications.
   ## For Information on Features
-  - [Nutanix Data Services for Kubernetes](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Services-for-Kubernetes-v2_1:Nutanix-Data-Services-for-Kubernetes-v2_1)
+  - [Nutanix Data Services for Kubernetes](https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Services-for-Kubernetes-v2_3:Nutanix-Data-Services-for-Kubernetes-v2_3)
 
   ## Prerequisites and Configuration Guide
   ### This application is supported only on NKP clusters backed by Nutanix Infrastructure.
@@ -82,3 +82,121 @@ overview: |-
       secretName: <Name of pre-existing secret>
       clusterName: <Name of NKP cluster>
   ```
+  ### NDK UI Configuration
+
+  The NDK UI is disabled by default. To enable the UI from the NKP Catalog, set `ui.enable` to `true`.
+
+  ### Password Configuration
+
+  The NDK UI does not use the default NKP SSO in this configuration. It authenticates against locally configured users, whose passwords must be bcrypt-hashed. Generate a hash for each user:
+
+  ```
+  htpasswd -bnBC 10 "" 'YourSecurePassword123!' | tr -d ':\n'
+
+  ```
+
+  Copy the resulting hash (for example, $2y$10$...) directly in the catalog values. Clear-text passwords must not be used.
+
+  ### Enable NDK UI with HTTPS
+
+  For production environments, expose the NDK UI through an Ingress controller with TLS termination.
+
+  Before enabling the application, create a TLS Secret in the `ntnx-system` namespace:
+
+  ```bash
+  kubectl create secret tls ndk-ui-tls \
+    --cert=<path-to-tls.crt> \
+    --key=<path-to-tls.key> \
+    -n ntnx-system
+  ```
+
+  When enabling NDK from the NKP Catalog, provide the following values:
+
+  ```yaml
+  ui:
+    enable: true
+
+  deployment:
+    ui:
+      ndkUIService:
+        type: ClusterIP
+
+  config:
+    uiConfig:
+      security:
+        publicScheme: https
+        headers:
+          hsts: false
+      secrets:
+        create: true
+        jwtSecret: ''
+        usersConfig: |
+          [
+            {
+              "id": "1",
+              "username": "admin",
+              "password": "REPLACE_WITH_ADMIN_BCRYPT_HASH",
+              "role": "ADMIN"
+            },
+            {
+              "id": "2",
+              "username": "viewer",
+              "password": "REPLACE_WITH_VIEWER_BCRYPT_HASH",
+              "role": "VIEWER"
+            }
+          ]
+      ingress:
+        enabled: true
+        host: <ndk-ui-hostname>
+        className: <ingress-class>
+        tls:
+          mode: SECRET
+          secretName: ndk-ui-tls
+
+  ```
+
+  Note: The NDK UI uses two role names: ADMIN and VIEWER. The ADMIN role provides full create, read, update, and delete access on NDK custom resources. The VIEWER role provides read-only access.
+
+  Replace the following placeholders:
+
+  * `<ndk-ui-hostname>` with the DNS name used to access the UI.
+  * `<ingress-class>` with the Ingress class, for example `nginx`. `kommander-traefik` can be used if present.
+  * `REPLACE_WITH_*_BCRYPT_HASH` with the hashes generated using `htpasswd`.
+
+  The DNS hostname must resolve to the external IP address of the Ingress controller.
+
+  ### Supported TLS Modes
+
+  * `SECRET`: Uses a pre-created Kubernetes TLS Secret. Cert-manager is not required.
+  * `ISSUER`: Uses an existing cert-manager `Issuer` or `ClusterIssuer`.
+  * `SELF_SIGNED`: Uses cert-manager to create a self-signed certificate. This is suitable for testing only and causes a browser certificate warning.
+
+  For `ISSUER` mode, replace the TLS configuration with:
+
+  ```yaml
+  tls:
+    mode: ISSUER
+    issuer:
+      name: <issuer-name>
+      kind: ClusterIssuer
+
+  ```
+
+  For `SELF_SIGNED` mode, use:
+
+  ```yaml
+  tls:
+    mode: SELF_SIGNED
+
+  ```
+
+  Cert-manager must be installed for `ISSUER` and `SELF_SIGNED` modes.
+
+  Access the UI using:
+
+  ```text
+  https://<ndk-ui-hostname>
+
+  ```
+
+  Use the original password chosen before generating the bcrypt hash to log in. Do not use the bcrypt hash itself as the login password.
