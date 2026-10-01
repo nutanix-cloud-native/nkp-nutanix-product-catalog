@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: gateway-selfsigned-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    gateway:
+      tlsSecretName: ingress-certificate
+      certManager:
+        selfSigned: true
