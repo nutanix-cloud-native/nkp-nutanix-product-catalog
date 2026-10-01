@@ -32,6 +32,7 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: actionlint
@@ -46,6 +47,8 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
         with:
+          # Full history so gitlint can walk PR commits vs the base branch.
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install Nix on self-hosted ARC runners
