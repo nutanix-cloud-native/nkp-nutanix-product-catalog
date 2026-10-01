@@ -10,8 +10,8 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.19.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/leaderworkerset:0.8.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/nc-orchestrator:1.0.3
-      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:1.0.0
-      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:1.0.0
+      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:0.0.12
+      - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:0.0.9
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.1.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.3.0
@@ -83,16 +83,14 @@ applications:
       - harbor.eng.nutanix.com/nc-orchestrator/ikat-proxy:1.0.0
       - harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-6cd958a
   - name: ncm-k8s-collector
-    version: 1.0.0
+    version: 0.0.9
     images:
-      - oci://harbor.eng.nutanix.com/ncm-k8s/nkp-otel:1.0.0
-      - harbor.eng.nutanix.com/ncm-k8s/opentelemetry-collector-contrib:0.153.0
-      - harbor.eng.nutanix.com/ncm/ncm-otel-collector:0.153.0-ncm.1
+      - oci://harbor.eng.nutanix.com/ncm-k8s/charts/nkp-otel:0.0.8
   - name: ncm-k8s-collector-operator
-    version: 1.0.0
+    version: 0.0.12
     images:
-      - oci://harbor.eng.nutanix.com/ncm-k8s/ntnx-k8s-collector-operator:1.0.0
-      - harbor.eng.nutanix.com/ncm-k8s/telemetry-operator:1.0.0
+      - oci://harbor.eng.nutanix.com/ncm-k8s/charts/ntnx-k8s-collector-operator:0.0.12
+      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:59389af
   - name: ndk
     version: 2.0.0
     images:
