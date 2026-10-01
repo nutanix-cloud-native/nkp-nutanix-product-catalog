@@ -30,8 +30,9 @@ jobs:
     - self-hosted-nutanix-docker-medium
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: actionlint
@@ -44,8 +45,10 @@ jobs:
     runs-on: self-hosted-nutanix-medium
     steps:
       - name: Check out code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
+          # Full history so gitlint can walk PR commits vs the base branch.
+          fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Install Nix on self-hosted ARC runners
@@ -59,7 +62,7 @@ jobs:
           skip-nix-installation: true
 
       - name: Set up pre-commit cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/pre-commit
           key: pre-commit-3|${{ hashFiles('.pre-commit-config.yaml') }}
