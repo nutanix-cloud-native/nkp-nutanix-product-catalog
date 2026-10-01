@@ -8,7 +8,7 @@ metadata:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
   interval: 24h
-  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core" # TODO: Update to public registry oci://ghcr.io/mesosphere/charts/nai-core
+  url: "oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts/nai-core"
   ref:
     tag: 2.8.1
   layerSelector:
