@@ -33,9 +33,8 @@ spec:
           kind: Job
           name: ndh-ingress-cert-patch
         patch: |
-          # Add two volumes:
-          # - ndh-ingress-certs with only the ca.pem, cert and key (that's all the Job reads)
-          # - kubectl-wrapper which makes the script (from configmap in envoy.yaml) executable
+          # The chart assumes MSP injects these certificate files into the Job.
+          # On NKP, mount the cert-manager Secret with the filenames the Job expects.
           - op: add
             path: /spec/template/spec/volumes
             value:
@@ -49,30 +48,13 @@ spec:
                   path: cert
                 - key: tls.key
                   path: key
-            - name: kubectl-wrapper
-              configMap:
-                name: ndh-ingress-cert-patch-kubectl
-                defaultMode: 0755
-          # Mount the volumes in container 0:
-          # - ndh-ingress-certs at /home/certs
-          # - script at /opt/kubectl-wrapper
+          # Mount the certificates in the Job's first container.
           - op: add
             path: /spec/template/spec/containers/0/volumeMounts
             value:
             - name: ndh-ingress-certs
               mountPath: /home/certs
               readOnly: true
-            - name: kubectl-wrapper
-              mountPath: /opt/kubectl-wrapper
-              readOnly: true
-          # Add a PATH variable that puts /opt/kubectl-wrapper first on PATH.
-          # When the job runs kubectl, the shell finds the wrapper before the real
-          # /usr/bin/kubectl.
-          - op: add
-            path: /spec/template/spec/containers/0/env/-
-            value:
-              name: PATH
-              value: /opt/kubectl-wrapper:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
       # Each of the following patches mounts the matching secret from ndh/certs.yaml at /home/certs.
       - target:
           kind: Deployment

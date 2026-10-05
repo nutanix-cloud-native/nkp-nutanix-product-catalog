@@ -34,9 +34,7 @@ data:
           registry: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker
       tls:
         postInstallJob:
-          # Both MetalLB addresses on this cluster are already taken, so this is
-          # not set to be a LoadBalancer, but rather a NodePort.
-          serviceType: NodePort
+          serviceType: LoadBalancer
           # Resources raised to 256Mi memory to avoid OOM kills, which happened
           # when the default 64Mi limit was used.
           resources:
@@ -49,17 +47,14 @@ data:
     qdrant:
       sizingProfiles:
         kLargeCluster:
-          # Setting the number of replicas to 1 (reduced from 2) to fit the cluster's resources.
-          replicas: 1
+          replicas: 2
           resources:
             limits:
-              # Setting the CPU limit to 1 (reduced from 5) to fit the cluster's resources.
-              cpu: "1"
-              # Setting the memory limit to 4Gi (reduced from 40Gi) to fit the cluster's resources.
-              memory: 4Gi
+              cpu: "5"
+              memory: 40Gi
             requests:
-              cpu: "1"
-              memory: 4Gi
+              cpu: "5"
+              memory: 40Gi
       storage:
         size: 50Gi
         storageClassName: nutanix-volume
@@ -74,32 +69,28 @@ data:
       metrics:
         podMonitor:
           enabled: false
-      # Setting the head resources to 2 CPU and 4Gi because with less resources, the head's
-      # `ray health-check` liveness probe exceeds its 10s timeout and the head is restarted.
+      # The larger cluster can use the chart's kLargeCluster head sizing: 3 CPU and 8Gi.
       head:
         sizingProfiles:
           kLargeCluster:
             resources:
               limits:
-                cpu: "2"
-                memory: 4Gi
+                cpu: "3"
+                memory: 8Gi
               requests:
-                cpu: "2"
-                memory: 4Gi
+                cpu: "3"
+                memory: 8Gi
       worker:
         sizingProfiles:
           kLargeCluster:
-            # Setting the number of replicas to 1 (reduced from 3) to fit the cluster's resources.
-            replicas: 1
+            replicas: 3
             resources:
               limits:
-                # Setting the CPU limit to 2 (reduced from 7) to fit the cluster's resources.
-                cpu: "2"
-                # Setting the memory limit to 6Gi (reduced from 16Gi) to fit the cluster's resources.
-                memory: 6Gi
+                cpu: "7"
+                memory: 16Gi
               requests:
-                cpu: "2"
-                memory: 6Gi
+                cpu: "7"
+                memory: 16Gi
 kind: ConfigMap
 metadata:
   name: ${releaseName}-ndh-config-defaults

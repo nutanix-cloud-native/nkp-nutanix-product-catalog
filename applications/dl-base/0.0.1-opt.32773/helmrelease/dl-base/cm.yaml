@@ -8,6 +8,8 @@ data:
       enabled: false
     altinity-clickhouse-operator:
       enabled: true
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
       serviceMonitor:
         enabled: false
       alerts:
@@ -16,6 +18,8 @@ data:
       enabled: true
     ndh-kuberay-operator:
       enabled: true
+      imagePullSecrets:
+      - name: ndh-iep-secret
 kind: ConfigMap
 # Gives the name '${releaseName}-config-defaults' to the ConfigMap and stores
 # it in the namespace ${releaseNamespace}. It is later used to set the values

@@ -3,5 +3,4 @@ kind: Kustomization
 resources:
 - certs.yaml
 - cm.yaml
-- envoy.yaml
 - helmrelease.yaml

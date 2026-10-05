@@ -45,17 +45,15 @@ data:
         storage:
           storageClass: nutanix-volume
           pvcStorage: 2000Gi
-        # [RESOURCE ISSUE] Reduced from the 4 CPU / 32Gi requested in the dl-common config (chart default:
-        # 2 CPU / 16Gi) to fit this cluster's 8 CPU / ~30.9Gi workers next to the other data-lens pods.
         qos:
           custom:
             resources:
               limits:
-                cpu: "2"
-                memory: 8Gi
+                cpu: "4"
+                memory: 32Gi
               requests:
-                cpu: "2"
-                memory: 8Gi
+                cpu: "4"
+                memory: 32Gi
     cpaas-nats-helm:
       # Sets the StorageClass for the NATS account resolver.
       auth:
