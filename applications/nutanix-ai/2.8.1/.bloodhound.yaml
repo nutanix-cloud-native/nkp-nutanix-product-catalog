@@ -1,0 +1,40 @@
+# Kubernetes versions
+# (e.g. 1.33.0 - has to match versions in https://github.com/yannh/kubernetes-json-schema)
+k8s_versions:
+  - 1.35.0
+  - 1.36.0
+
+# use strict validation (reject unknown fields in resources)
+strict: true
+
+# types to be skipped (e.g. certmanager.k8s.io/v1, or certmanager.k8s.io/v1/Certificate)
+skip_types: [
+  "opentelemetry.io/v1beta1/OpenTelemetryCollector",
+  "gateway.envoyproxy.io/v1alpha1/Backend",
+  "gateway.networking.k8s.io/v1beta1/ReferenceGrant",
+  "gateway.envoyproxy.io/v1alpha1/SecurityPolicy",
+  "gateway.envoyproxy.io/v1alpha1/ClientTrafficPolicy",
+  "gateway.envoyproxy.io/v1alpha1/EnvoyProxy",
+  "monitoring.coreos.com/v1/PodMonitor",
+  "postgresql.cnpg.io/v1/Database",
+  "postgresql.cnpg.io/v1/Cluster"
+]
+
+# load additional CRDs (URLs of CRD yaml files)
+additional_crds:
+ - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_certificates.yaml
+ - https://raw.githubusercontent.com/cert-manager/cert-manager/master/deploy/crds/cert-manager.io_issuers.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_prometheusrules.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_prometheuses.yaml
+ - https://raw.githubusercontent.com/prometheus-operator/prometheus-operator/refs/heads/main/example/prometheus-operator-crd-full/monitoring.coreos.com_servicemonitors.yaml
+ - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_gateways.yaml
+ - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_gatewayclasses.yaml
+ - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_httproutes.yaml
+ - https://raw.githubusercontent.com/kubernetes-sigs/gateway-api/refs/heads/main/config/crd/standard/gateway.networking.k8s.io_backendtlspolicies.yaml
+ - https://raw.githubusercontent.com/open-telemetry/opentelemetry-operator/main/config/crd/bases/opentelemetry.io_opentelemetrycollectors.yaml
+ - https://raw.githubusercontent.com/kserve/kserve/refs/tags/v0.19.0/config/crd/full/llmisvc/serving.kserve.io_llminferenceserviceconfigs.yaml
+
+# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
+substitution_vars:
+  releaseNamespace: kommander
+  workspaceNamespace: workspace
