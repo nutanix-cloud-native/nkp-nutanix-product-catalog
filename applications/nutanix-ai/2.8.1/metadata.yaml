@@ -27,19 +27,19 @@ dependsOn:
     optional: false
   - type: Application
     name: nvidia-gpu-operator
-    optional: true
+    optional: false
   - type: Application
     name: opentelemetry-operator
     optional: false
   - type: Application
     name: kserve
-    optional: true
+    optional: false
   - type: Application
     name: envoy-gateway-nai
     optional: false
   - type: Application
     name: leaderworkerset
-    optional: true
+    optional: false
   - type: Application
     name: cloudnative-pg
     optional: false

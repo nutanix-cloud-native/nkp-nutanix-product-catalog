@@ -24,6 +24,18 @@ spec:
   dependsOn:
     - name: kube-prometheus-stack
       namespace: ${workspaceNamespace}
+    - name: nvidia-gpu-operator
+      namespace: ${workspaceNamespace}
+    - name: kserve
+      namespace: ${workspaceNamespace}
+    - name: kserve-crd
+      namespace: ${workspaceNamespace}
+    - name: kserve-llmisvc-crd
+      namespace: ${workspaceNamespace}
+    - name: kserve-llmisvc-resources
+      namespace: ${workspaceNamespace}
+    - name: lws
+      namespace: ${workspaceNamespace}
     - name: envoy-gateway-nai
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
