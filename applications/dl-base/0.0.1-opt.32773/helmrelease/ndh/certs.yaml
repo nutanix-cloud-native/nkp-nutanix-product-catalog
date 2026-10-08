@@ -17,9 +17,10 @@ spec:
     kind: ClusterIssuer
     name: kommander-ca
   commonName: ndh-ingress-gateway
-  # Named after the Gateway 'ndh-ingress-gateway'; Envoy creates its service under a generated name
-  # (envoy-ndh-core-ndh-ingress-gateway-<hash>). Browsers reach it through a node IP and NodePort,
-  # which no certificate name covers, so the browser warning is expected either way.
+  # Named after the Gateway 'ndh-ingress-gateway'; Envoy creates its Service under a generated name
+  # (envoy-ndh-core-ndh-ingress-gateway-<hash>) and exposes it as a LoadBalancer.
+  # The certificate identifies the Gateway's internal service names; the external LoadBalancer
+  # IP is not a DNS name and therefore is not included in dnsNames.
   dnsNames:
   - ndh-ingress-gateway
   - ndh-ingress-gateway.ndh-core.svc
