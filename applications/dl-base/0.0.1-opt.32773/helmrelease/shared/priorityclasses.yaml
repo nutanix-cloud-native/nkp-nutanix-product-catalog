@@ -1,0 +1,31 @@
+# Data Lens pods ask for these PriorityClasses by name ('priorityClassName'). A pod that names a
+# PriorityClass which does not exist is rejected, so they must exist before any chart runs.
+# The dl-base chart would normally create them, but it is disabled in dl-base/cm.yaml
+# (dl-priorityclasses.enabled: false): the chart's 'value' numbers differ from these, and a
+# PriorityClass 'value' can not be changed after it is created, so Helm upgrades fail.
+# A higher 'value' means the scheduler places the pod first and evicts it last when a node is full.
+# 'globalDefault: false' means pods that do not name a PriorityClass are not affected.
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-high-priority
+value: 1000000
+globalDefault: false
+description: Priority class for high-priority Data Lens workloads.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-medium-priority
+value: 100000
+globalDefault: false
+description: Priority class for medium-priority Data Lens workloads.
+---
+apiVersion: scheduling.k8s.io/v1
+kind: PriorityClass
+metadata:
+  name: dl-low-priority
+value: 10000
+globalDefault: false
+description: Priority class for low-priority Data Lens workloads.
+---

@@ -1,0 +1,96 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dl-common
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: dl-common
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-canaveral-helm
+        namespace: ${releaseNamespace}
+      version: 3.0.0-release.19
+  # dl-base is a dependency of dl-common, so it must be installed first. Flux
+  # does not start this release, until dl-base is Ready.
+  dependsOn:
+  - name: ${releaseName}
+  install:
+    # Creates the namespace, if it does not exist yet.
+    createNamespace: true
+    # Does not install the CRDs shipped in the chart; they are applied as a prerequisite before the install.
+    crds: Skip
+    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries'
+    # number of times.
+    remediation:
+      retries: 30
+  # How often Flux checks that the installed release still matches this HelmRelease.
+  interval: 10m
+  # Only the "largecluster"/"mediumcluster" NATS profiles define the ndh_transformation_* and
+  # dl_dc_result streams. Their definitions, built into the image, ask for 3 replicas, but the cluster
+  # runs one NATS server. NATS rejects a 3-replica stream on a 1-node cluster, so the setup Job fails.
+  # Therefore, we rewrite the replica count to 1, by:
+  # - adding an emptyDir volume called 'nats-entities', which is an empty scratch directory.
+  # - adding an init container (single-replica-profile) that uses the same image as the main container and it:
+  #   - copies the largecluster profile to the emptyDir volume
+  #   - changes the number of replicas to 1 (using sed command) in every stream file
+  #   - changes the number of replicas to 1 (using sed command) in the commands.txt file
+  # - mounting the 'nats-entities' volume over /nats/datalens/largecluster in the main stream-consumer-creation container
+  postRenderers:
+  - kustomize:
+      patches:
+      - target:
+          kind: Job
+          name: stream-consumer-deployment-job-.*
+        patch: |
+          apiVersion: batch/v1
+          kind: Job
+          metadata:
+            name: stream-consumer-deployment-job
+          spec:
+            template:
+              spec:
+                volumes:
+                - name: nats-entities
+                  emptyDir: {}
+                initContainers:
+                - name: single-replica-profile
+                  # Must match the stream-consumer-creation image.
+                  image: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-nats-catalog:0.59.0
+                  command:
+                  - sh
+                  - -ec
+                  - |
+                    cp -r /nats/datalens/largecluster/. /work/
+                    sed -i -E 's/"num_replicas"( *): *3/"num_replicas"\1: 1/' /work/streams/*.json
+                    sed -i 's/--replicas=3/--replicas=1/' /work/kv-buckets/commands.txt
+                  resources:
+                    requests: {cpu: 10m, memory: 16Mi}
+                    limits: {memory: 64Mi}
+                  volumeMounts:
+                  - {name: nats-entities, mountPath: /work}
+                containers:
+                - name: stream-consumer-creation
+                  volumeMounts:
+                  - {name: nats-entities, mountPath: /nats/datalens/largecluster}
+  # The name of the HelmRelease.
+  releaseName: dl-common
+  # The namespace where the chart's resources are installed.
+  targetNamespace: ${releaseNamespace}
+  # The timeout HELM waits for everything to be Ready.
+  timeout: 20m
+  upgrade:
+    # Does not touch the CRDs on upgrade either; they are managed as a prerequisite.
+    crds: Skip
+    # If the upgrade fails, Flux rolls back to the last working release and tries again up to 'retries'
+    # number of times.
+    remediation:
+      retries: 30
+  # Reads the values from the ConfigMap '${releaseName}-dl-common-config-defaults' in the namespace ${releaseNamespace},
+  # which is actually the cm.yaml file from the same folder.
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-dl-common-config-defaults
+---

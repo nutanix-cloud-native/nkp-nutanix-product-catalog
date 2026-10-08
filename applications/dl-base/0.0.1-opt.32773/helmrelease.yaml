@@ -1,0 +1,35 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${releaseName}-helmrelease
+  namespace: ${releaseNamespace}
+spec:
+  # Flux rebuilds the folder every 'interval' time period. It undoes any manual changes
+  # on the cluster. Flux also reconciles right away whenever the source publishes
+  # a new revision, so 'interval' is only the safety-net period.
+  interval: 6h0m0s
+  # Path to the folder that contains the manifests.
+  path: ./helmrelease
+  # Flux replaces those placeholders in every file under 'path' before applying them.
+  # NKP's catalog fills them in when the app is installed.
+  postBuild:
+    substitute:
+      releaseName: ${releaseName}
+      releaseNamespace: ${releaseNamespace}
+  prune: true
+  # If a reconcile fails, retry after 1 minute, instead of waiting for the 6h interval.
+  retryInterval: 1m0s
+  # Kommander creates an OCIRepository and calls it 'dl-base-source' which is downloaded
+  # and unpacked by Flux's source-controller, which keeps it in a cluster as a tarball.
+  # Flux's kustomize-controller opens the tarball and goes to the path (./helmrelease),
+  # builds it and applies it to the cluster. After that, Flux's source-controller
+  # downloads the charts from Artifactory and helm-controller installs them.
+  sourceRef:
+    kind: OCIRepository
+    name: ${releaseName}-source
+    namespace: ${releaseNamespace}
+  # As the entire HELM Release needs around 5-6 minutes to become Ready, setting the timeout to 10 minutes.
+  timeout: 10m0s
+  # Waiting for the entire HELM Release to become Ready before marking the Kustomization as Ready.
+  wait: true
+---

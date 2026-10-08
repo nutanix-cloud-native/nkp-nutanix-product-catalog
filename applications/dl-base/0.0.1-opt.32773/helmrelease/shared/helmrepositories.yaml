@@ -1,0 +1,23 @@
+# Both chart sources use the same public GitHub Container Registry OCI repository.
+# The source names remain unchanged so the HelmReleases do not need sourceRef changes.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-canaveral-helm-backup
+  namespace: ${releaseNamespace}
+spec:
+  interval: 10m
+  type: oci
+  url: oci://ghcr.io/mirko38/nkp-nutanix-product-catalog/charts
+---
+# dl-common, data-lens and ndh use the same OCI repository.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-canaveral-helm
+  namespace: ${releaseNamespace}
+spec:
+  interval: 10m
+  type: oci
+  url: oci://ghcr.io/mirko38/nkp-nutanix-product-catalog/charts
+---

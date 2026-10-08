@@ -1,0 +1,146 @@
+# dnsNames are the hostnames a client may dial; TLS verification fails for any name not listed.
+# In Kubernetes, a service <svc> in namespace <ns> can be reached as:
+#   <svc>                          from pods in the same namespace
+#   <svc>.<ns>                     from other namespaces
+#   <svc>.<ns>.svc                 same, more explicit
+#   <svc>.<ns>.svc.cluster.local   fully qualified name
+# so every service a certificate is served on gets all four. The MSP cert_service_name is always
+# listed as well, because that is the name MSP would issue the certificate under.
+
+# Certificate 1 (dl-dp-receiver certificate used for dl-dp-receiver-tls secret)
+# Used by the dl-dp-receiver deployment.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-dp-receiver
+  namespace: data-lens
+spec:
+  # The secret name is used to mount the certificate and key into the container.
+  secretName: dl-dp-receiver-tls
+  issuerRef:
+    kind: ClusterIssuer
+    # kommander-ca is the certificate authority that will issue the certificate.
+    name: kommander-ca
+  commonName: dl-dp-receiver
+  dnsNames:
+  - dl-dp-receiver
+  - dl-dp-receiver.data-lens
+  - dl-dp-receiver.data-lens.svc
+  - dl-dp-receiver.data-lens.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+# Certificate 2 (dl-sync-service certificate used for dl-sync-service-tls secret)
+# Used by the sync job and the nginx in pc-proxy.yaml.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-sync-service
+  namespace: data-lens
+spec:
+  # The secret name is used to mount the certificate and key into the container.
+  secretName: dl-sync-service-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: datalens-dl-sync-service
+  # 'datalens-dl-sync-service' is the sync job's cert_service_name; the job has no service of its own.
+  # The iam-proxy.ntnx-base names are there because dl-pc-proxy serves this same certificate as
+  # iam-proxy.ntnx-base:8445: the sync job trusts only its own certificate file, so the proxy must
+  # present exactly this certificate, under the hostname the job dials.
+  dnsNames:
+  - datalens-dl-sync-service
+  - iam-proxy.ntnx-base
+  - iam-proxy.ntnx-base.svc
+  - iam-proxy.ntnx-base.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+# Certificate 3 (dl-datalens certificate used for dl-datalens-tls secret)
+# Used by the dl-api-gateway, dl-react-ui, dl-gojobd, dl-pyjobd, dl-ransomware-protection and dl-job-framework deployments.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-datalens
+  namespace: data-lens
+spec:
+  secretName: dl-datalens-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: datalens
+  # All combinations for all deployments that share the same cert_service_name.
+  dnsNames:
+  - datalens
+  - dl-api-gateway
+  - dl-api-gateway.data-lens
+  - dl-api-gateway.data-lens.svc
+  - dl-api-gateway.data-lens.svc.cluster.local
+  - data-lens-dl-react-ui
+  - data-lens-dl-react-ui.data-lens
+  - data-lens-dl-react-ui.data-lens.svc
+  - data-lens-dl-react-ui.data-lens.svc.cluster.local
+  - dl-gojobd
+  - dl-gojobd.data-lens
+  - dl-gojobd.data-lens.svc
+  - dl-gojobd.data-lens.svc.cluster.local
+  - dl-pyjobd
+  - dl-pyjobd.data-lens
+  - dl-pyjobd.data-lens.svc
+  - dl-pyjobd.data-lens.svc.cluster.local
+  - dl-ransomware-protection
+  - dl-ransomware-protection.data-lens
+  - dl-ransomware-protection.data-lens.svc
+  - dl-ransomware-protection.data-lens.svc.cluster.local
+  - dl-job-framework
+  - dl-job-framework.data-lens
+  - dl-job-framework.data-lens.svc
+  - dl-job-framework.data-lens.svc.cluster.local
+  usages:
+  - server auth
+  - client auth
+---
+# Certificate 4 (dl-fp-leader certificate used for dl-fp-leader-tls secret)
+# Used by the files-processing leader.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-fp-leader
+  namespace: data-lens
+spec:
+  secretName: dl-fp-leader-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dl-fp-leader
+  # Only the cert_service_name: the files-processing leader has no service, so nothing dials it by
+  # hostname. The certificate only identifies it when it connects to other services.
+  dnsNames:
+  - dl-fp-leader
+  usages:
+  - server auth
+  - client auth
+---
+# Certificate 5 (dl-fp-worker certificate used for dl-fp-worker-tls secret)
+# Used by the files-processing worker.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: dl-fp-worker
+  namespace: data-lens
+spec:
+  secretName: dl-fp-worker-tls
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: dl-fp-worker
+  # Only the cert_service_name: the files-processing worker has no service, so nothing dials it by
+  # hostname. The certificate only identifies it when it connects to other services.
+  dnsNames:
+  - dl-fp-worker
+  usages:
+  - server auth
+  - client auth
+---
