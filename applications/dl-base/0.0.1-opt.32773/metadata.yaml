@@ -11,6 +11,6 @@ licensing:
 - Ultimate
 overview: Deploys the NDH Helm charts.
 scope:
-- project
-supportLink: ""
+- workspace
+supportLink: https://www.nutanix.com
 ---

@@ -16,7 +16,7 @@ spec:
   # dl-base is a dependency of dl-common, so it must be installed first. Flux
   # does not start this release, until dl-base is Ready.
   dependsOn:
-  - name: dl-base
+  - name: ${releaseName}
   install:
     # Creates the namespace, if it does not exist yet.
     createNamespace: true
