@@ -17,8 +17,11 @@ licensing:
   - Ultimate
 requiredDependencies:
   - kube-prometheus-stack
+  - nvidia-gpu-operator
   - opentelemetry-operator
+  - kserve
   - envoy-gateway-nai
+  - leaderworkerset
   - cloudnative-pg
   - cert-manager
 dependsOn:
