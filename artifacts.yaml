@@ -85,12 +85,12 @@ applications:
   - name: ncm-k8s-collector
     version: 0.0.9
     images:
-      - oci://harbor.eng.nutanix.com/ncm-k8s/charts/nkp-otel:0.0.8
+      - oci://harbor.eng.nutanix.com/ncm-k8s/charts/nkp-otel:0.0.9
   - name: ncm-k8s-collector-operator
     version: 0.0.12
     images:
       - oci://harbor.eng.nutanix.com/ncm-k8s/charts/ntnx-k8s-collector-operator:0.0.12
-      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:59389af
+      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:65c1a44
   - name: ndk
     version: 2.0.0
     images:
