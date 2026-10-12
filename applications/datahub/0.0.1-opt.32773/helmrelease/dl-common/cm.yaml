@@ -38,7 +38,7 @@ data:
         # the pull fails with ImagePullBackOff.
         #
         # Setting the localRepository to artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-clickhouse-server
-        # makes the pod pull from Artifactory instead. It pulls with the dl-base-artifactory-pull
+        # makes the pod pull from Artifactory instead. It pulls with the ${releaseName}-artifactory-pull
         # secret attached to the default ServiceAccount.
         image:
           localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cpaas-clickhouse-server

@@ -4,4 +4,4 @@ resources:
 - certs.yaml
 - cm.yaml
 - helmrelease.yaml
-- pc-proxy.yaml
+- runtime-helmrelease.yaml

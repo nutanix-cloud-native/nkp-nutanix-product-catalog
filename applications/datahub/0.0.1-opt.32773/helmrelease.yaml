@@ -19,7 +19,7 @@ spec:
   prune: true
   # If a reconcile fails, retry after 1 minute, instead of waiting for the 6h interval.
   retryInterval: 1m0s
-  # Kommander creates an OCIRepository and calls it 'dl-base-source' which is downloaded
+  # Kommander creates an OCIRepository and calls it '${releaseName}-source' which is downloaded
   # and unpacked by Flux's source-controller, which keeps it in a cluster as a tarball.
   # Flux's kustomize-controller opens the tarball and goes to the path (./helmrelease),
   # builds it and applies it to the cluster. After that, Flux's source-controller

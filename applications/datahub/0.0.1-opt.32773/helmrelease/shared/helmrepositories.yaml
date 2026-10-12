@@ -5,6 +5,10 @@ kind: HelmRepository
 metadata:
   name: ${releaseName}-canaveral-helm-backup
   namespace: ${releaseNamespace}
+  annotations:
+    # Keep the chart source available until the pre-delete hook has
+    # uninstalled the dependent HelmReleases.
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   interval: 10m
   type: oci
@@ -16,6 +20,9 @@ kind: HelmRepository
 metadata:
   name: ${releaseName}-canaveral-helm
   namespace: ${releaseNamespace}
+  annotations:
+    # The cleanup hook deletes this source after its HelmReleases disappear.
+    kustomize.toolkit.fluxcd.io/prune: disabled
 spec:
   interval: 10m
   type: oci

@@ -3,6 +3,5 @@ kind: Kustomization
 resources:
 - helmrepositories.yaml
 - image-pull.yaml
-- mspdeployedparams.yaml
 - namespaces.yaml
 - priorityclasses.yaml

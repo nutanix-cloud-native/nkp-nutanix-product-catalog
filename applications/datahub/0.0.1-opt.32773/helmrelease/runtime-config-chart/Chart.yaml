@@ -1,0 +1,6 @@
+apiVersion: v2
+name: dl-runtime-config
+description: Runtime-specific Nutanix Data Lens configuration for NKP
+type: application
+version: 0.1.10
+appVersion: "1.0"

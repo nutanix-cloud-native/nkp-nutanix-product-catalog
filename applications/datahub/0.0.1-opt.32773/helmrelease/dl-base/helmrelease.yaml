@@ -1,8 +1,8 @@
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
-# Gives the name 'dl-base' to the HelmRelease and stores it in the namespace ${releaseNamespace}.
+# Gives the NKP instance name '${releaseName}' to the HelmRelease and stores it in the namespace ${releaseNamespace}.
 metadata:
-  name: dl-base
+  name: ${releaseName}
   namespace: ${releaseNamespace}
 spec:
   chart:
@@ -31,7 +31,7 @@ spec:
   # How often the helm-controller checks that the installed release still matches this HelmRelease.
   interval: 15s
   # The name of the Helm release, as shown by 'helm list'.
-  releaseName: dl-base
+  releaseName: datahub
   # The namespace the chart's resources are installed into, which also holds the Helm release history.
   targetNamespace: ${releaseNamespace}
   # Settings for upgrades, which happen whenever the chart version or the values change.

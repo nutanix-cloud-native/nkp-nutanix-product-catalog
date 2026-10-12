@@ -13,8 +13,8 @@ spec:
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
       version: 3.0.0-release.19
-  # dl-base is a dependency of dl-common, so it must be installed first. Flux
-  # does not start this release, until dl-base is Ready.
+  # datahub (the dl-base chart release) is a dependency of dl-common, so it must be installed first. Flux
+  # does not start this release, until datahub is Ready.
   dependsOn:
   - name: ${releaseName}
   install:
