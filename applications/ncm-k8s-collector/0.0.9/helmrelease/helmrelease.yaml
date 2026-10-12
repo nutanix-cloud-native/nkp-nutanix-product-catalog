@@ -7,13 +7,13 @@ metadata:
 spec:
   interval: 24h
   ref:
-    tag: 1.0.0
-  url: oci://harbor.eng.nutanix.com/ncm-k8s/ntnx-k8s-collector-operator
+    tag: 0.0.9
+  url: oci://harbor.eng.nutanix.com/ncm-k8s/charts/nkp-otel
 ---
 apiVersion: helm.toolkit.fluxcd.io/v2
 kind: HelmRelease
 metadata:
-  name: ntnx-k8s-collector-operator
+  name: ncm-k8s-collector
   namespace: ${releaseNamespace}
 spec:
   chartRef:
@@ -27,6 +27,9 @@ spec:
       retries: 30
   interval: 15s
   targetNamespace: ${releaseNamespace}
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-nkp-defaults
   upgrade:
     crds: CreateReplace
     remediation:

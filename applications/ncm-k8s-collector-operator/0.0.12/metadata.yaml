@@ -3,6 +3,7 @@ schema: catalog.nkp.nutanix.com/v1/application-metadata
 displayName: NCM k8s Collector Operator
 description: Unified Multi-Cluster Telemetry Operator. Reconciles telemetry.platform/v1 TelemetryIntent custom resources into merged OpenTelemetry Collector configs and deploys a single set of collectors per managed k8s cluster.
 allowMultipleInstances: false
+nkpVersionSupport: ">=2.20.0"
 type: internal
 category:
 - observability
