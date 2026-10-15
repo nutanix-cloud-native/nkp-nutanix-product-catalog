@@ -62,6 +62,8 @@ spec:
   targetNamespace: nai-system
   valuesFrom:
     - kind: ConfigMap
+      name: cnpg-pdb-fix-defaults
+    - kind: ConfigMap
       name: ${releaseName}-config-overrides
       optional: true
     - kind: ConfigMap

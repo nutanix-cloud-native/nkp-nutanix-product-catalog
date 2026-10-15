@@ -1,0 +1,13 @@
+# This is only needed for Nutanix AI 2.8.x for default profile only.
+# Remove this resource and its corresponding helmrelease references
+# when Nutanix AI 2.9.x is released.
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cnpg-pdb-fix-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    naiDatabase:
+      enablePDB: false
