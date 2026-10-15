@@ -7,7 +7,7 @@ spec:
   chart:
     spec:
       chart: dl-runtime-config
-      version: 0.1.11
+      version: 0.1.12
       interval: 10m
       sourceRef:
         kind: HelmRepository

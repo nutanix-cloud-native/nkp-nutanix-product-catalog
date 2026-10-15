@@ -16,7 +16,7 @@ data:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smspUuid: ""
         # Data Lens app version.
-        dl_app_version: "3.0.0"
+        dl_app_version: "0.0.1"
         # Makes it run its first-time setup and create its PC user and access key.
         is_bootstrap_run: true
       # Mounts the dl-sync-service-tls secret at /opt/nutanix/sync_service/certs and

@@ -12,6 +12,7 @@ strict: true
 # by the generic Kubernetes strict schema.
 skip_types:
   - cert-manager.io/v1/Certificate
+  - ikat.nutanix.com/v1alpha1/IkatSnapshotTrigger
   - monitoring.coreos.com/v1/PrometheusRule
   - monitoring.coreos.com/v1/ServiceMonitor
   - ray.io/v1/RayCluster

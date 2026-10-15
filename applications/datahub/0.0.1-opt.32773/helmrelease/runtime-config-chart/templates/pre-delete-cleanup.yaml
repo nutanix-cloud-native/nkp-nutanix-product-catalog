@@ -61,6 +61,9 @@ rules:
 - apiGroups: ["cert-manager.io"]
   resources: ["certificates", "certificaterequests"]
   verbs: ["get", "list", "watch", "delete", "patch"]
+- apiGroups: ["gateway.networking.k8s.io"]
+  resources: ["gatewayclasses"]
+  verbs: ["get", "list", "watch", "delete", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
@@ -109,7 +112,7 @@ spec:
           set -eu
 
           app_label_names="datahub-1-helmrelease datahub-helmrelease"
-          helm_releases="datahub datahub-1 dl-common data-lens ndh"
+          helm_releases="datahub datahub-1 dl-common data-lens ndh ndh-envoy-gateway"
 
           is_datahub_resource() {
             label="$(kubectl get "$1" "$2" -n "$3" \
@@ -181,7 +184,8 @@ spec:
           # after their HelmReleases are gone.
           for chart in kommander-datahub-1 kommander-dl-common \
                        kommander-data-lens kommander-ndh \
-                       kommander-dl-runtime-config; do
+                       kommander-dl-runtime-config \
+                       kommander-ndh-envoy-gateway; do
             kubectl delete helmchart "$chart" -n {{ .Release.Namespace }} \
               --ignore-not-found --wait=false || true
           done
@@ -198,7 +202,7 @@ spec:
           # forced HelmRelease deletion.  Secrets are intentionally absent
           # from this list so manually-created credentials survive.
           for namespace in data-lens ndh-core; do
-            for release in datahub datahub-1 dl-common data-lens ndh; do
+            for release in datahub datahub-1 dl-common data-lens ndh envoy-gateway; do
               selector="app.kubernetes.io/managed-by=Helm,app.kubernetes.io/instance=$release"
               for resource in deployments daemonsets statefulsets services jobs cronjobs configmaps persistentvolumeclaims; do
                 kubectl delete "$resource" -n "$namespace" -l "$selector" \
@@ -239,10 +243,21 @@ spec:
           kubectl delete service iam-proxy \
             -n ntnx-base --ignore-not-found --wait=false || true
 
-          for service in $(kubectl get service -n ntnx-ikat -o name 2>/dev/null \
+          for service in $(kubectl get service -n ntnx-ikat-platform -o name 2>/dev/null \
             | grep '^service/pc-' || true); do
-            kubectl delete "$service" -n ntnx-ikat \
+            kubectl delete "$service" -n ntnx-ikat-platform \
               --ignore-not-found --wait=false || true
           done
+
+          # Envoy Gateway adds a finalizer to its GatewayClass and creates the
+          # data-plane objects itself. If the controller is removed first,
+          # neither is cleaned up.
+          kubectl delete deployments,services -n ndh-core \
+            -l gateway.envoyproxy.io/owning-gateway-name=ndh-ingress-gateway \
+            --ignore-not-found --wait=false || true
+          kubectl patch gatewayclass ndh-gatewayclass --type=merge \
+            -p '{"metadata":{"finalizers":[]}}' 2>/dev/null || true
+          kubectl delete gatewayclass ndh-gatewayclass \
+            --ignore-not-found --wait=false || true
 
           echo "DataHub pre-delete cleanup completed."

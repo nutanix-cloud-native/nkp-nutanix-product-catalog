@@ -30,7 +30,7 @@ overview: |-
 
   These values configure the Prism Central compatibility proxy, the
   `mspdeployedparams` ConfigMaps, and the generated
-  `pc-<prism-central-uuid>.ntnx-ikat` Service. DNS and certificate names are
+  `pc-<prism-central-uuid>.ntnx-ikat-platform` Service. DNS and certificate names are
   intentionally fixed Kubernetes service identities and are not configurable.
 scope:
 - workspace

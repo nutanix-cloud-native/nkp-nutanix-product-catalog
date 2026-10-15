@@ -12,16 +12,17 @@ spec:
         kind: HelmRepository
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
-      version: 3.0.0-release.19
+      version: 0.0.1-opt.38095
   dependsOn:
   - name: data-lens
+  - name: ndh-envoy-gateway
   install:
     createNamespace: true
-    crds: Skip
-    # envoy-gateway-certgen (which deletes itself after 30 seconds) and
-    # ndh-ingress-cert-patch (after 600 seconds) delete themselves when
-    # they finish. If Helm is still waiting on them, it reports
-    # "jobs.batch ... not found" and treats the release as failed.
+    # Install CRDs shipped by the NDH chart before its custom resources.
+    crds: Create
+    # iam-backend-ca-copy deletes itself 300 seconds after it finishes. If
+    # Helm is still waiting on it, it reports "jobs.batch ... not found" and
+    # treats the release as failed.
     disableWaitForJobs: true
     remediation:
       retries: 30
@@ -31,30 +32,13 @@ spec:
       patches:
       - target:
           kind: Job
-          name: ndh-ingress-cert-patch
+          name: iam-backend-ca-copy-.*
         patch: |
-          # The chart assumes MSP injects these certificate files into the Job.
-          # On NKP, mount the cert-manager Secret with the filenames the Job expects.
+          # The chart sets no pull secret for this Artifactory image.
           - op: add
-            path: /spec/template/spec/volumes
+            path: /spec/template/spec/imagePullSecrets
             value:
-            - name: ndh-ingress-certs
-              secret:
-                secretName: ndh-ingress-msp-cert
-                items:
-                - key: ca.crt
-                  path: ca.pem
-                - key: tls.crt
-                  path: cert
-                - key: tls.key
-                  path: key
-          # Mount the certificates in the Job's first container.
-          - op: add
-            path: /spec/template/spec/containers/0/volumeMounts
-            value:
-            - name: ndh-ingress-certs
-              mountPath: /home/certs
-              readOnly: true
+            - name: ndh-iep-secret
       # Each of the following patches mounts the matching secret from ndh/certs.yaml at /home/certs.
       - target:
           kind: Deployment

@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
-      version: 3.0.0-release.19
+      version: 0.0.1-opt.38095
   # The data-lens chart depends on the dl-common chart.
   dependsOn:
   - name: dl-common

@@ -10,4 +10,4 @@ metadata:
 data:
   name: "Nutanix Data Hub"
   docsLink: "https://portal.nutanix.com/page/documents/details?targetId=Nutanix-Data-Lens"
-  version: "0.0.1-opt.32773"
+  version: "0.0.1-opt.38095"

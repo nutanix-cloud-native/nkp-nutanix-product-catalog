@@ -21,29 +21,26 @@ data:
       database:
         # Setting the storage class to Nutanix Volume.
         storageClass: nutanix-volume
-    envoy-gateway:
-      global:
-        images:
-          envoyGateway:
-            # Redirecting the image to Artifactory.
-            image: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/envoy-proxy-gateway:v1.5.0
     ndh-gateway:
-      dataPlane:
-        image:
-          # Redirecting the image to Artifactory.
-          registry: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker
+      # The chart targets the MSP-only Ikat gateway. On NKP the Gateway is served by
+      # Envoy Gateway (ndh/envoy-gateway.yaml).
+      ikatGatewayClassName: ndh-gatewayclass
+      serviceAnnotations:
+        service.msp.ntnx.io/lb: null
+      # Selects Ikat data-plane pods, which do not run on NKP. Envoy Gateway
+      # creates its own LoadBalancer Service.
+      lbIngressService:
+        enabled: false
       tls:
-        postInstallJob:
-          serviceType: LoadBalancer
-          # Resources raised to 256Mi memory to avoid OOM kills, which happened
-          # when the default 64Mi limit was used.
-          resources:
-            requests:
-              cpu: 25m
-              memory: 64Mi
-            limits:
-              cpu: 200m
-              memory: 256Mi
+        # cert-manager Secret from ndh/certs.yaml.
+        secretName: ndh-ingress-msp-cert
+        namespace: ndh-core
+      backendTls:
+        # iam-proxy's certificate is issued by kommander-ca; the copy Job takes
+        # ca.crt from its cert-manager Secret instead of the Ikat client cert.
+        sourceSecretName: msp-cert-iam-proxy
+        sourceNamespace: ndh-core
+        caSecretName: ndh-iam-proxy-ca
     qdrant:
       sizingProfiles:
         kLargeCluster:

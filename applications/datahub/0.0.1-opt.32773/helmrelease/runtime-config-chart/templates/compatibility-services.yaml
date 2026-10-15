@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: ntnx-ikat
+  name: ntnx-ikat-platform
 ---
 apiVersion: v1
 kind: Service
@@ -9,7 +9,7 @@ metadata:
   # The validation hook prevents this fallback during installation. It keeps
   # Helm uninstall possible if the UI override is removed first.
   name: pc-{{ default "unconfigured" .Values.nutanix.prismCentral.uuid }}
-  namespace: ntnx-ikat
+  namespace: ntnx-ikat-platform
 spec:
   type: ExternalName
   externalName: dl-pc-proxy.data-lens.svc.cluster.local

@@ -88,7 +88,13 @@ data:
             # Only 'largecluster' and 'mediumcluster' include the ndh_transformation_* and
             # dl_dc_result streams that ndh and data-lens need.
             size: largecluster
-    ikat:
+    # Ikat is an MSP-only platform component. NKP does not provide the MSP
+    # etcd hostPath or certificate-injector that this subchart requires.
+    ikat-platform:
+      enabled: false
+    # This chart contains the Ikat Gateway API objects and must be disabled
+    # together with the Ikat platform subchart.
+    dl-ikat-config:
       enabled: false
     # Turns off MSP-specific metrics collector.
     msp-prometheus-collector:

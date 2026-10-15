@@ -10,6 +10,15 @@ data:
       enabled: true
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
+      # The 0.0.1-opt.38095 chart already emits the operator probes. Its
+      # optional values-based probe blocks duplicate those fields, which NKP's
+      # strict bundle validator rejects.
+      operator:
+        livenessProbe: null
+        readinessProbe: null
+      metrics:
+        livenessProbe: null
+        readinessProbe: null
       serviceMonitor:
         enabled: false
       alerts:
