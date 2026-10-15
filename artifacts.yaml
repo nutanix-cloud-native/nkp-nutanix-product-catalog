@@ -4,6 +4,7 @@ applications:
     images:
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway-nai:1.7.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway-nai:1.8.1
+      - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway-nai:1.8.2
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.5.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/envoy-gateway:1.6.3
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.15.0
@@ -51,6 +52,13 @@ applications:
       - oci://docker.io/envoyproxy/gateway-helm:v1.8.1
       - docker.io/envoyproxy/envoy:distroless-v1.38.0
       - docker.io/envoyproxy/gateway:v1.8.1
+      - docker.io/nutanix/nai-ratelimit:1e50889b
+  - name: envoy-gateway-nai
+    version: 1.8.2
+    images:
+      - oci://docker.io/envoyproxy/gateway-helm:v1.8.2
+      - docker.io/envoyproxy/envoy:distroless-v1.38.1
+      - docker.io/envoyproxy/gateway:v1.8.2
       - docker.io/nutanix/nai-ratelimit:1e50889b
   - name: kserve
     version: 0.15.0
