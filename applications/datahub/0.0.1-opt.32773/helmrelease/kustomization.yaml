@@ -6,3 +6,4 @@ resources:
 - dl-common
 - data-lens
 - ndh
+- post-install

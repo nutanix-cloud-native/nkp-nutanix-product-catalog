@@ -6,7 +6,7 @@ HelmReleases and removes only resources labelled as application-owned.
 It deliberately preserves:
   - namespaces data-lens and ndh-core
   - image-pull and Prism Central credential Secrets
-  - NKP-managed CRDs
+  - ClickHouse and NKP-managed CRDs
   - PriorityClasses
   - NKP, MetalLB and other platform resources
 */ -}}
@@ -60,9 +60,6 @@ rules:
   verbs: ["get", "list", "watch", "delete", "patch"]
 - apiGroups: ["cert-manager.io"]
   resources: ["certificates", "certificaterequests"]
-  verbs: ["get", "list", "watch", "delete", "patch"]
-- apiGroups: ["apiextensions.k8s.io"]
-  resources: ["customresourcedefinitions"]
   verbs: ["get", "list", "watch", "delete", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
@@ -246,18 +243,6 @@ spec:
             | grep '^service/pc-' || true); do
             kubectl delete "$service" -n ntnx-ikat \
               --ignore-not-found --wait=false || true
-          done
-
-          # ClickHouse CRDs belong to this application and are deliberately
-          # removed during disablement. Ray and Gateway CRDs are not included
-          # here because NKP owns them.
-          for crd in \
-            clickhouseinstallations.clickhouse.altinity.com \
-            clickhouseinstallationtemplates.clickhouse.altinity.com \
-            clickhousekeeperinstallations.clickhouse-keeper.altinity.com \
-            clickhouseoperatorconfigurations.clickhouse.altinity.com; do
-            kubectl delete crd "$crd" \
-              --ignore-not-found --wait=true
           done
 
           echo "DataHub pre-delete cleanup completed."
