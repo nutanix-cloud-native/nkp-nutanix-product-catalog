@@ -1,0 +1,11 @@
+schema: catalog.nkp.nutanix.com/v1/catalog-release-spec
+releases:
+  - tagName: 2.18-ncm
+    fileName: ncm-catalog.tar
+    constraints:
+      nkpVersion: "2.18"
+    applications:
+      - name: ncm-k8s-collector-operator
+        version: "0.0.2"
+      - name: ncm-k8s-collector
+        version: "0.0.2"
