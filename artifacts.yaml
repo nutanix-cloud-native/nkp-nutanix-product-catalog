@@ -91,7 +91,7 @@ applications:
     version: 0.0.12
     images:
       - oci://harbor.eng.nutanix.com/ncm-k8s/charts/ntnx-k8s-collector-operator:0.0.12
-      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:a890dc1
+      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:aa9013d
   - name: ndk
     version: 2.0.0
     images:
