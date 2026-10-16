@@ -102,7 +102,7 @@ Pull a chart from an HTTP Helm repository and push it to GHCR. Defaults to
 `oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts`. The same
 recipe is used by [Publish Chart to GHCR](.github/workflows/publish-chart-oci.yaml).
 
-Please create a LEG ticket if you unsure if you can use this workflow as running this 
+Please create a LEG ticket if you unsure if you can use this workflow as running this
 will make your artifact publicly available under `gchr.io/nutanix-cloud-native` org.
 
 ```bash
