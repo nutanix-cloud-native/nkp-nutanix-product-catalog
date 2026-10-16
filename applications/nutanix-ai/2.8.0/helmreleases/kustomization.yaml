@@ -4,5 +4,6 @@ resources:
 - service-monitor-cm.yaml
 - gateway-selfsigned-cm.yaml
 - nai-ui-dashboard-cm.yaml
+- cnpg-pdb-fix-defaults.yaml
 - nai-operators.yaml
 - nutanix-ai.yaml
