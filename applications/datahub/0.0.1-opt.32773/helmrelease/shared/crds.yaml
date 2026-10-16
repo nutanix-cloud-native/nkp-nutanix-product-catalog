@@ -1,0 +1,82 @@
+# The NDH chart still renders an IkatSnapshotTrigger when the MSP-only Ikat
+# runtime is disabled. Keep only this compatibility CRD in Flux; the other
+# DataHub CRDs are installed by their Helm charts.
+#
+# WILL BE REMOVED ONCE THE CHART IS FIXED WITH THE ENABLE FLAG!
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    kustomize.toolkit.fluxcd.io/prune: disabled
+  name: ikatsnapshottriggers.ikat.nutanix.com
+spec:
+  group: ikat.nutanix.com
+  scope: Namespaced
+  names:
+    kind: IkatSnapshotTrigger
+    plural: ikatsnapshottriggers
+  versions:
+    - name: v1alpha1
+      served: true
+      storage: true
+      schema:
+        openAPIV3Schema:
+          type: object
+          required:
+            - spec
+          properties:
+            spec:
+              type: object
+              required:
+                - revision
+              properties:
+                revision:
+                  type: integer
+                  format: int64
+                  default: 0
+                  description: |
+                    Monotonic revision bumped by ikat-control-plane on
+                    every successful xDS SnapshotCache update. The value
+                    is opaque (a UnixNano timestamp in practice); only
+                    the change matters. ikat-gateway watches this field
+                    via EnvoyGateway extensionManager.policyResources
+                    and re-runs PostTranslateModify when it changes.
+                targetRefs:
+                  type: array
+                  description: |
+                    Gateway-API objects this trigger is associated with
+                    (LocalPolicyTargetReference shape). Set once by the
+                    chart-managed bootstrap CR; ikat-control-plane never
+                    writes this field.
+                  items:
+                    type: object
+                    required:
+                      - group
+                      - kind
+                      - name
+                    properties:
+                      group:
+                        type: string
+                        description: |
+                          API group of the referent. Empty string for
+                          the core API group.
+                      kind:
+                        type: string
+                        description: Kind of the referent.
+                      name:
+                        type: string
+                        minLength: 1
+                        maxLength: 253
+                        description: Name of the referent.
+            status:
+              type: object
+              x-kubernetes-preserve-unknown-fields: true
+      subresources:
+        status: {}
+      additionalPrinterColumns:
+        - name: Revision
+          type: integer
+          jsonPath: .spec.revision
+        - name: Age
+          type: date
+          jsonPath: .metadata.creationTimestamp

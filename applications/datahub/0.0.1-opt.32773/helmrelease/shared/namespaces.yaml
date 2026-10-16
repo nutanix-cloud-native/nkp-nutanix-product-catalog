@@ -1,0 +1,28 @@
+# The datahub release (using the dl-base chart) creates these namespaces, but the certificates, ConfigMaps and
+# ServiceAccounts in this directory must land in them before it has run. The Helm ownership
+# metadata lets the datahub release adopt them instead of failing on "already exists".
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: data-lens
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: datahub
+    meta.helm.sh/release-namespace: ${releaseNamespace}
+    # These namespaces contain administrator-created prerequisites and must
+    # survive removal of the catalog application.
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: ndh-core
+  labels:
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    meta.helm.sh/release-name: datahub
+    meta.helm.sh/release-namespace: ${releaseNamespace}
+    # Keep the prerequisite namespace when the application is disabled.
+    kustomize.toolkit.fluxcd.io/prune: disabled
+---
