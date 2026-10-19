@@ -3,7 +3,7 @@ displayName: NAI - Envoy Gateway (Supported by NAI)
 description: Envoy Gateway is a Kubernetes-native API Gateway and reverse proxy control plane.
 type: nkp-catalog
 allowMultipleInstances: false
-nkpVersionSupport: ">=2.18.0"
+nkpVersionSupport: ">=2.19.0"
 category:
   - inferencing-and-serving
 appScreens:
