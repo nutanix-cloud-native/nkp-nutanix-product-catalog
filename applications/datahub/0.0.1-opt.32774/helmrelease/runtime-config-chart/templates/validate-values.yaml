@@ -1,0 +1,41 @@
+{{- $params := index .Values "dl-mspdeployedparams" | default dict -}}
+{{- $cluster := $params.cluster | default dict -}}
+{{- $prismCentral := $params.prismCentral | default dict -}}
+{{- $expectedFqdn := printf "pc-%s.ntnx-ikat-platform" (default "" $prismCentral.uuid) -}}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: dl-runtime-config-validate
+  annotations:
+    # Run before ordinary resources so an incomplete UI configuration cannot
+    # create an invalid PC proxy or compatibility Service.
+    helm.sh/hook: pre-install,pre-upgrade
+    helm.sh/hook-weight: "-10"
+    helm.sh/hook-delete-policy: before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 0
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: validate
+        image: alpine:3.20
+        command: ["/bin/sh", "-ec"]
+        args:
+        - |
+          missing=""
+          [ -n "{{ default "" $prismCentral.ip }}" ] || missing="$missing dl-mspdeployedparams.prismCentral.ip"
+          [ -n "{{ default "" $prismCentral.uuid }}" ] || missing="$missing dl-mspdeployedparams.prismCentral.uuid"
+          [ -n "{{ default "" $cluster.name }}" ] || missing="$missing dl-mspdeployedparams.cluster.name"
+          [ -n "{{ default "" $cluster.uuid }}" ] || missing="$missing dl-mspdeployedparams.cluster.uuid"
+          if [ -n "$missing" ]; then
+            echo "DataHub cannot start: enter these values in the NKP workspace configuration:$missing"
+            exit 1
+          fi
+          # Data Lens reaches Prism Central through the pc-<uuid>.ntnx-ikat-platform
+          # compatibility Service created by this chart.
+          if [ "{{ default "" $prismCentral.fqdn }}" != "{{ $expectedFqdn }}" ]; then
+            echo "DataHub cannot start: set dl-mspdeployedparams.prismCentral.fqdn to {{ $expectedFqdn }}"
+            exit 1
+          fi
+          echo "Required NKP workspace values are present."
