@@ -6,13 +6,13 @@ metadata:
 spec:
   chart:
     spec:
-      chart: dl-common
+      chart: custom-dl-common
       interval: 10m
       sourceRef:
         kind: HelmRepository
         name: ${releaseName}-canaveral-helm
         namespace: ${releaseNamespace}
-      version: 0.0.1-opt.38095
+      version: 0.3.10
   # datahub (the dl-base chart release) is a dependency of dl-common, so it must be installed first. Flux
   # does not start this release, until datahub is Ready.
   dependsOn:

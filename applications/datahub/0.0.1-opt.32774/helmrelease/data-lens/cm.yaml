@@ -1,0 +1,128 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    # Image tags are not set here: the custom-data-lens chart is stamped with one Data Lens
+    # build (0.0.1-opt.38986), the same way CI stamps the official charts.
+    dl-db-access:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+    dl-sync-service:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+        # The sync job trusts only its own certificate, so the dl-pc-proxy, which the
+        # iam-proxy.ntnx-base compatibility Service points at, serves this certificate.
+        extraDnsNames:
+        - iam-proxy.ntnx-base
+        - iam-proxy.ntnx-base.svc
+        - iam-proxy.ntnx-base.svc.cluster.local
+      env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smspUuid: ""
+        # Data Lens app version.
+        dl_app_version: "0.0.1"
+        # The NKP compatibility proxy exposes the MSP PC endpoint on 9444.
+        pc_port: "9444"
+        # Makes it run its first-time setup and create its PC user and access key.
+        is_bootstrap_run: true
+    dl-dp-ingestion:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+    dl-objects-ingestion:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+    dl-dp-receiver:
+      # The receiver's health check dials the Service by this name. On SMSP every subchart is
+      # its own Helm release named after the chart, which gives the same name.
+      fullnameOverride: dl-dp-receiver
+      size: kLarge
+      service:
+        # The readiness check goes through the Service, so it has to route to unready pods.
+        publishNotReadyAddresses: true
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+      env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        pcFqdn: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        cluster_instance_name: ""
+    dl-api-gateway:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+      env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smsp_lb_ip: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        pcFqdn: ""
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        cluster_instance_name: ""
+    dl-react-ui:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    dl-files-processing-svc:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    dl-job-framework:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+      env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smsp_lb_ip: ""
+      volume:
+        # Set the storage class to nutanix-volume, because NKP uses Nutanix CSI StorageClass
+        storage_class: nutanix-volume
+    dl-ransomware-protection:
+      size: kLarge
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-data-lens-config-defaults
+  namespace: ${releaseNamespace}
+---

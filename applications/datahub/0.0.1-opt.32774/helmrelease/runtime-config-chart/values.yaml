@@ -1,0 +1,10 @@
+# Same keys as dl-base's dl-mspdeployedparams subchart, so one NKP UI configuration
+# feeds both releases.
+dl-mspdeployedparams:
+  cluster:
+    name: ""
+    uuid: ""
+  prismCentral:
+    ip: ""
+    uuid: ""
+    fqdn: ""

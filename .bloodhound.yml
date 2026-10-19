@@ -20,7 +20,11 @@ skip_types:
   - batch/v1/Job
 
 # load additional CRDs (URLs of CRD yaml files)
-additional_crds: []
+# Gateway API and Envoy Gateway CRDs installed by the NKP envoy-gateway 1.5.0 application.
+additional_crds:
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/gatewayapi-crds.yaml
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/generated/gateway.envoyproxy.io_envoyproxies.yaml
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/generated/gateway.envoyproxy.io_httproutefilters.yaml
 
 # set values for substitution variables (e.g. ${releaseNamespace}) in the resources
 substitution_vars:

@@ -8,7 +8,7 @@ spec:
   chart:
     spec:
       # The name of the chart that needs to be installed.
-      chart: dl-base
+      chart: custom-dl-base
       # How often Flux checks the HelmRepository for a new copy of the chart.
       interval: 10m
       # The source of the chart is a HelmRepository in the namespace ${releaseNamespace}
@@ -18,7 +18,7 @@ spec:
         name: ${releaseName}-canaveral-helm-backup
         namespace: ${releaseNamespace}
       # The version of the chart that needs to be installed.
-      version: 0.0.1-opt.38095
+      version: 0.2.0
   install:
     # Creates the target namespace, if it does not exist yet.
     createNamespace: true

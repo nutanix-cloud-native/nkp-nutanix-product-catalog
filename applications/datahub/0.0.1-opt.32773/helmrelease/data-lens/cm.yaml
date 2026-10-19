@@ -3,13 +3,19 @@ data:
   values.yaml: |
     dl-db-access:
       size: kLarge
-      dlDBAccessService:
-        # dl-db-access sets its own imagePullSecrets, so the trick with the default
-        # service account does not reach it, so we set it here explicitly.
-        imagePullSecrets:
-        - name: ${releaseName}-artifactory-pull
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
     dl-sync-service:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+        extraDnsNames:
+        - iam-proxy.ntnx-base
+        - iam-proxy.ntnx-base.svc
+        - iam-proxy.ntnx-base.svc.cluster.local
       env:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
@@ -19,25 +25,6 @@ data:
         dl_app_version: "0.0.1"
         # Makes it run its first-time setup and create its PC user and access key.
         is_bootstrap_run: true
-      # Mounts the dl-sync-service-tls secret at /opt/nutanix/sync_service/certs and
-      # uses the renaming to address the differences between MSP and NKP.
-      volumes:
-      - name: sync-service-certs
-        secret:
-          secretName: dl-sync-service-tls
-          items:
-          - key: ca.crt
-            path: ca.pem
-          - key: ca.crt
-            path: chain
-          - key: tls.crt
-            path: cert
-          - key: tls.key
-            path: key
-      volumeMounts:
-      - name: sync-service-certs
-        mountPath: /opt/nutanix/sync_service/certs
-        readOnly: true
     dl-dp-ingestion:
       size: kLarge
     dl-objects-ingestion:
@@ -46,6 +33,11 @@ data:
       # The receiver's health check dials the Service by this name.
       fullnameOverride: dl-dp-receiver
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
       env:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
@@ -55,6 +47,11 @@ data:
         cluster_instance_name: ""
     dl-api-gateway:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
       env:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
@@ -64,10 +61,25 @@ data:
         cluster_instance_name: ""
     dl-react-ui:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
     dl-files-processing-svc:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
     dl-job-framework:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
       env:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
@@ -76,6 +88,11 @@ data:
         storage_class: nutanix-volume
     dl-ransomware-protection:
       size: kLarge
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
 kind: ConfigMap
 metadata:
   name: ${releaseName}-data-lens-config-defaults

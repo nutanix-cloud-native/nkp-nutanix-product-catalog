@@ -1,8 +1,8 @@
-export KUBECONFIG="$HOME/...conf"
-export ART_USER='...'
-export ART_TOKEN=...
-export PC_USER='admin'
-export PC_PASSWORD=...
+export KUBECONFIG="$HOME/mirko-nkp.conf"
+: "${ART_USER:?Set ART_USER to the Artifactory username}"
+: "${ART_TOKEN:?Set ART_TOKEN to the Artifactory token}"
+: "${PC_USER:?Set PC_USER to the Prism Central username}"
+: "${PC_PASSWORD:?Set PC_PASSWORD to the Prism Central password}"
 
 rm -rf "$HOME/dl-work"
 mkdir -p "$HOME/dl-work/dl-prereqs"

@@ -10,9 +10,6 @@ metadata:
   annotations:
     meta.helm.sh/release-name: datahub
     meta.helm.sh/release-namespace: ${releaseNamespace}
-    # These namespaces contain administrator-created prerequisites and must
-    # survive removal of the catalog application.
-    kustomize.toolkit.fluxcd.io/prune: disabled
 ---
 apiVersion: v1
 kind: Namespace
@@ -23,6 +20,4 @@ metadata:
   annotations:
     meta.helm.sh/release-name: datahub
     meta.helm.sh/release-namespace: ${releaseNamespace}
-    # Keep the prerequisite namespace when the application is disabled.
-    kustomize.toolkit.fluxcd.io/prune: disabled
 ---

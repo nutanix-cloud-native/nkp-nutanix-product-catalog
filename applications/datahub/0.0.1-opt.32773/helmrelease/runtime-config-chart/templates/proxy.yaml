@@ -79,7 +79,9 @@ spec:
           secretName: dl-pc-proxy-auth
       - name: tls
         secret:
-          secretName: dl-sync-service-tls
+          # The custom data-lens chart creates this MSP-compatible secret when
+          # its native cert-manager integration is enabled.
+          secretName: msp-cert-dl-sync-service
 ---
 apiVersion: v1
 kind: Service

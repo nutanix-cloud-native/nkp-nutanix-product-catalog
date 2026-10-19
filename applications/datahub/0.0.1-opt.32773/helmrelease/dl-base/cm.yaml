@@ -6,6 +6,15 @@ data:
     # error is thrown.
     dl-priorityclasses:
       enabled: false
+    dl-certs:
+      enabled: true
+      issuerRef:
+        kind: ClusterIssuer
+        name: kommander-ca
+    # The runtime-config HelmRelease still owns this ConfigMap because its
+    # values come from the NKP UI's nutanix configuration.
+    dl-mspdeployedparams:
+      enabled: false
     altinity-clickhouse-operator:
       enabled: true
       imagePullSecrets:

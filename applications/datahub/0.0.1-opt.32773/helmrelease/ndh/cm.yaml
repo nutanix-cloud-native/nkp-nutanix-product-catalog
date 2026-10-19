@@ -4,9 +4,44 @@ data:
     tags:
       kLargeCluster: true
     ndh-api-pc:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
       env:
         # SMSP value that needs to be empty, as it does not exist on NKP.
         smsp_lb_ip: ""
+    ndh-api:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-dion:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-iam:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-permission-management:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-ui:
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
     cloudnative-pg:
       image:
         # Redirecting the image to Artifactory.
@@ -22,9 +57,11 @@ data:
         # Setting the storage class to Nutanix Volume.
         storageClass: nutanix-volume
     ndh-gateway:
-      # The chart targets the MSP-only Ikat gateway. On NKP the Gateway is served by
-      # Envoy Gateway (ndh/envoy-gateway.yaml).
+      # On NKP the chart's bundled Envoy Gateway serves the Gateway resource;
+      # the MSP-only Ikat data plane remains disabled.
       ikatGatewayClassName: ndh-gatewayclass
+      ikatSnapshotTrigger:
+        enabled: false
       serviceAnnotations:
         service.msp.ntnx.io/lb: null
       # Selects Ikat data-plane pods, which do not run on NKP. Envoy Gateway
@@ -32,7 +69,7 @@ data:
       lbIngressService:
         enabled: false
       tls:
-        # cert-manager Secret from ndh/certs.yaml.
+        # cert-manager Secret for the chart-managed Envoy Gateway listener.
         secretName: ndh-ingress-msp-cert
         namespace: ndh-core
       backendTls:
