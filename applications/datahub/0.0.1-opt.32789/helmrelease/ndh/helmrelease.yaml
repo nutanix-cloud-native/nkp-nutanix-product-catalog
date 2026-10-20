@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ${releaseName}-charts
         namespace: ${releaseNamespace}
-      version: 0.2.9
+      version: 0.2.10
   dependsOn:
   - name: data-lens
   install:
