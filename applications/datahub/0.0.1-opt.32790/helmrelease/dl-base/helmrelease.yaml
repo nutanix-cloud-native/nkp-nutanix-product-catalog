@@ -18,7 +18,7 @@ spec:
         name: ${releaseName}-charts
         namespace: ${releaseNamespace}
       # The version of the chart that needs to be installed.
-      version: 0.4.2
+      version: 0.4.3
   install:
     # Creates the target namespace, if it does not exist yet.
     createNamespace: true
