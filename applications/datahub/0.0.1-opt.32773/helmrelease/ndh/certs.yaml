@@ -1,0 +1,28 @@
+# dnsNames are the hostnames a client may dial; TLS verification fails for any name not listed.
+# A service <svc> in namespace <ns> can be reached as:
+#   <svc>                          from pods in the same namespace
+#   <svc>.<ns>                     from other namespaces
+#   <svc>.<ns>.svc                 same, more explicit
+#   <svc>.<ns>.svc.cluster.local   fully qualified name
+# so every service a certificate is served on gets all four. The MSP cert_service_name is always
+# listed as well, because that is the name MSP would issue the certificate under.
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: ndh-ingress
+  namespace: ndh-core
+spec:
+  secretName: ndh-ingress-msp-cert
+  issuerRef:
+    kind: ClusterIssuer
+    name: kommander-ca
+  commonName: ndh-ingress-gateway
+  # Named after the Gateway 'ndh-ingress-gateway'; Envoy creates its Service under a generated name
+  # (envoy-ndh-core-ndh-ingress-gateway-<hash>) and exposes it as a LoadBalancer.
+  # The certificate identifies the Gateway's internal service names; the external LoadBalancer
+  # IP is not a DNS name and therefore is not included in dnsNames.
+  dnsNames:
+  - ndh-ingress-gateway
+  - ndh-ingress-gateway.ndh-core.svc
+  usages:
+  - server auth

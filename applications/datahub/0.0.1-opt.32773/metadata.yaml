@@ -1,0 +1,38 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+type: nkp-catalog
+allowMultipleInstances: true
+category:
+- general
+description: Nutanix Data Hub services
+displayName: datahub
+icon: ""
+licensing:
+- Pro
+- Ultimate
+overview: |-
+  Deploys Nutanix Data Lens and NDH services on NKP.
+
+  ## Configure Service values
+
+  In NKP's Configure Service editor, enter the Prism Central and NKP cluster
+  identity values. The values below are the current deployment's examples and
+  should be replaced for another environment:
+
+  ```yaml
+  nutanix:
+    prismCentral:
+      ip: 10.48.61.3
+      uuid: fcab3de9-fabf-48b9-abe3-b298fd19c511
+    cluster:
+      name: mirko-nkp
+      uuid: eea9e75e-78fe-41c0-a008-d9c76d5c10b2
+  ```
+
+  These values configure the Prism Central compatibility proxy, the
+  `mspdeployedparams` ConfigMaps, and the generated
+  `pc-<prism-central-uuid>.ntnx-ikat-platform` Service. DNS and certificate names are
+  intentionally fixed Kubernetes service identities and are not configurable.
+scope:
+- workspace
+supportLink: https://www.nutanix.com
+---
