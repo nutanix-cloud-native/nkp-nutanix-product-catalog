@@ -8,11 +8,13 @@ data:
       proxyEnabled: true
       prismCentral:
         ip: ""
-    # Image tags are not set here: the custom-data-lens chart is stamped with one Data Lens
-    # build (0.0.1-opt.38986), the same way CI stamps the official charts.
+    # Keep the catalog override explicit for Data Access as well as the chart defaults,
+    # so an older packaged chart cannot fall back to dl-db-access-1.0.1-575.
     dl-db-access:
       size: kLarge
       dlDBAccessService:
+        image:
+          tag: "0.0.1-opt.38986"
         imagePullSecrets:
         - name: ${releaseName}-artifactory-pull
       imagePullSecrets:
