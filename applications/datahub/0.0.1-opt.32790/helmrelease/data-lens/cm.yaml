@@ -6,6 +6,8 @@ data:
     dl-db-access:
       size: kLarge
       dlDBAccessService:
+        image:
+          tag: "0.0.1-opt.38986"
         imagePullSecrets:
         - name: ${releaseName}-artifactory-pull
       imagePullSecrets:
