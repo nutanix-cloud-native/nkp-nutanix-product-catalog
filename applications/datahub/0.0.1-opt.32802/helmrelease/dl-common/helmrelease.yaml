@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ${releaseName}-charts
         namespace: ${releaseNamespace}
-      version: 0.5.0
+      version: 0.5.1
   # datahub (the dl-base chart release) is a dependency of dl-common, so it must be installed first. Flux
   # does not start this release, until datahub is Ready.
   dependsOn:

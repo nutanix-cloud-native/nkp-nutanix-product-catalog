@@ -12,7 +12,7 @@ spec:
         kind: HelmRepository
         name: ${releaseName}-charts
         namespace: ${releaseNamespace}
-      version: 0.4.4
+      version: 0.4.5
   # The data-lens chart depends on the dl-common chart.
   dependsOn:
   - name: dl-common
