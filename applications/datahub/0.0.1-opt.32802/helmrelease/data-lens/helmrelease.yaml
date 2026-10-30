@@ -1,0 +1,41 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: data-lens
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: custom-data-lens
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-charts
+        namespace: ${releaseNamespace}
+      version: 0.4.5
+  # The data-lens chart depends on the dl-common chart.
+  dependsOn:
+  - name: dl-common
+  install:
+    createNamespace: true
+    crds: Skip
+    # The sync Job stays running after bootstrap; Helm must not wait for it to complete.
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  interval: 15s
+  releaseName: data-lens
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-data-lens-config-defaults
+  - kind: ConfigMap
+    name: ${releaseName}-config-overrides
+    optional: true
+---

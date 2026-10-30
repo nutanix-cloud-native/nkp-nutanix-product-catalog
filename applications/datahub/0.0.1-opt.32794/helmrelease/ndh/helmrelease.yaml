@@ -1,0 +1,40 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: ndh
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: custom-ndh
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-charts
+        namespace: ${releaseNamespace}
+      version: 0.3.4
+  dependsOn:
+  - name: data-lens
+  install:
+    createNamespace: true
+    # The custom NDH chart installs its CRDs before its custom resources.
+    crds: Create
+    # iam-backend-ca-copy deletes itself 300 seconds after it finishes. If
+    # Helm is still waiting on it, it reports "jobs.batch ... not found" and
+    # treats the release as failed.
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  interval: 15s
+  releaseName: ndh
+  targetNamespace: ${releaseNamespace}
+  timeout: 20m
+  upgrade:
+    crds: Skip
+    disableWaitForJobs: true
+    remediation:
+      retries: 30
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-ndh-config-defaults
+---

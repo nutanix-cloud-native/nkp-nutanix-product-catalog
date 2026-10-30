@@ -1,7 +1,0 @@
-nutanix:
-  prismCentral:
-    ip: ""
-    uuid: ""
-  cluster:
-    name: ""
-    uuid: ""

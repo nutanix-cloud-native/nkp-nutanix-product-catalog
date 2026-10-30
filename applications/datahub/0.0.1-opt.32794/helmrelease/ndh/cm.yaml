@@ -1,0 +1,193 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    tags:
+      kLargeCluster: true
+    global:
+      # The NDH charts default to MSP's msp.cluster.local DNS suffix.
+      clusterDomain: cluster.local
+    ndh-api-pc:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+      env:
+        # SMSP value that needs to be empty, as it does not exist on NKP.
+        smsp_lb_ip: ""
+    ndh-api:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      image:
+        tag: "0.0.1-opt.38986"
+      retrieval:
+        image:
+          tag: "0.0.1-opt.38986"
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-dion:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      image:
+        tag: "dion-26951-precommit"
+      migrationImage:
+        image:
+          tag: "migrations-26951-precommit"
+      jobsImage:
+        image:
+          tag: "jobs-26951-precommit"
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+        secretName: ndh-shared-service-cert
+    ndh-iam:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      # Use fully-qualified Service DNS for in-cluster dialing while retaining
+      # the bare Service name as the TLS server name.
+      fqdnServiceNames: true
+      redis:
+        deploymentType: cluster
+        address: dion-valkey.ndh-core.svc:6379
+        masterName: ""
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-permission-management:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      image:
+        tag: "0.0.1-opt.38986"
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    ndh-ui:
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      image:
+        tag: "0.0.1-opt.38986"
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+    cloudnative-pg:
+      image:
+        # Redirecting the image to Artifactory.
+        repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/cloudnative-pg
+    cloudnative-pg-cluster:
+      # When the field is set, the template writes the 'priorityClassName' key twice,
+      # which Flux's strict YAML parser rejects. Setting it to empty avoids that.
+      priorityClassName: ""
+      # Redirecting the image to Artifactory.
+      image:
+        repository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/cloudnative-pg/postgresql
+      database:
+        # Setting the storage class to Nutanix Volume.
+        storageClass: nutanix-volume
+    ndh-gateway:
+      # NKP's envoy-gateway application (a catalog dependency of datahub) serves the
+      # Gateway; the MSP-only Ikat platform and its GatewayClass do not exist here.
+      createGatewayClass: true
+      ikatGatewayClassName: ndh-gatewayclass
+      dataPlane:
+        enabled: true
+        # The chart default nutanix/envoy-proxy-envoy only exists on SMSP nodes.
+        image:
+          registry: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker
+          repository: envoy-proxy-envoy
+          tag: distroless-v1.35.0
+        imagePullSecrets:
+        - name: ndh-iep-secret
+      ikatSnapshotTrigger:
+        enabled: false
+      certs:
+        enabled: true
+        issuerRef:
+          kind: ClusterIssuer
+          name: kommander-ca
+      serviceAnnotations:
+        service.msp.ntnx.io/lb: null
+      # Selects Ikat data-plane pods, which do not run on NKP. Envoy Gateway
+      # creates its own LoadBalancer Service.
+      lbIngressService:
+        enabled: false
+      tls:
+        # Created by the chart's cert-manager Certificate (certs.enabled above).
+        secretName: ndh-ingress-gateway-tls
+        namespace: ndh-core
+      backendTls:
+        # iam-proxy's certificate is issued by kommander-ca; the copy Job takes
+        # ca.crt from its cert-manager Secret instead of the Ikat client cert.
+        sourceSecretName: ndh-shared-service-cert
+        sourceNamespace: ndh-core
+        copyJob:
+          imagePullSecrets:
+          - name: ndh-iep-secret
+        caSecretName: ndh-iam-proxy-ca
+    qdrant:
+      sizingProfiles:
+        kLargeCluster:
+          replicas: 2
+          resources:
+            limits:
+              cpu: "5"
+              memory: 40Gi
+            requests:
+              cpu: "5"
+              memory: 40Gi
+      storage:
+        size: 50Gi
+        storageClassName: nutanix-volume
+    ndh-ray-etl:
+      # Redirecting the image to Artifactory.
+      imagePullSecrets:
+      - name: ndh-iep-secret
+      image:
+        localRepository: artifactory.dyn.ntnxdpro.com/canaveral-legacy-docker/nutanix-core/data-lens-onprem-dev/ndh-ray-etl
+        tag: "0.0.1-opt.38986"
+      # Setting the storage class to Nutanix Volume.
+      volume:
+        storage_class: nutanix-volume
+      # Disabling the metrics collection, as Prometheus is not installed on this cluster.
+      metrics:
+        podMonitor:
+          enabled: false
+      # The larger cluster can use the chart's kLargeCluster head sizing: 3 CPU and 8Gi.
+      head:
+        sizingProfiles:
+          kLargeCluster:
+            resources:
+              limits:
+                cpu: "3"
+                memory: 8Gi
+              requests:
+                cpu: "3"
+                memory: 8Gi
+      worker:
+        sizingProfiles:
+          kLargeCluster:
+            replicas: 3
+            resources:
+              limits:
+                cpu: "7"
+                memory: 16Gi
+              requests:
+                cpu: "7"
+                memory: 16Gi
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-ndh-config-defaults
+  namespace: ${releaseNamespace}
+---

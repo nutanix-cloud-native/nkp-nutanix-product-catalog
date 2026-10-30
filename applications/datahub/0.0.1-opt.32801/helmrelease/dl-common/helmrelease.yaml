@@ -1,0 +1,55 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: dl-common
+  namespace: ${releaseNamespace}
+spec:
+  chart:
+    spec:
+      chart: custom-dl-common
+      interval: 10m
+      sourceRef:
+        kind: HelmRepository
+        name: ${releaseName}-charts
+        namespace: ${releaseNamespace}
+      version: 0.5.0
+  # datahub (the dl-base chart release) is a dependency of dl-common, so it must be installed first. Flux
+  # does not start this release, until datahub is Ready.
+  dependsOn:
+  - name: ${releaseName}
+  install:
+    # Creates the namespace, if it does not exist yet.
+    createNamespace: true
+    # Install the CRDs shipped by the chart before its custom resources.
+    crds: Create
+    # The stream-consumer setup Job is recreated by Helm and may be deleted
+    # after completion; do not make release readiness depend on its lifetime.
+    disableWaitForJobs: true
+    # If the install fails, Flux uninstalls the failed release and tries again up to 'retries'
+    # number of times.
+    remediation:
+      retries: 30
+  # How often Flux checks that the installed release still matches this HelmRelease.
+  interval: 10m
+  # The name of the HelmRelease.
+  releaseName: dl-common
+  # The namespace where the chart's resources are installed.
+  targetNamespace: ${releaseNamespace}
+  # The timeout HELM waits for everything to be Ready.
+  timeout: 20m
+  upgrade:
+    # Existing CRDs are not changed automatically during upgrades.
+    crds: Skip
+    # The stream-consumer setup Job is recreated by Helm and may be deleted
+    # after completion; do not make release readiness depend on its lifetime.
+    disableWaitForJobs: true
+    # If the upgrade fails, Flux rolls back to the last working release and tries again up to 'retries'
+    # number of times.
+    remediation:
+      retries: 30
+  # Reads the values from the ConfigMap '${releaseName}-dl-common-config-defaults' in the namespace ${releaseNamespace},
+  # which is actually the cm.yaml file from the same folder.
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-dl-common-config-defaults
+---

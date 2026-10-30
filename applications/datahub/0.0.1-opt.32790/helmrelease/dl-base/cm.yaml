@@ -1,0 +1,61 @@
+apiVersion: v1
+data:
+  values.yaml: |
+    # dl-priorityclasses is disabled because dl-base chart has them with different
+    # values and, as they are immutable, HELM can not change them in place and an
+    # error is thrown.
+    dl-priorityclasses:
+      enabled: false
+    # dl-certs stays disabled: every service's 'certs.issuerRef' points at NKP's
+    # existing kommander-ca ClusterIssuer, so no Data Lens CA is needed.
+    # Creates the 'mspdeployedparams' ConfigMaps that MSP would provide, before any
+    # Data Lens or NDH pod starts. The cluster and Prism Central values come from
+    # the NKP UI configuration (see metadata.yaml).
+    dl-mspdeployedparams:
+      enabled: true
+      proxyEnabled: false
+    altinity-clickhouse-operator:
+      enabled: true
+      imagePullSecrets:
+      - name: ${releaseName}-artifactory-pull
+      # The altinity-clickhouse-operator 0.27.2 chart already emits the operator probes. Its
+      # optional values-based probe blocks duplicate those fields, which NKP's
+      # strict bundle validator rejects.
+      operator:
+        livenessProbe: null
+        readinessProbe: null
+        qos:
+          overrideDefaultQos: true
+          custom:
+            resources:
+              limits:
+                cpu: "250m"
+                memory: "1Gi"
+              requests:
+                cpu: "100m"
+                memory: "512Mi"
+      metrics:
+        livenessProbe: null
+        readinessProbe: null
+      serviceMonitor:
+        enabled: false
+      alerts:
+        enabled: true
+    ndh-core-namespace:
+      enabled: true
+    ndh-kuberay-operator:
+      env:
+        - name: CLUSTER_DOMAIN
+          value: "cluster.local"
+    ndh-kuberay-operator:
+      enabled: true
+      imagePullSecrets:
+      - name: ndh-iep-secret
+kind: ConfigMap
+# Gives the name '${releaseName}-config-defaults' to the ConfigMap and stores
+# it in the namespace ${releaseNamespace}. It is later used to set the values
+# that the chart is expecting.
+metadata:
+  name: ${releaseName}-config-defaults
+  namespace: ${releaseNamespace}
+---
