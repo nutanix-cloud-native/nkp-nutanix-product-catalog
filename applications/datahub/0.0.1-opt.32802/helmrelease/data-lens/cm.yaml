@@ -93,6 +93,8 @@ data:
         cluster_instance_name: ""
     dl-react-ui:
       size: kLarge
+      httpRoute:
+        enabled: true
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:

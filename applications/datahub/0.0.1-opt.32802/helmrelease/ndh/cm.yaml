@@ -101,6 +101,7 @@ data:
       # Gateway; the MSP-only Ikat platform and its GatewayClass do not exist here.
       createGatewayClass: true
       ikatGatewayClassName: ndh-gatewayclass
+      redirectRootToNdh: false
       dataPlane:
         enabled: true
         # The chart default nutanix/envoy-proxy-envoy only exists on SMSP nodes.
