@@ -131,7 +131,7 @@ data:
       backendTls:
         # iam-proxy's certificate is issued by kommander-ca; the copy Job takes
         # ca.crt from its cert-manager Secret instead of the Ikat client cert.
-        sourceSecretName: ndh-shared-service-cert
+        sourceSecretName: msp-cert-iam-proxy
         sourceNamespace: ndh-core
         copyJob:
           imagePullSecrets:
