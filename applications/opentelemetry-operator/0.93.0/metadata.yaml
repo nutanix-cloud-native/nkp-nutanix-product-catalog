@@ -16,10 +16,10 @@ dependencies:
 requiredDependencies:
   - kube-prometheus-stack
 dependsOn:
-  - type: Application
+  - type: PlatformApplication
     name: kube-prometheus-stack
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: cert-manager
     optional: true
 scope:
