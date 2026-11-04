@@ -24,10 +24,10 @@ requiredDependencies:
   - kserve
   - envoy-gateway
 dependsOn:
-  - type: Application
+  - type: PlatformApplication
     name: kube-prometheus-stack
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: nvidia-gpu-operator
     optional: false
   - type: Application
@@ -39,7 +39,7 @@ dependsOn:
   - type: Application
     name: envoy-gateway
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: cert-manager
     optional: true
 scope:

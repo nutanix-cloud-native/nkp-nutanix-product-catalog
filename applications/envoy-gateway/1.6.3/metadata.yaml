@@ -18,7 +18,7 @@ dependencies:
   - cert-manager
 requiredDependencies: []
 dependsOn:
-  - type: Application
+  - type: PlatformApplication
     name: cert-manager
     optional: true
 scope:
