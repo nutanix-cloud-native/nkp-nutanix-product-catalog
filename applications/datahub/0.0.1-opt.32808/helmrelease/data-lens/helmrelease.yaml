@@ -6,13 +6,13 @@ metadata:
 spec:
   chart:
     spec:
-      chart: custom-data-lens
+      chart: data-lens
       interval: 10m
       sourceRef:
         kind: HelmRepository
         name: ${releaseName}-charts
         namespace: ${releaseNamespace}
-      version: 0.4.8
+      version: 0.2.4
   # The data-lens chart depends on the dl-common chart.
   dependsOn:
   - name: dl-common
