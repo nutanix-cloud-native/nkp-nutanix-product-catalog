@@ -14,7 +14,7 @@ data:
       size: kLarge
       dlDBAccessService:
         image:
-          tag: "0.0.1-opt.38986"
+          tag: "0.0.1-opt.38883"
         imagePullSecrets:
         - name: ${releaseName}-artifactory-pull
       imagePullSecrets:
@@ -22,7 +22,7 @@ data:
     dl-sync-service:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:
@@ -50,17 +50,17 @@ data:
     dl-migration-tool:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
     dl-dp-ingestion:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
     dl-objects-ingestion:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
     dl-dp-receiver:
@@ -69,7 +69,7 @@ data:
       fullnameOverride: dl-dp-receiver
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       service:
         # The readiness check goes through the Service, so it has to route to unready pods.
         publishNotReadyAddresses: true
@@ -90,7 +90,7 @@ data:
     dl-api-gateway:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:
@@ -108,7 +108,7 @@ data:
     dl-react-ui:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       httpRoute:
         enabled: true
       imagePullSecrets:
@@ -121,7 +121,7 @@ data:
     dl-files-processing-svc:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:
@@ -133,7 +133,7 @@ data:
       size: kLarge
       common:
         image:
-          tag: "0.0.1-opt.38986"
+          tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:
@@ -150,7 +150,7 @@ data:
     dl-ransomware-protection:
       size: kLarge
       image:
-        tag: "0.0.1-opt.38986"
+        tag: "0.0.1-opt.38883"
       imagePullSecrets:
       - name: ${releaseName}-artifactory-pull
       certs:
