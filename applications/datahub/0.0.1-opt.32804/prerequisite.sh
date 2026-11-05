@@ -68,6 +68,14 @@ kubectl -n data-lens create secret docker-registry \
   --docker-password="$ART_TOKEN" \
   --dry-run=client -o yaml | kubectl apply -f -
 
+# The pre-delete cleanup hook runs in the Flux/Helm namespace.
+kubectl -n kommander create secret docker-registry \
+  datahub-1-cleanup-pull \
+  --docker-server=artifactory-edge-01.corp.p10y.ntnxdpro.com \
+  --docker-username="$ART_USER" \
+  --docker-password="$ART_TOKEN" \
+  --dry-run=client -o yaml | kubectl apply -f -
+
 # NDH image-pull Secret for both private registries.
 export DOCKER_AUTH_CONFIG="$(
 python3 - <<'PY'

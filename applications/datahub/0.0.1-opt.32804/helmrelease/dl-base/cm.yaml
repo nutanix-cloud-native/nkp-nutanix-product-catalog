@@ -6,6 +6,12 @@ data:
     # error is thrown.
     dl-priorityclasses:
       enabled: false
+    # Run the pre-delete cleanup hook so operator-managed resources are
+    # finalized before the data-lens namespace is removed.
+    dl-pre-delete-cleanup:
+      enabled: true
+      imagePullSecrets:
+        - name: datahub-1-cleanup-pull
     # dl-certs stays disabled: every service's 'certs.issuerRef' points at NKP's
     # existing kommander-ca ClusterIssuer, so no Data Lens CA is needed.
     # Creates the 'mspdeployedparams' ConfigMaps that MSP would provide, before any
