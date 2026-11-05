@@ -137,6 +137,9 @@ data:
           imagePullSecrets:
           - name: ndh-iep-secret
         caSecretName: ndh-iam-proxy-ca
+    oauth2-proxy:
+      imagePullSecrets:
+      - name: ndh-iep-secret
     qdrant:
       sizingProfiles:
         kLargeCluster:
