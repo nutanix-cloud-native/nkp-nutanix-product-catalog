@@ -39,9 +39,6 @@ spec:
       retries: 30
   releaseName: kserve
   targetNamespace: kserve
-  values:
-    kserve:
-      controller:
-        deploymentMode: RawDeployment
-        gateway:
-          disableIngressCreation: true
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-defaults
