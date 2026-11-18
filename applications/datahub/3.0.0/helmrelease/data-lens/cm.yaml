@@ -89,6 +89,9 @@ data:
         pcFqdn: ""
         # SMSP value that needs to be empty, as it does not exist on NKP.
         cluster_instance_name: ""
+        # Use NDH's IAM in ndh-core instead of the MSP one.
+        iam_host: iam-proxy.ndh-core.svc.cluster.local
+        use_legacy_auth_override: false
     dl-react-ui:
       size: kLargeCluster
       httpRoute:
