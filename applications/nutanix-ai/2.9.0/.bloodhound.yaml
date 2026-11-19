@@ -18,7 +18,10 @@ skip_types: [
   "monitoring.coreos.com/v1/PodMonitor",
   "postgresql.cnpg.io/v1/Database",
   "postgresql.cnpg.io/v1/Cluster",
-  "scheduling.k8s.io/v1/PriorityClass"
+  "scheduling.k8s.io/v1/PriorityClass",
+  "opentelemetry.io/v1alpha1/TargetAllocator",
+  "gateway.envoyproxy.io/v1alpha1/EnvoyPatchPolicy",
+  "scheduling.run.ai/v2/Queue"
 ]
 
 # load additional CRDs (URLs of CRD yaml files)
@@ -39,4 +42,3 @@ additional_crds:
 substitution_vars:
   releaseNamespace: kommander
   workspaceNamespace: workspace
-  appVersion: "2.9.0"

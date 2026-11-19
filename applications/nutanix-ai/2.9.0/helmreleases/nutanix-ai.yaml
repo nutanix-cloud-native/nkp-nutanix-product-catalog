@@ -8,9 +8,9 @@ metadata:
     kommander.d2iq.io/dkp-airgapped: supported
 spec:
   interval: 24h
-  url: "oci://ghcr.io/nutanix-cloud-native/nkp-nutanix-product-catalog/charts/nai-core"
+  url: "oci://repos.ntnxdpro.com/ai-nai-core/nai-core"
   ref:
-    tag: 2.9.0
+    tag: 2.9.0-dev10
   layerSelector:
     mediaType: "application/vnd.cncf.helm.chart.content.v1.tar+gzip"
     operation: copy
