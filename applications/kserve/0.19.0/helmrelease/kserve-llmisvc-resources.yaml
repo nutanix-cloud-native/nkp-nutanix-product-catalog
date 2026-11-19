@@ -40,8 +40,12 @@ spec:
       retries: 30
   releaseName: kserve-llmisvc-resources
   targetNamespace: kserve
-  values:
-    kserve:
-      createSharedResources: false
-      llmisvc:
-        createGIECRDs: false
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-defaults
+    - kind: ConfigMap
+      name: ${releaseName}-config-overrides
+      optional: true
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
+      optional: true

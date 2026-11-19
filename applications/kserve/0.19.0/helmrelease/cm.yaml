@@ -11,3 +11,6 @@ data:
         deploymentMode: RawDeployment
         gateway:
           disableIngressCreation: true
+      createSharedResources: false
+      llmisvc:
+        createGIECRDs: false

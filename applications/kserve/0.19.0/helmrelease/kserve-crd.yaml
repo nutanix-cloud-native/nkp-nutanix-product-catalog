@@ -38,3 +38,9 @@ spec:
   valuesFrom:
     - kind: ConfigMap
       name: ${releaseName}-${appVersion}-defaults
+    - kind: ConfigMap
+      name: ${releaseName}-config-overrides
+      optional: true
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
+      optional: true
