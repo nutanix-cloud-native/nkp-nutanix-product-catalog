@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-config-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    global:
+      checkNewVersion: false
+      sendAnonymousUsage: false
+
+    # Do not create an IngressClass at install time; create/configure it later.
+    ingressClass:
+      enabled: false
+      isDefaultClass: false
+
+    # Filter on a dedicated class name so this instance does not reconcile
+    # unannotated or kommander-traefik Ingress / IngressRoute resources.
+    providers:
+      kubernetesCRD:
+        enabled: true
+        ingressClass: traefik-custom
+      kubernetesIngress:
+        enabled: true
+        ingressClass: traefik-custom
+        publishedService:
+          enabled: true
+      kubernetesGateway:
+        enabled: false
+
+    instanceLabelOverride: traefik-custom
