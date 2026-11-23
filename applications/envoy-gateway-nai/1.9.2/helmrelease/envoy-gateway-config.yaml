@@ -20,7 +20,7 @@ data:
           kubernetes:
             rateLimitDeployment:
               container:
-                image: "docker.io/envoyproxy/ratelimit:63c7e9cc"
+                image: "docker.io/envoyproxy/ratelimit:20f81739"
               pod:
                 priorityClassName: dkp-high-priority
               patch:
@@ -32,7 +32,7 @@ data:
                         containers:
                           - imagePullPolicy: "IfNotPresent"
                             name: "envoy-ratelimit"
-                            image: "docker.io/envoyproxy/ratelimit:63c7e9cc"
+                            image: "docker.io/envoyproxy/ratelimit:20f81739"
                             env:
                               - name: REDIS_TYPE
                                 value: "sentinel"
@@ -69,6 +69,7 @@ data:
               hostname: "ai-gateway-controller.nai-system.svc.cluster.local"
               port: 1063
         rateLimit:
+          failClosed: true
           backend:
             type: "Redis"
             redis:

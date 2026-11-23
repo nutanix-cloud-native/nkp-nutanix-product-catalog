@@ -42,7 +42,7 @@ spec:
   targetNamespace: kserve
   valuesFrom:
     - kind: ConfigMap
-      name: ${releaseName}-${appVersion}-defaults
+      name: ${releaseName}-${appVersion}-llmisvc-defaults
     - kind: ConfigMap
       name: ${releaseName}-config-overrides
       optional: true
