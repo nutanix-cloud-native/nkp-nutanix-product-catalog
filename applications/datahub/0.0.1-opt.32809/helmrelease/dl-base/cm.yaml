@@ -10,6 +10,8 @@ data:
     # finalized before the data-lens namespace is removed.
     dl-pre-delete-cleanup:
       enabled: true
+      # Upgrades retain PVCs; disablement explicitly removes them.
+      deletePersistentVolumeClaims: true
       imagePullSecrets:
         - name: datahub-1-cleanup-pull
     # dl-certs stays disabled: every service's 'certs.issuerRef' points at NKP's
