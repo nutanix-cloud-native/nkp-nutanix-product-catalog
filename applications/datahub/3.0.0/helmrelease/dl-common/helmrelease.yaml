@@ -52,4 +52,7 @@ spec:
   valuesFrom:
   - kind: ConfigMap
     name: ${releaseName}-dl-common-config-defaults
+  - kind: ConfigMap
+    name: ${releaseName}-config-overrides
+    optional: true
 ---
