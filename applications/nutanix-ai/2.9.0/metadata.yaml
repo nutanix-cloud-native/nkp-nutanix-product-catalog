@@ -25,6 +25,7 @@ requiredDependencies:
   - envoy-gateway-nai
   - leaderworkerset
   - cloudnative-pg
+  - kai-scheduler
 dependsOn:
   - type: Application
     name: kube-prometheus-stack
@@ -46,6 +47,9 @@ dependsOn:
     optional: false
   - type: Application
     name: cloudnative-pg
+    optional: false
+  - type: Application
+    name: kai-scheduler
     optional: false
   - type: Application
     name: cert-manager

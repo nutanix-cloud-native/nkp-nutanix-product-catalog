@@ -42,6 +42,8 @@ spec:
       namespace: ${workspaceNamespace}
     - name: opentelemetry-operator
       namespace: ${workspaceNamespace}
+    - name: kai-scheduler
+      namespace: ${workspaceNamespace}
   interval: 15s
   install:
     remediation:
