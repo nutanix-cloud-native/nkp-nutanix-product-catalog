@@ -1,0 +1,40 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${releaseName}-phase-2-datastore
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: ${releaseName}-phase-1-operators
+    namespace: ${releaseNamespace}
+  interval: 6h0m0s
+  path: ./helmrelease/datastore
+  postBuild:
+    substitute:
+      releaseName: ${releaseName}
+      releaseNamespace: ${releaseNamespace}
+  prune: true
+  retryInterval: 1m0s
+  sourceRef:
+    kind: OCIRepository
+    name: ${releaseName}-source
+    namespace: ${releaseNamespace}
+  timeout: 20m0s
+  wait: true
+  healthChecks:
+  - apiVersion: postgresql.cnpg.io/v1
+    kind: Cluster
+    name: nc-pg
+    namespace: nc-system
+  - apiVersion: valkey.nutanix.com/v1alpha1
+    kind: ValkeyCluster
+    name: nc-valkey-cluster
+    namespace: nc-system
+  # ValkeyCluster has no kstatus Ready condition; gate on instance readiness.
+  # Use >= because readyInstances can count replicas above spec.instances.
+  healthCheckExprs:
+  - apiVersion: valkey.nutanix.com/v1alpha1
+    kind: ValkeyCluster
+    current: has(status.readyInstances) && status.readyInstances >= spec.instances
+    failed: has(status.clusterState) && (status.clusterState == 'Failed' || status.clusterState == 'Error')
+---

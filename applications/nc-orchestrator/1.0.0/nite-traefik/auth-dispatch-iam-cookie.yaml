@@ -1,0 +1,42 @@
+# VIP one-password after interceptDexCallback:
+# AuthN code is exchanged by celine (seeds NTNX_IAM_ID_TOKEN). Dex TFA never
+# completes, so auth-dispatch must not fall through to traefik-forward-auth.
+# When that cookie is present, route ForwardAuth to celine FederatedForwardAuth
+# (validates JWT → Impersonate-*). NC federated header / _nite_session stay on
+# NITE (priority 10001). Cookie-less first login stays on TFA (priority 10000).
+#
+# Requires Traefik --providers.kubernetescrd.allowCrossNamespace=true
+# (phase-8 Job injects into traefik-overrides). Endpoints fallback still synced.
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: auth-dispatch-celine-path
+  namespace: kommander
+  labels:
+    app.kubernetes.io/component: auth-dispatch-iam-cookie
+    app.kubernetes.io/part-of: nc-orchestrator
+spec:
+  replacePath:
+    path: /forwardauth/kommander
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: auth-dispatch-iam-cookie
+  namespace: kommander
+  labels:
+    app.kubernetes.io/component: auth-dispatch-iam-cookie
+    app.kubernetes.io/part-of: nc-orchestrator
+spec:
+  entryPoints:
+    - auth-dispatch
+  routes:
+    - kind: Rule
+      priority: 10002
+      match: HeaderRegexp(`Cookie`, `(^|;\s*)NTNX_IAM_ID_TOKEN=`)
+      middlewares:
+        - name: auth-dispatch-celine-path
+      services:
+        - name: celine
+          namespace: celine
+          port: 8091

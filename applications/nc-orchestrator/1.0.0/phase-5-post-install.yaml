@@ -1,0 +1,25 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${releaseName}-phase-5-post-install
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: ${releaseName}-phase-4-nc-orchestrator
+    namespace: ${releaseNamespace}
+  interval: 6h0m0s
+  path: ./post-install
+  postBuild:
+    substitute:
+      releaseName: ${releaseName}
+      releaseNamespace: ${releaseNamespace}
+      workspaceNamespace: ${releaseNamespace}
+  prune: true
+  retryInterval: 1m0s
+  sourceRef:
+    kind: OCIRepository
+    name: ${releaseName}-source
+    namespace: ${releaseNamespace}
+  timeout: 10m0s
+  wait: true
+---

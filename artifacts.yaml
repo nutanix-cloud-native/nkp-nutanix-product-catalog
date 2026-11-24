@@ -10,7 +10,7 @@ applications:
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.15.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/kserve:0.19.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/leaderworkerset:0.8.0
-      - oci://<registry-url>/nkp-nutanix-product-catalog/nc-orchestrator:1.0.3
+      - oci://<registry-url>/nkp-nutanix-product-catalog/nc-orchestrator:1.0.0
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector-operator:0.0.12
       - oci://<registry-url>/nkp-nutanix-product-catalog/ncm-k8s-collector:0.0.9
       - oci://<registry-url>/nkp-nutanix-product-catalog/ndk:2.0.0
@@ -85,12 +85,25 @@ applications:
       - oci://registry.k8s.io/lws/charts/lws:0.8.0
       - registry.k8s.io/lws/lws:v0.8.0
   - name: nc-orchestrator
-    version: 1.0.3
+    version: 1.0.0
     images:
-      - oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator:1.0.3
-      - harbor.eng.nutanix.com/nc-orchestrator/ikat-control-plane:1.0.0
-      - harbor.eng.nutanix.com/nc-orchestrator/ikat-proxy:1.0.0
-      - harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-6cd958a
+      - oci://harbor.eng.nutanix.com/iamv2/nc-cpaas:1.0.18
+      - oci://harbor.eng.nutanix.com/iamv2/nutanix-central:9.9.16
+      - oci://harbor.eng.nutanix.com/nc-orchestrator/nc-orchestrator:1.0.6
+      - oci://harbor.eng.nutanix.com/public-manoj.surudwad/nutanix-iam-token-exchange/charts/nutanix-iam-token-exchange:0.1.0-dev.827d033
+      - docker.io/mesosphere/kubectl:v1.34.1-alpine
+      - harbor.eng.nutanix.com/iamv2/cloudnative-pg:1.29.2
+      - harbor.eng.nutanix.com/iamv2/cpaas-common-utilities:300
+      - harbor.eng.nutanix.com/iamv2/iam-proxy-control-plane:1844
+      - harbor.eng.nutanix.com/iamv2/iam-proxy:1844
+      - harbor.eng.nutanix.com/iamv2/iam-themis:15068
+      - harbor.eng.nutanix.com/iamv2/iam-ui:11744
+      - harbor.eng.nutanix.com/iamv2/iam-user-authn:21273
+      - harbor.eng.nutanix.com/iamv2/valkey-operator:v0.2.12
+      - harbor.eng.nutanix.com/nc-orchestrator/ikat-control-plane:master
+      - harbor.eng.nutanix.com/nc-orchestrator/ikat-proxy:master
+      - harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-e65b106
+      - harbor.eng.nutanix.com/public-manoj.surudwad/nutanix-iam-token-exchange:v0.1.0-dev.827d033
   - name: ncm-k8s-collector
     version: 0.0.9
     images:
@@ -99,7 +112,7 @@ applications:
     version: 0.0.12
     images:
       - oci://harbor.eng.nutanix.com/ncm-k8s/charts/ntnx-k8s-collector-operator:0.0.12
-      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:aa9013d
+      - harbor.eng.nutanix.com/ncm-k8s/ncm-k8s-collector-operator:f5f8b99
   - name: ndk
     version: 2.0.0
     images:

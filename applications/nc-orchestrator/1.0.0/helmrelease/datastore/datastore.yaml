@@ -1,0 +1,60 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 1m
+  ref:
+    tag: 9.9.16
+  url: oci://harbor.eng.nutanix.com/iamv2/nutanix-central
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: iamv2-datastore
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: iamv2-operators
+    namespace: ${releaseNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-chart
+    namespace: ${releaseNamespace}
+  timeout: 15m0s
+  install:
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 5
+  interval: 15s
+  # Datastore CRs (nc-pg, nc-valkey) belong in nc-system.
+  targetNamespace: nc-system
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 5
+  # Chart defaults cover cert/cleanup TTLs and priorityClassName (NKP has no
+  # PriorityClass "default"). Phase only toggles which subcharts run.
+  values:
+    create-namespace:
+      enabled: true
+      namespaceOverride: nc-system
+    cpaas-common-utilities-role-nc:
+      enabled: true
+      namespaceOverride: nc-system
+    cpaas-common-utilities-job-nc:
+      enabled: true
+      namespaceOverride: nc-system
+      priorityClassNameEnabled: false
+      priorityClassName: ""
+    nc-cloudnative-pg-cluster:
+      enabled: true
+      namespaceOverride: nc-system
+    nc-valkey-cluster:
+      enabled: true
+      namespaceOverride: nc-system
+    iamv2:
+      enabled: false
+---

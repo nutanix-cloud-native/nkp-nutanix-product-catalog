@@ -1,0 +1,84 @@
+# After register-dex-oidc creates Connector/Secret, attach ownerReferences to
+# nc-orchestrator-dex-oidc-owner so Flux prune on uninstall GC-deletes them.
+#
+# IMPORTANT: do not use ${var} in the shell script — NKP catalog substitution
+# eats unknown ${...} placeholders (leaves empty strings) and breaks the Job.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iamv2-dex-oidc-gc-1.0.0
+  namespace: ${workspaceNamespace}
+  labels:
+    app.kubernetes.io/component: dex-oidc
+    app.kubernetes.io/part-of: nc-orchestrator
+spec:
+  backoffLimit: 8
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: iamv2-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: attach-ownerrefs
+          image: docker.io/mesosphere/kubectl:v1.34.1-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+              NS=kommander
+              OWNER=nc-orchestrator-dex-oidc-owner
+              CONNECTOR=pc-oidc
+              SECRET=pc-oidc-client
+
+              echo "waiting for ConfigMap $NS/$OWNER ..."
+              i=0
+              while ! kubectl -n "$NS" get configmap "$OWNER" >/dev/null 2>&1; do
+                i=$((i + 1))
+                if [ "$i" -gt 60 ]; then
+                  echo "ERROR: ConfigMap $OWNER not found" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              echo "waiting for Connector $NS/$CONNECTOR ..."
+              i=0
+              while ! kubectl -n "$NS" get connector.dex.mesosphere.io "$CONNECTOR" >/dev/null 2>&1; do
+                i=$((i + 1))
+                if [ "$i" -gt 60 ]; then
+                  echo "ERROR: Connector $CONNECTOR not found (register-dex-oidc not done?)" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              echo "waiting for Secret $NS/$SECRET ..."
+              i=0
+              while ! kubectl -n "$NS" get secret "$SECRET" >/dev/null 2>&1; do
+                i=$((i + 1))
+                if [ "$i" -gt 60 ]; then
+                  echo "ERROR: Secret $SECRET not found" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              OWNER_UID=$(kubectl -n "$NS" get configmap "$OWNER" -o jsonpath='{.metadata.uid}')
+              [ -n "$OWNER_UID" ] || { echo "ERROR: empty owner uid" >&2; exit 1; }
+
+              # Replace ownerReferences so re-runs stay idempotent.
+              patch_owner() {
+                kind=$1
+                name=$2
+                kubectl -n "$NS" patch "$kind" "$name" --type=merge -p="{\"metadata\":{\"ownerReferences\":[{\"apiVersion\":\"v1\",\"kind\":\"ConfigMap\",\"name\":\"$OWNER\",\"uid\":\"$OWNER_UID\",\"controller\":true,\"blockOwnerDeletion\":true}],\"labels\":{\"app.kubernetes.io/part-of\":\"nc-orchestrator\",\"app.kubernetes.io/component\":\"dex-oidc\"}}}"
+              }
+
+              echo "attaching ownerRef → ConfigMap/$OWNER (uid=$OWNER_UID)"
+              patch_owner connector.dex.mesosphere.io "$CONNECTOR"
+              patch_owner secret "$SECRET"
+
+              kubectl -n "$NS" get connector.dex.mesosphere.io "$CONNECTOR" -o jsonpath='connector owners={.metadata.ownerReferences[0].name}{"\n"}'
+              kubectl -n "$NS" get secret "$SECRET" -o jsonpath='secret owners={.metadata.ownerReferences[0].name}{"\n"}'
+              echo "done — uninstall prune of $OWNER will GC-remove Nutanix IAM login"

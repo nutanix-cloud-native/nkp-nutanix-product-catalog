@@ -1,0 +1,12 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: iamv2-postinstall
+subjects:
+  - kind: ServiceAccount
+    name: iamv2-postinstall
+    namespace: ${workspaceNamespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: iamv2-postinstall

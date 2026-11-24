@@ -1,0 +1,27 @@
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: iamv2-postinstall
+rules:
+  - apiGroups: [""]
+    resources: ["secrets", "services", "configmaps"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  - apiGroups: ["apps"]
+    resources: ["deployments"]
+    verbs: ["get", "list", "watch", "update", "patch"]
+  - apiGroups: ["networking.k8s.io"]
+    resources: ["ingresses"]
+    verbs: ["get", "list", "update", "patch"]
+  - apiGroups: ["traefik.io", "traefik.containo.us"]
+    resources: ["middlewares"]
+    verbs: ["get", "list", "create", "update", "patch"]
+  - apiGroups: ["dex.mesosphere.io"]
+    resources: ["connectors"]
+    verbs: ["get", "list", "create", "update", "patch", "delete"]
+  - apiGroups: ["helm.toolkit.fluxcd.io"]
+    resources: ["helmreleases"]
+    verbs: ["get", "list", "update", "patch"]
+  # phase-8: wire NITE traefik overrides into AppDeployment/traefik
+  - apiGroups: ["apps.kommander.d2iq.io"]
+    resources: ["appdeployments"]
+    verbs: ["get", "list", "update", "patch"]

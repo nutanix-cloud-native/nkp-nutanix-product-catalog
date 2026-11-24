@@ -1,0 +1,79 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-nite-config-defaults
+  namespace: ${releaseNamespace}
+data:
+  values.yaml: |
+    # nite (nutanix-iam-token-exchange) — NC federated ForwardAuth in kommander.
+    # Secrets (except Dex verify-only) are created by phase-6 Job ensure-nite-secrets
+    # from in-cluster NKP IAM in nc-system — not Prism Central ZK/APLOSService:
+    #   nc-nkp-iamv2-token-exchange-client  (OIDC client against nc-system IAM)
+    #   iamv2-client-tls                    (copy of iam-proxy-control-plane-tls)
+    #   dex-client-secret-kube-apiserver, dex-tls  (already on NKP; Job verifies)
+    #
+    # Why NITE (not celine /forwardauth/kommander): NITE exchanges
+    # X-Federated-Iamv2-Id-Token for Dex + Impersonate-* headers. Without
+    # kommanderOverrides + AppDeployment wiring, Kommander UI stays on stock
+    # traefik-forward-auth (AUTH_HOST=VIP) and NC domain URLs 307 to the VIP.
+    # Phase-8 Job patches AppDeployment/traefik to reference the overrides CM.
+    image:
+      repository: harbor.eng.nutanix.com/public-manoj.surudwad/nutanix-iam-token-exchange
+      tag: v0.1.0-dev.827d033
+      pullPolicy: IfNotPresent
+    config:
+      LISTEN_ADDRESS: ":8080"
+      LOG_LEVEL: info
+      LOG_FORMAT: json
+      # In-cluster NKP IAM (nc-system), not PC :9440.
+      IAMV2_TOKEN_URL: https://iam-proxy.nc-system.svc:8445/api/iam/authn/v1/oidc/token
+      IAMV2_TLS_INSECURE_SKIP_VERIFY: "false"
+      IAMV2_CLIENT_CERT_FILE: /etc/iamv2-tls/tls.crt
+      IAMV2_CLIENT_KEY_FILE: /etc/iamv2-tls/tls.key
+      IAMV2_CA_FILE: /etc/iamv2-tls/ca.pem
+      DEX_TOKEN_URL: https://dex.kommander.svc:32000/dex/token
+      # Typical NKP management-cluster Dex Client / Connector ids (see nite chart README).
+      DEX_CLIENT_ID: dex-controller-dex-dka-client-kube-apiserver
+      DEX_CONNECTOR_ID: dex-controller_kommander_pc-oidc
+      DEX_SCOPE: openid profile email groups
+      DEX_CA_FILE: /etc/dex-tls/ca.crt
+      USERNAME_CLAIM: email
+      GROUPS_CLAIM: groups
+      GROUPS_PREFIX: "oidc:"
+    iamv2:
+      credentialsSecret:
+        name: nc-nkp-iamv2-token-exchange-client
+        clientIdKey: client-id
+        clientSecretKey: client-secret
+      tlsSecret:
+        name: iamv2-client-tls
+    dex:
+      clientSecret:
+        name: dex-client-secret-kube-apiserver
+        key: client-secret
+      caSecret:
+        name: dex-tls
+        key: ca.crt
+    traefik:
+      sessionCookieName: _nite_session
+      dispatch:
+        enabled: true
+        entryPoint: auth-dispatch
+        priority: 10001
+      apiServer:
+        enabled: true
+      # Creates CM nutanix-iam-token-exchange-traefik-overrides. Phase-8 Job:
+      #  1) sets AppDeployment/traefik configMapName to that CM
+      #  2) copies it into traefik-overrides (what Traefik HR actually merges —
+      #     AppDeployment syncs to traefik-cluster-overrides, which HR ignores)
+      #  3) patches shared forwardauth* middlewares → http://127.0.0.1:8090/
+      #  4) ensures auth-dispatch IAM-cookie route → celine FA (VIP one-password
+      #     after interceptDexCallback seeds NTNX_IAM_ID_TOKEN)
+      kommanderOverrides:
+        enabled: true
+        # Point shared forwardauth* at auth-dispatch:
+        #   federated header / _nite_session → NITE
+        #   NTNX_IAM_ID_TOKEN cookie → celine /forwardauth/kommander
+        #   else → stock TFA (first VIP login)
+        switchMiddlewares: true
+---

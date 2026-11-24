@@ -1,0 +1,26 @@
+# Companion Ingress for /ui/iam. nutanix-central@9.9.15+ bakes this path into
+# iam-proxy Ingress; keep this for upgrades that still land on older charts.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: iam-ui
+  namespace: nc-system
+  labels:
+    k8s-app: iam-proxy
+    app.kubernetes.io/part-of: nc-orchestrator
+  annotations:
+    kubernetes.io/ingress.class: kommander-traefik
+    ingress.kubernetes.io/protocol: https
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: nc-system-iam-oidc-seed-tenant@kubernetescrd
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /ui/iam
+        pathType: Prefix
+        backend:
+          service:
+            name: iam-proxy
+            port:
+              name: https

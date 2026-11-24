@@ -1,0 +1,174 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nite-traefik-overrides-1.0.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 8
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: iamv2-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: patch-traefik-appdeployment
+          image: docker.io/mesosphere/kubectl:v1.34.1-alpine
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -ec
+            - |
+              set -eu
+              NS=kommander
+              AD=traefik
+              CM=nutanix-iam-token-exchange-traefik-overrides
+              # Traefik HelmRelease on NKP 2.x reads optional CM "traefik-overrides".
+              # AppDeployment syncs configMapName → "traefik-cluster-overrides",
+              # which this Traefik HR does NOT merge — so we also copy into
+              # traefik-overrides (and traefik-cluster-overrides for completeness).
+              echo "waiting for ConfigMap ${NS}/${CM} ..."
+              i=0
+              while ! kubectl -n "${NS}" get configmap "${CM}" >/dev/null 2>&1; do
+                i=$((i + 1))
+                if [ "${i}" -gt 60 ]; then
+                  echo "ERROR: ConfigMap ${CM} not found after waiting" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              echo "patching AppDeployment/${AD} clusterConfigOverrides[0].configMapName=${CM}"
+              if kubectl -n "${NS}" get appdeployment "${AD}" \
+                  -o jsonpath='{.spec.clusterConfigOverrides[0]}' | grep -q .; then
+                kubectl -n "${NS}" patch appdeployment "${AD}" --type=json -p="[
+                  {\"op\":\"replace\",\"path\":\"/spec/clusterConfigOverrides/0/configMapName\",\"value\":\"${CM}\"}
+                ]"
+              else
+                CLUSTER=$(kubectl get nodes -o jsonpath='{.items[0].metadata.labels.kommander\.d2iq\.io/cluster-name}' 2>/dev/null || true)
+                [ -n "${CLUSTER}" ] || CLUSTER=nkp-1
+                kubectl -n "${NS}" patch appdeployment "${AD}" --type=merge -p="{\"spec\":{\"clusterConfigOverrides\":[{\"appVersion\":\"39.0.7\",\"clusterSelector\":{\"matchExpressions\":[{\"key\":\"kommander.d2iq.io/cluster-name\",\"operator\":\"In\",\"values\":[\"${CLUSTER}\"]}]},\"configMapName\":\"${CM}\"}]}}"
+              fi
+
+              echo "syncing ${CM} → traefik-overrides + traefik-cluster-overrides"
+              VALUES=$(kubectl -n "${NS}" get configmap "${CM}" -o jsonpath='{.data.values\.yaml}')
+              # VIP IAM-cookie FA targets celine in another namespace; Traefik defaults
+              # allowCrossNamespace=false and Endpoints to celine ClusterIP go stale
+              # when the Service is recreated (dashboard 500 / FA timeout).
+              if ! printf '%s' "${VALUES}" | grep -q 'providers.kubernetescrd.allowCrossNamespace=true'; then
+                VALUES=$(printf '%s\n' "${VALUES}" | sed '/additionalArguments:/a\  - "--providers.kubernetescrd.allowCrossNamespace=true"')
+              fi
+              for TARGET in traefik-overrides traefik-cluster-overrides; do
+                kubectl -n "${NS}" create configmap "${TARGET}" \
+                  --from-literal=values.yaml="${VALUES}" \
+                  --dry-run=client -o yaml | kubectl apply -f -
+              done
+
+              echo "requesting Traefik HelmRelease reconcile"
+              kubectl -n "${NS}" annotate helmrelease traefik \
+                reconcile.fluxcd.io/requestedAt="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+                --overwrite || true
+
+              # Belt-and-suspenders: Helm/extraObjects can leave shared ForwardAuth
+              # middlewares on the stock TFA address after an upgrade. Point them
+              # at the auth-dispatch loopback once the entrypoint exists.
+              echo "waiting for auth-dispatch entrypoint on Traefik deploy..."
+              i=0
+              while ! kubectl -n "${NS}" get deploy kommander-traefik -o yaml 2>/dev/null \
+                  | grep -q 'entryPoints.auth-dispatch.address'; do
+                i=$((i + 1))
+                if [ "${i}" -gt 60 ]; then
+                  echo "ERROR: auth-dispatch not present on Traefik deploy" >&2
+                  exit 1
+                fi
+                sleep 5
+              done
+
+              echo "switching shared ForwardAuth middlewares → http://127.0.0.1:8090/"
+              kubectl -n "${NS}" patch middleware forwardauth --type=merge -p='{"spec":{"forwardAuth":{"address":"http://127.0.0.1:8090/","trustForwardHeader":true,"authResponseHeaders":["X-Forwarded-User","Impersonate-User","Impersonate-Group","X-Federated-Iamv2-Id-Token"],"addAuthCookiesToResponse":["_nite_session","kommander_profile_name"]}}}'
+              kubectl -n "${NS}" patch middleware forwardauth-full --type=merge -p='{"spec":{"forwardAuth":{"address":"http://127.0.0.1:8090/","trustForwardHeader":true,"authResponseHeaders":["X-Forwarded-User","Impersonate-User","Impersonate-Group","Authorization","X-Federated-Iamv2-Id-Token"],"addAuthCookiesToResponse":["_nite_session","kommander_profile_name"]}}}'
+              kubectl -n "${NS}" patch middleware forwardauth-grafana --type=merge -p='{"spec":{"forwardAuth":{"address":"http://127.0.0.1:8090/","trustForwardHeader":true,"authResponseHeaders":["X-Forwarded-User","X-Federated-Iamv2-Id-Token"],"addAuthCookiesToResponse":["_nite_session","kommander_profile_name"]}}}'
+
+              # VIP: NTNX_IAM_ID_TOKEN (seeded by celine /dex/callback intercept) →
+              # celine FederatedForwardAuth via cross-namespace Service (requires
+              # allowCrossNamespace injected above). Keep Endpoints in sync as a
+              # fallback until Traefik reloads with that flag.
+              echo "ensuring auth-dispatch IAM-cookie → celine FA route"
+              CELINE_IP=$(kubectl -n celine get svc celine -o jsonpath='{.spec.clusterIP}')
+              if [ -z "${CELINE_IP}" ]; then
+                echo "ERROR: celine.celine ClusterIP not found" >&2
+                exit 1
+              fi
+              echo "celine ClusterIP=${CELINE_IP}"
+              kubectl -n "${NS}" delete svc celine-forwardauth --ignore-not-found
+              kubectl apply -f - <<EOF
+              apiVersion: v1
+              kind: Service
+              metadata:
+                name: celine-forwardauth
+                namespace: kommander
+                labels:
+                  app.kubernetes.io/component: auth-dispatch-iam-cookie
+                  app.kubernetes.io/part-of: nc-orchestrator
+              spec:
+                clusterIP: None
+                ports:
+                  - name: http
+                    port: 8091
+                    targetPort: 8091
+              ---
+              apiVersion: v1
+              kind: Endpoints
+              metadata:
+                name: celine-forwardauth
+                namespace: kommander
+                labels:
+                  app.kubernetes.io/component: auth-dispatch-iam-cookie
+                  app.kubernetes.io/part-of: nc-orchestrator
+              subsets:
+                - addresses:
+                    - ip: ${CELINE_IP}
+                  ports:
+                    - name: http
+                      port: 8091
+              EOF
+              kubectl apply -f - <<'EOF'
+              apiVersion: traefik.io/v1alpha1
+              kind: Middleware
+              metadata:
+                name: auth-dispatch-celine-path
+                namespace: kommander
+                labels:
+                  app.kubernetes.io/component: auth-dispatch-iam-cookie
+                  app.kubernetes.io/part-of: nc-orchestrator
+              spec:
+                replacePath:
+                  path: /forwardauth/kommander
+              ---
+              apiVersion: traefik.io/v1alpha1
+              kind: IngressRoute
+              metadata:
+                name: auth-dispatch-iam-cookie
+                namespace: kommander
+                labels:
+                  app.kubernetes.io/component: auth-dispatch-iam-cookie
+                  app.kubernetes.io/part-of: nc-orchestrator
+              spec:
+                entryPoints:
+                  - auth-dispatch
+                routes:
+                  - kind: Rule
+                    priority: 10002
+                    match: HeaderRegexp(`Cookie`, `(^|;\s*)NTNX_IAM_ID_TOKEN=`)
+                    middlewares:
+                      - name: auth-dispatch-celine-path
+                    services:
+                      - name: celine
+                        namespace: celine
+                        port: 8091
+              EOF
+
+              kubectl -n "${NS}" get appdeployment "${AD}" -o jsonpath='{.spec.clusterConfigOverrides}{"\n"}'
+              kubectl -n "${NS}" get middleware forwardauth -o jsonpath='forwardauth={.spec.forwardAuth.address}{"\n"}'
+              kubectl -n "${NS}" get ingressroute auth-dispatch-iam-cookie -o jsonpath='iam-cookie={.spec.routes[0].match}{"\n"}'
+              echo "done — Traefik merges NITE overrides (auth-dispatch + IAM-cookie + switched forwardauth)"
+---

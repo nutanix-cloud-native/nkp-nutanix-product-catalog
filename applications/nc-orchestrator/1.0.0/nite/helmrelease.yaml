@@ -1,0 +1,39 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-nite-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 1m
+  ref:
+    # From NITE install doc: public-manoj.surudwad Harbor project.
+    tag: 0.1.0-dev.827d033
+  url: oci://harbor.eng.nutanix.com/public-manoj.surudwad/nutanix-iam-token-exchange/charts/nutanix-iam-token-exchange
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nite
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: iamv2
+    namespace: ${releaseNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-nite-chart
+    namespace: ${releaseNamespace}
+  install:
+    createNamespace: false
+    remediation:
+      retries: 5
+  interval: 15s
+  targetNamespace: kommander
+  upgrade:
+    remediation:
+      retries: 5
+  timeout: 10m0s
+  valuesFrom:
+  - kind: ConfigMap
+    name: ${releaseName}-nite-config-defaults
+---
