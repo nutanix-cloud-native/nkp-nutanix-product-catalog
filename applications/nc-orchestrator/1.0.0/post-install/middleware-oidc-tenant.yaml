@@ -1,0 +1,13 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: iam-oidc-seed-tenant
+  namespace: nc-system
+spec:
+  redirectRegex:
+    permanent: false
+    # Match only when client_id is the first query param (Dex order) so the
+    # seeded redirect is not re-matched (Go RE2 has no negative lookahead).
+    regex: ^(https://[^/]+)?(/api/iam/authn/v1/oidc/auth)\?client_id=(.*)$
+    # Default infra tenant UUID (V5 of iamv2infra) — same as ccp-backend DefaultTenantUUID.
+    replacement: $1$2?tenant_uuid=59d5de78-a964-5746-8c6e-677c4c7a79df&client_id=$3

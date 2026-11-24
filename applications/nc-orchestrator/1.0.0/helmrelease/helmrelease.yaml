@@ -1,0 +1,54 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 1m
+  ref:
+    tag: 9.9.16
+  url: oci://harbor.eng.nutanix.com/iamv2/nutanix-central
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: iamv2
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: iamv2-datastore
+    namespace: ${releaseNamespace}
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-chart
+    namespace: ${releaseNamespace}
+  timeout: 15m0s
+  install:
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 5
+  interval: 15s
+  # IAM pods belong in nc-system alongside the datastore.
+  targetNamespace: nc-system
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 5
+  # Chart defaults (iamv2 ingress, bootstrapSecrets, iamBootstrap off).
+  # Only enable/disable subcharts for this phase.
+  values:
+    create-namespace:
+      enabled: false
+    cpaas-common-utilities-role-nc:
+      enabled: false
+    cpaas-common-utilities-job-nc:
+      enabled: false
+    nc-cloudnative-pg-cluster:
+      enabled: false
+    nc-valkey-cluster:
+      enabled: false
+    iamv2:
+      enabled: true
+      namespace: nc-system
+---

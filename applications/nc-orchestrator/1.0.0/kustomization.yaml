@@ -1,0 +1,12 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- phase-1-operators.yaml
+- phase-2-datastore.yaml
+- phase-3-iam.yaml
+- phase-4-nc-orchestrator.yaml
+- phase-5-post-install.yaml
+- phase-6-nite-secrets.yaml
+- phase-7-nite.yaml
+- phase-8-nite-traefik.yaml
+---

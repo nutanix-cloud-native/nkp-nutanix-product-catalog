@@ -1,0 +1,68 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: iamv2-dex-registration-1.0.3
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: iamv2-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: dex-registration
+          image: harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-e65b106
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: WORKSPACE_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: IAM_NAMESPACE
+              value: "nc-system"
+            - name: IAM_HOST
+              value: "https://iam-proxy.nc-system.svc:8443"
+            - name: IAM_MTLS_HOST
+              value: "https://iam-proxy.nc-system.svc:8445"
+            - name: IAM_CERT_SECRET
+              value: "iam-proxy-control-plane-tls"
+            - name: CLIENT_NAME
+              value: "nkp-dex"
+            - name: DEX_NAMESPACE
+              value: "kommander"
+            - name: DEX_SVC
+              value: "dex"
+            - name: DEX_DEPLOY
+              value: "dex"
+            - name: DEX_DISCOVERY
+              value: "https://dex.kommander.svc:32000/dex/.well-known/openid-configuration"
+            - name: SECRET_NAME
+              value: "pc-oidc-client"
+            - name: CONNECTOR_NAME
+              value: "pc-oidc"
+            - name: CONNECTOR_DISPLAY_NAME
+              value: "Nutanix IAM"
+            - name: CONNECTOR_API_VERSION
+              value: "dex.mesosphere.io/v1alpha1"
+            # false → issuer = Traefik VIP (e.g. https://10.102.114.151:443/api/iam/authn)
+            - name: USE_INTERNAL_IAM_ISSUER
+              value: "false"
+            # Empty TENANT_UUID → job derives V5 UUID of TENANT_NAME (iamv2infra → 59d5de78-...).
+            - name: TENANT_NAME
+              value: "iamv2infra"
+            - name: TENANT_UUID
+              value: "59d5de78-a964-5746-8c6e-677c4c7a79df"
+            - name: UI_CLIENT_NAME
+              value: "iam-ui"
+            - name: UI_CLIENT_SECRET_NAME
+              value: "iam-oidc-client"
+            # Seed AuthZ ops + NKP Admin role + ACP for local admin (/ui/iam/config).
+            - name: ADMIN_USER_UUID
+              value: "00000000-0000-0000-0000-000000000000"
+            - name: SKIP_SEED_ADMIN_IAM
+              value: "false"
+          command:
+            - /usr/local/bin/jobs
+          args:
+            - register-dex-oidc

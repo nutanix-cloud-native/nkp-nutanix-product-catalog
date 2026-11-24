@@ -1,0 +1,47 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: nite-secrets-1.0.0
+  namespace: ${workspaceNamespace}
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: null
+  template:
+    spec:
+      serviceAccountName: iamv2-postinstall
+      restartPolicy: OnFailure
+      containers:
+        - name: nite-secrets
+          # Rebuild/push jobs image that includes ensure-nite-secrets before install.
+          image: harbor.eng.nutanix.com/nc-orchestrator/nutanix-central-orchestrator:precommit-nutanix-central-orchestrator-e65b106
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: IAM_NAMESPACE
+              value: "nc-system"
+            - name: IAM_HOST
+              value: "https://iam-proxy.nc-system.svc:8443"
+            - name: IAM_MTLS_HOST
+              value: "https://iam-proxy.nc-system.svc:8445"
+            - name: IAM_CERT_SECRET
+              value: "iam-proxy-control-plane-tls"
+            - name: DEX_NAMESPACE
+              value: "kommander"
+            - name: TRAEFIK_SERVICE
+              value: "kommander-traefik"
+            # NITE Secrets land in kommander (chart mount namespace), sourced from NKP IAM.
+            - name: NITE_SECRETS_NAMESPACE
+              value: "kommander"
+            - name: NITE_OAUTH_SECRET_NAME
+              value: "nc-nkp-iamv2-token-exchange-client"
+            - name: NITE_TLS_SECRET_NAME
+              value: "iamv2-client-tls"
+            - name: NITE_CLIENT_NAME
+              value: "nkp-nite-token-exchange"
+            - name: NITE_DEX_CLIENT_SECRET_NAME
+              value: "dex-client-secret-kube-apiserver"
+            - name: NITE_DEX_TLS_SECRET_NAME
+              value: "dex-tls"
+          command:
+            - /usr/local/bin/jobs
+          args:
+            - ensure-nite-secrets

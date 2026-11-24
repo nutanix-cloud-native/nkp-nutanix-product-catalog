@@ -1,0 +1,50 @@
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: OCIRepository
+metadata:
+  name: ${releaseName}-operator-chart
+  namespace: ${releaseNamespace}
+spec:
+  interval: 1m
+  ref:
+    tag: 1.0.18
+  url: oci://harbor.eng.nutanix.com/iamv2/nc-cpaas
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: iamv2-operators
+  namespace: ${releaseNamespace}
+spec:
+  chartRef:
+    kind: OCIRepository
+    name: ${releaseName}-operator-chart
+    namespace: ${releaseNamespace}
+  install:
+    crds: CreateReplace
+    createNamespace: true
+    remediation:
+      retries: 30
+  interval: 15s
+  # CNPG/Valkey operators + their webhooks must live in cpaas-system (chart
+  # webhook clientConfig is pinned there). Do not use ${releaseNamespace}.
+  targetNamespace: cpaas-system
+  upgrade:
+    crds: CreateReplace
+    remediation:
+      retries: 30
+  # Phase toggles only — chart defaults cover the rest.
+  values:
+    create-namespace:
+      enabled: true
+      namespaceOverride: cpaas-system
+    cloudnative-pg:
+      enabled: true
+      namespaceOverride: cpaas-system
+    cpaas-valkey-operator:
+      enabled: true
+      namespaceOverride: cpaas-system
+    cpaas-common-utilities-role:
+      enabled: false
+    cpaas-common-utilities-job:
+      enabled: false
+---

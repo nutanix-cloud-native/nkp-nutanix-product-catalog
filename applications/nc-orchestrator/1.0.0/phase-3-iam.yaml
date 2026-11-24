@@ -1,0 +1,24 @@
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: ${releaseName}-phase-3-iam
+  namespace: ${releaseNamespace}
+spec:
+  dependsOn:
+  - name: ${releaseName}-phase-2-datastore
+    namespace: ${releaseNamespace}
+  interval: 6h0m0s
+  path: ./helmrelease
+  postBuild:
+    substitute:
+      releaseName: ${releaseName}
+      releaseNamespace: ${releaseNamespace}
+  prune: true
+  retryInterval: 1m0s
+  sourceRef:
+    kind: OCIRepository
+    name: ${releaseName}-source
+    namespace: ${releaseNamespace}
+  timeout: 15m0s
+  wait: true
+---

@@ -1,0 +1,15 @@
+# Flux-managed owner for the Dex OIDC connector that register-dex-oidc creates.
+# On app uninstall, phase-5 prune deletes this ConfigMap; kube GC then removes
+# owned Connector/Secret so "Log in with Nutanix IAM" does not linger on Dex.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nc-orchestrator-dex-oidc-owner
+  namespace: kommander
+  labels:
+    app.kubernetes.io/component: dex-oidc
+    app.kubernetes.io/part-of: nc-orchestrator
+data:
+  connector: pc-oidc
+  secret: pc-oidc-client
+  note: "ownerReferences attached by iamv2-dex-oidc-gc Job after register-dex-oidc"
