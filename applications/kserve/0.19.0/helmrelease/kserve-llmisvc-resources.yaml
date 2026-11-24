@@ -40,8 +40,25 @@ spec:
       retries: 30
   releaseName: kserve-llmisvc-resources
   targetNamespace: kserve
-  values:
-    kserve:
-      createSharedResources: false
-      llmisvc:
-        createGIECRDs: false
+  valuesFrom:
+    - kind: ConfigMap
+      name: ${releaseName}-${appVersion}-llmisvc-defaults
+    - kind: ConfigMap
+      name: ${releaseName}-config-overrides
+      optional: true
+    - kind: ConfigMap
+      name: ${releaseName}-cluster-overrides
+      optional: true
+  # KServe Helm charts do not expose priorityClassName yet
+  # (https://github.com/kserve/kserve/pull/6433). Patch the controller
+  # Deployment via Flux post-renderer until upstream supports it.
+  postRenderers:
+    - kustomize:
+        patches:
+          - target:
+              kind: Deployment
+              name: llmisvc-controller-manager
+            patch: |
+              - op: add
+                path: /spec/template/spec/priorityClassName
+                value: dkp-high-priority
