@@ -11,6 +11,17 @@ data:
         deploymentMode: RawDeployment
         gateway:
           disableIngressCreation: true
+---
+# llmisvc-resources must not recreate shared resources / GIE CRDs already
+# owned by the main kserve and kserve-llmisvc-crd charts.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-${appVersion}-llmisvc-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    kserve:
       createSharedResources: false
       llmisvc:
         createGIECRDs: false
