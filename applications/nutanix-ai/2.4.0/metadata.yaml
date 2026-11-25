@@ -20,13 +20,13 @@ dependencies:
   - kube-prometheus-stack
   - nvidia-gpu-operator
 dependsOn:
-  - type: Application
+  - type: PlatformApplication
     name: cert-manager
     optional: true
-  - type: Application
+  - type: PlatformApplication
     name: kube-prometheus-stack
     optional: true
-  - type: Application
+  - type: PlatformApplication
     name: nvidia-gpu-operator
     optional: true
 scope:

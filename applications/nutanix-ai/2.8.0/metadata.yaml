@@ -26,10 +26,10 @@ requiredDependencies:
   - leaderworkerset
   - cloudnative-pg
 dependsOn:
-  - type: Application
+  - type: PlatformApplication
     name: kube-prometheus-stack
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: nvidia-gpu-operator
     optional: false
   - type: Application
@@ -44,10 +44,10 @@ dependsOn:
   - type: Application
     name: leaderworkerset
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: cloudnative-pg
     optional: false
-  - type: Application
+  - type: PlatformApplication
     name: cert-manager
     optional: true
 scope:
