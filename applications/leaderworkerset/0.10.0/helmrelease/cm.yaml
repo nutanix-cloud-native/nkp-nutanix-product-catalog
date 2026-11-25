@@ -1,0 +1,10 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ${releaseName}-${appVersion}-defaults
+  namespace: ${workspaceNamespace}
+data:
+  values.yaml: |-
+    # NKP provisions dkp-high-priority for NAI-installed dependencies.
+    priorityClassName: dkp-high-priority
