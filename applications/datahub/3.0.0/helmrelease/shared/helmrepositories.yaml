@@ -1,0 +1,17 @@
+# All Data Hub charts (dl-base, dl-common, data-lens and ndh) are published to the same
+# public OCI repository. 'dlChartRepo' comes from the optional 'dl-build-version' ConfigMap;
+# without it, the default after ':=' is used.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: HelmRepository
+metadata:
+  name: ${releaseName}-charts
+  namespace: ${releaseNamespace}
+  annotations:
+    # Keep the chart source available until the pre-delete hook has
+    # uninstalled the dependent HelmReleases.
+    kustomize.toolkit.fluxcd.io/prune: disabled
+spec:
+  interval: 10m
+  type: oci
+  url: "${dlChartRepo:=oci://ghcr.io/madhukargokhale/nkp-nutanix-product-catalog/charts}"
+---

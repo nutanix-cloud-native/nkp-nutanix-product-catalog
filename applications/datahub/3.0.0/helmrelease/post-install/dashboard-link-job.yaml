@@ -1,0 +1,62 @@
+# Sets 'dashboardLink' on the datahub-app-dashboard-info ConfigMap, which adds the open link
+# to the Data Hub card on NKP's Application Dashboard. The address is the LoadBalancer of
+# the ndh-ingress-gateway Gateway (ndh chart), whose https listener serves the Data Lens UI at /.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+  annotations:
+    # A Job's pod template is immutable, so Flux recreates the Job when it changes.
+    kustomize.toolkit.fluxcd.io/force: Enabled
+spec:
+  backoffLimit: 3
+  template:
+    spec:
+      serviceAccountName: ${releaseName}-dashboard-link
+      restartPolicy: OnFailure
+      containers:
+      - name: set-dashboard-link
+        image: mesosphere/kubectl:v1.34.1-alpine
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        command:
+        - /bin/sh
+        - -c
+        - |
+          set -eu
+          SELECTOR="gateway.envoyproxy.io/owning-gateway-name=ndh-ingress-gateway,gateway.envoyproxy.io/owning-gateway-namespace=ndh-core"
+
+          # The Gateway exists only once the ndh release is installed, after dl-base,
+          # dl-common and data-lens, so wait for up to 30 minutes.
+          IP=""
+          HOSTNAME=""
+          for i in $(seq 1 360); do
+            IP=$(kubectl get svc -n envoy-gateway-system -l "$SELECTOR" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].ip}' 2>/dev/null || echo "")
+            HOSTNAME=$(kubectl get svc -n envoy-gateway-system -l "$SELECTOR" -o jsonpath='{.items[0].status.loadBalancer.ingress[0].hostname}' 2>/dev/null || echo "")
+            if [ -n "$IP" ] || [ -n "$HOSTNAME" ]; then
+              break
+            fi
+            echo "Waiting for the ndh-ingress-gateway LoadBalancer address ($i/360)..."
+            sleep 5
+          done
+
+          if [ -z "$IP" ] && [ -z "$HOSTNAME" ]; then
+            echo "ERROR: ndh-ingress-gateway has no LoadBalancer IP or hostname" >&2
+            exit 1
+          fi
+
+          # No brace-style shell variables here: Flux would substitute them.
+          if [ -n "$IP" ]; then
+            ENDPOINT="https://$IP/"
+          else
+            ENDPOINT="https://$HOSTNAME/"
+          fi
+          kubectl patch configmap datahub-app-dashboard-info -n "$NAMESPACE" \
+            --type=merge -p "{\"data\":{\"dashboardLink\":\"$ENDPOINT\"}}"
+          echo "Dashboard link set to $ENDPOINT"
+---

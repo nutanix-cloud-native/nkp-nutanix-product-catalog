@@ -1,0 +1,57 @@
+# Lets the dashboard-link Job read the ndh Gateway's LoadBalancer Service and patch the
+# dashboard ConfigMap, and nothing else.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: envoy-gateway-system
+rules:
+- apiGroups: [""]
+  resources: ["services"]
+  verbs: ["get", "list"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: envoy-gateway-system
+subjects:
+- kind: ServiceAccount
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${releaseName}-dashboard-link
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+rules:
+- apiGroups: [""]
+  resources: ["configmaps"]
+  resourceNames: ["datahub-app-dashboard-info"]
+  verbs: ["get", "patch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+subjects:
+- kind: ServiceAccount
+  name: ${releaseName}-dashboard-link
+  namespace: ${releaseNamespace}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: ${releaseName}-dashboard-link
+---
