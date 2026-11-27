@@ -1,0 +1,48 @@
+schema: catalog.nkp.nutanix.com/v1/application-metadata
+type: nkp-catalog
+allowMultipleInstances: true
+category:
+- general
+description: Nutanix Data Hub services
+displayName: datahub
+icon: ""
+licensing:
+- Pro
+- Ultimate
+# cert-manager issues the service certificates; envoy-gateway serves the NDH Gateway
+# and installs the Gateway API and Envoy Gateway CRDs.
+dependencies:
+- cert-manager
+- envoy-gateway
+overview: |-
+  Deploys Nutanix Data Lens and NDH services on NKP.
+
+  ## Prerequisites
+
+  - The `envoy-gateway` application is enabled in the same workspace.
+  - `prerequisite.sh` has created the image-pull and Prism Central credential Secrets.
+
+  ## Configure Service values
+
+  In NKP's Configure Service editor, enter the Prism Central and NKP cluster
+  identity values. The values below are the current deployment's examples and
+  should be replaced for another environment:
+
+  ```yaml
+  dl-mspdeployedparams:
+    cluster:
+      name: mirko-nkp
+      uuid: eea9e75e-78fe-41c0-a008-d9c76d5c10b2
+    prismCentral:
+      ip: 10.48.61.3
+      uuid: fcab3de9-fabf-48b9-abe3-b298fd19c511
+      fqdn: pc-fcab3de9-fabf-48b9-abe3-b298fd19c511.ntnx-ikat-platform
+  ```
+
+  These values fill the `mspdeployedparams` ConfigMaps (created by the dl-base
+  chart) and configure the Prism Central compatibility proxy. `fqdn` must be
+  `pc-<prism-central-uuid>.ntnx-ikat-platform`: Data Lens reaches Prism Central
+  through that MSP service name, which this application maps to its proxy.
+scope:
+- workspace
+supportLink: https://www.nutanix.com

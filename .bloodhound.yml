@@ -1,0 +1,33 @@
+# Kubernetes versions
+# (e.g. 1.33.0 - has to match versions in https://github.com/yannh/kubernetes-json-schema)
+k8s_versions:
+  - 1.33.0
+
+# use strict validation (reject unknown fields in resources)
+strict: true
+
+# These resources are defined by CRDs owned by NKP or by the application charts.
+# The catalog builder does not have those CRD schemas locally, and the chart
+# emits a Job pod-template shape that is valid for the target chart but rejected
+# by the generic Kubernetes strict schema.
+skip_types:
+  - cert-manager.io/v1/Certificate
+  - ikat.nutanix.com/v1alpha1/IkatSnapshotTrigger
+  - monitoring.coreos.com/v1/PrometheusRule
+  - monitoring.coreos.com/v1/ServiceMonitor
+  - ray.io/v1/RayCluster
+  - source.toolkit.fluxcd.io/v1/HelmRepository
+  - batch/v1/Job
+
+# load additional CRDs (URLs of CRD yaml files)
+# Gateway API and Envoy Gateway CRDs installed by the NKP envoy-gateway 1.5.0 application.
+additional_crds:
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/gatewayapi-crds.yaml
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/generated/gateway.envoyproxy.io_envoyproxies.yaml
+  - https://raw.githubusercontent.com/envoyproxy/gateway/v1.5.0/charts/gateway-helm/crds/generated/gateway.envoyproxy.io_httproutefilters.yaml
+
+# set values for substitution variables (e.g. ${releaseNamespace}) in the resources
+substitution_vars:
+  releaseNamespace: kommander
+  workspaceNamespace: workspace
+
